@@ -23,6 +23,7 @@ namespace GAME_NAME
 			if ((dataToLoad & LEVEL_DATA_AUDIO_MUSIC) != 0)
 			{
 				AssetManager::LoadMusic(levelPath, reload);
+				AssetManager::LoadSFX(levelPath, false);
 			}
 
 			if ((dataToLoad & LEVEL_DATA_AUDIO_SFX) != 0)

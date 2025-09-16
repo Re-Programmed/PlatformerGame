@@ -26,9 +26,10 @@ constexpr const char* ObjectFileName = "/object.pk";	//Path within a level to it
 constexpr const char* MenuFileExtension = ".pk";		//Extension for menu files.
 
 constexpr const char* MusicFilePath = "/music";			//Path within a level to its music folder.
+constexpr const char* SFXFilePath = "/sfx";			//Path within a level to its sfx folder.
 
 ///!Max number of texture assets to store at one time. [------- CURRENTLY NOT USED; HOWEVER, MAYBE USE A RENDER LIMIT OF 80 SPRITES WITH 20 ON EACH SCANLINE FOR RETRONESS. -------]
-#define ASSET_LIMIT 50
+#define ASSET_LIMIT 500
 
 enum TEXTURE_LOAD
 {
@@ -57,9 +58,11 @@ namespace GAME_NAME
 			/// Loads all the music from a subfolder.
 			/// </summary>
 			/// <param name="subfolder">The directory within the assets folder to load.</param>
-			/// <param name="reloadMusic">If true, all music loaded will be removed before the new music files are loaded.</param>
-			static void LoadMusic(const char* subfolder, bool reloadMusic = false);
+			/// <param name="reloadAllSounds">If true, all music loaded will be removed before the new music files are loaded.</param>
+			static void LoadMusic(const char* subfolder, bool reloadAllSounds = false);
 			
+			static void LoadSFX(const char* subfolder, bool reloadAllSounds = false);
+
 			/// <summary>
 			/// Gets the level data file and outputs it to the data array.
 			/// </summary>

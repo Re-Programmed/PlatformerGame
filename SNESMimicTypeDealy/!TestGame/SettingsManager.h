@@ -2,6 +2,7 @@
 
 #include "../Objects/GUI/Menus/GUIMenu.h"
 #include "../Rendering/Renderers/Renderer.h"
+#include "../Objects/GUI/Text/TextRenderer.h"
 
 #include "../Objects/GUI/StaticGUIElement.h"
 
@@ -31,6 +32,10 @@ namespace GAME_NAME
 		/// </summary>
 		static void CreateSettingsMenu();
 
+		static void OpenSoundMenu();
+
+		static void Update();
+
 		/// <summary>
 		/// Opens the controls menu for editing.
 		/// </summary>
@@ -56,6 +61,9 @@ namespace GAME_NAME
 		/// </summary>
 		static std::vector<GUI::StaticGUIElement*> m_recordingText;
 
+		static std::vector<GUI::StaticGUIElement*> m_musicMixerPercentage;
+		static std::vector<GUI::StaticGUIElement*> m_sfxMixerPercentage;
+
 		/// <summary>
 		/// True if the settings menu is currently open.
 		/// </summary>
@@ -71,6 +79,10 @@ namespace GAME_NAME
 		/// </summary>
 		/// <param name="id"></param>
 		static void controlsMenu_guiCallback(int id);
+
+		static void soundMenu_guiCallback(int id);
+
+		static GUI::Text::TextRenderer::RenderedDigit UpdateAudioMixer(int mixerIndex, int& percentDisplay, GUI::Text::TextRenderer::RenderedDigit& const initialDigit);
 
 		/// <summary>
 		/// The GLFW scroll callback for the controls menu. Used for scrolling through pages of controls.

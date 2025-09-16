@@ -74,7 +74,7 @@ namespace GAME_NAME::Objects::Enemies
 			//Move the enemy towards the pathfinding point if they are not already at it and ensure the enemy dosent exceed terminal velocity.
 			if (std::abs(m_physics->GetVelocity().X) < m_enemyAttributes->TerminalMovementSpeed)
 			{
-				m_physics->AddVelocity(Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0));
+				m_physics->AddVelocity(Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0) * Utils::Time::GameTime::GetScaledDeltaTime());
 			}
 		}
 

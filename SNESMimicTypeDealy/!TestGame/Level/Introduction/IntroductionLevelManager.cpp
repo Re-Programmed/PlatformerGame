@@ -131,17 +131,26 @@ namespace GAME_NAME::Level
 
 	};
 
+	//If true, will set up the second room data when the next update is called.
+	bool IntroManager_makeSecondRube = true;
+
 	IntroductionLevelManager::IntroductionLevelManager()
 	{
+		IntroManager_makeSecondRube = !IntroManager_makeSecondRube;
+
 		TestGame::ThePlayer->HideAllUI();
+
 		//Fix camera to go to where the player is, for some reason the player is starting too far away and the camera gets stuck.
 		TestGame::INSTANCE->GetCamera()->SetPosition(TestGame::ThePlayer->GetPosition() - Vec2{ TargetResolutionX, TargetResolutionY } / 2.f);
-		
-		//Freeze and hide the player.
-		//TestGame::ThePlayer->SetEnableRendering(false);
-		//TestGame::ThePlayer->SetFrozen(true);
 
-		createRube();
+		if (!IntroManager_makeSecondRube) 
+		{
+			//Freeze and hide the player.
+			TestGame::ThePlayer->SetEnableRendering(false);
+			TestGame::ThePlayer->SetFrozen(true);
+
+			createRube();
+		}
 	}
 
 	bool createdRubeSecondRoom = false;
@@ -152,7 +161,7 @@ namespace GAME_NAME::Level
 
     void IntroductionLevelManager::Update(GLFWwindow* window)
     {
-		if (m_rubeTimer < -2)
+		if (IntroManager_makeSecondRube)
 		{
 			//In the second room.
 
@@ -235,6 +244,8 @@ namespace GAME_NAME::Level
 #pragma endregion
 		}
 
+		if (createdRubeSecondRoom) { return; }
+
         executeRube();
     }
 
@@ -272,9 +283,8 @@ namespace GAME_NAME::Level
 		IntroductionLevelManager_toggleRoomColliders(false);
 		
 		//TESTING
-		m_rubeTimer = -9999;
-
-		return;
+		//m_rubeTimer = -9999;
+		//return;
 
 		AnimData bed_data;
 		for(int i = 56; i <= 62; i++){ bed_data.Sprites.emplace_back(std::shared_ptr<Sprite>(Renderer::GetSprite(i))); }

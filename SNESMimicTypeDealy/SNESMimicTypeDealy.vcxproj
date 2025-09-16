@@ -731,6 +731,7 @@
     <Media Include="Assets\green_region\music\0_test.wav" />
     <Media Include="Assets\green_region\music\10002_beat_test.wav" />
     <Media Include="Assets\green_region\music\1_test.wav" />
+    <Media Include="Assets\green_region\sfx\boing.wav" />
     <Media Include="Assets\testing\music\0_test.wav" />
     <Media Include="Assets\testing\music\1_idk.mp3">
       <DeploymentContent>true</DeploymentContent>

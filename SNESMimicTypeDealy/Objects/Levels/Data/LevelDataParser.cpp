@@ -30,10 +30,9 @@ namespace GAME_NAME
 
 					[](std::string song,Game::Level& level)
 					{
-						int snd = std::stoi(song);
-						if (snd != -1) 
+						if (song != "-1")
 						{ 
-							Audio::AudioVoice voice = Audio::SoundManager::Play(snd, Audio::SoundManager::BGMusic);
+							Audio::AudioVoice voice = Audio::SoundManager::Play(song, Audio::SoundManager::BGMusic);
 							level.CurrentBGMusic = voice;
 							Audio::SoundManager::BGMusic = voice;
 						}

@@ -149,6 +149,7 @@ namespace GAME_NAME
 			Game_nextLevelToLoad = "";
 			Game_nextLevelIsOnlyObjects = false;
 
+
 			return;
 		}
 
@@ -186,6 +187,8 @@ namespace GAME_NAME
 		{
 			m_currentLevelSystem->Update(window);
 		}
+
+		SettingsManager::Update();
 	}
 
 	void TestGame::Init(GLFWwindow* window)
@@ -214,12 +217,12 @@ namespace GAME_NAME
 		Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences("/green_region");
 		RenderFront = true;
 #else
-		LoadLevel("/introduction_1", LEVEL_DATA_TEXTURES_BACKGROUND);
+		LoadLevel("/introduction", LEVEL_DATA_TEXTURES_BACKGROUND);
 		LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
-		LoadLevel("/introduction_1", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
-		Mappings::LoadObjectsWithDefaultMapping("/introduction_1");
-		LoadLevel("/introduction_1", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
-		Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences("/introduction_1");
+		LoadLevel("/introduction", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
+		Mappings::LoadObjectsWithDefaultMapping("/introduction");
+		LoadLevel("/introduction", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
+		Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences("/introduction");
 		RenderFront = true;
 #endif
 #else

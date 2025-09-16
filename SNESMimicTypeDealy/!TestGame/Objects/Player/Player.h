@@ -277,6 +277,7 @@ namespace  GAME_NAME
 				inline void SetFrozen(bool frozen, PLAYER_LOOK_DIRECTION direction = NO_LOOK_DIRECTION, Vec2 point = Vec2::Zero)
 				{
 					m_frozen += frozen ? 1 : -1;
+					if (m_frozen < 0) { m_frozen = 0; }
 					SetLookDirection(direction, point);
 				}
 

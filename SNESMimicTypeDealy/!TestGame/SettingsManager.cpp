@@ -1,5 +1,4 @@
 #include "SettingsManager.h"
-#include "../Objects/GUI/Text/TextRenderer.h"
 #include "../Input/InputManager.h"
 
 #include "../Objects/GUI/GUIButton.h"
@@ -9,22 +8,29 @@
 
 #include <algorithm>
 
+#include "../Utils/Time/GameTime.h"
+
 //The amount that a GLFW_KEY should be offset to become a displayable char.
 #define LETTER_DISPLAY_OFFSET ('a' - GLFW_KEY_A)
 
 namespace GAME_NAME
 {
+	double SettingsManager_buttonCooldown;
+
 	std::vector<StaticGUIElement*> SettingsManager::m_currentPageElements;
 
 	std::vector<StaticGUIElement*> SettingsManager::m_controlsPageNumbers;
 
 	std::vector<StaticGUIElement*> SettingsManager::m_recordingText;
 
+	std::vector<StaticGUIElement*> SettingsManager::m_musicMixerPercentage, SettingsManager::m_sfxMixerPercentage;
+
 	bool SettingsManager::m_settingsMenuOpen = false;
 
 	bool SettingsManager::m_recordingKey = false;
 	int SettingsManager::m_currentRecordingIndex = -1;
 	
+	std::vector<StaticGUIElement*> ;
 
 	void SettingsManager::CreateSettingsMenu()
 	{
@@ -35,9 +41,100 @@ namespace GAME_NAME
 		GUI::Menus::GUIMenu::LoadMenu("/settings", new std::function(mainMenu_guiCallback));
 	}
 
+//Dims the screen by creating a large, dark rectangle.
+#define CreateMenuBacking() GUI::StaticGUIElement* backing = new GUI::StaticGUIElement({ 0.f, -800.f }, { 400.f, 1000.f }, Renderer::GetSprite(SpriteBase(-1))->GetSpriteId()); Renderer::LoadGUIElement(backing, 1); m_currentPageElements.push_back(backing);
 
 	double SettingsManager_currentControlsMenuScroll = 0.0; //Used to determine where the top and bottom of the scrolling page should be.
 	StaticGUIElement* SettingsManager_applyButton = nullptr;
+
+
+	void SettingsManager::OpenSoundMenu()
+	{
+		SettingsManager_buttonCooldown = 1.0;
+
+		m_settingsMenuOpen = true;
+		Renderer::UpdateObjects = false;
+
+		CreateMenuBacking();
+
+		Text::TextRenderer::RenderedWord controlsName = Text::TextRenderer::RenderWord("sound", Vec2(128.33f, 161), 12.f, 0.f, 2);
+		m_currentPageElements.insert(m_currentPageElements.end(), controlsName.begin(), controlsName.end());
+
+using namespace GUI::Text;
+
+		GUI::GUIButton* applyButton = new GUI::GUIButton(Vec2(78.6f, 118.f), Vec2(72.f, 16.f), Renderer::GetSprite(72)->GetSpriteId(), new std::function(soundMenu_guiCallback), Vec4{ 0.f, 0.75f, 0.f, 1.f });
+		Renderer::LoadGUIElement(applyButton, 2);
+		SettingsManager_applyButton = applyButton;
+		m_currentPageElements.push_back(applyButton);
+		GUI::GUIManager::RegisterButton(applyButton);
+
+		GUI::GUIButton* closeButton = new GUI::GUIButton(Vec2(162.f, 118.f), Vec2(72.f, 16.f), Renderer::GetSprite(72)->GetSpriteId(), new std::function(soundMenu_guiCallback), Vec4{ 0.75f, 0.f, 0.f, 1.f });
+		Renderer::LoadGUIElement(closeButton, 2);
+		m_currentPageElements.push_back(closeButton);
+		GUI::GUIManager::RegisterButton(closeButton);
+
+		auto applyWords = TextRenderer::RenderWord("Apply", Vec2(96.6f, 120.f), 12.f, 0.f, 2);
+		m_currentPageElements.insert(m_currentPageElements.end(), applyWords.begin(), applyWords.end());
+
+		auto closeWords = TextRenderer::RenderWord("Close", Vec2(180.f, 120.f), 12.f, 0.f, 2);
+		m_currentPageElements.insert(m_currentPageElements.end(), closeWords.begin(), closeWords.end());
+
+
+		//MUSIC MIXER (id_2)
+		GUI::GUIButton* musicMixerKnob = new GUI::GUIButton({ 78.6f, 15.f }, { 12.2f, 6.11f }, Renderer::GetSprite(72)->GetSpriteId(), new std::function(soundMenu_guiCallback), Vec4{ 1.f, 1.f, 1.f, 1.f });
+		Renderer::LoadGUIElement(musicMixerKnob, 2);
+		m_currentPageElements.push_back(musicMixerKnob);
+		GUI::GUIManager::RegisterButton(musicMixerKnob);
+
+		GUI::StaticGUIElement* musicMixerBGLine = new GUI::StaticGUIElement(musicMixerKnob->GetPosition() + Vec2{musicMixerKnob->GetScale().X / 2.f - 0.5f, 0.f}, {1.f, 100.f}, Renderer::GetSprite(72)->GetSpriteId());
+		Renderer::LoadGUIElement(musicMixerBGLine, 2);
+		m_currentPageElements.push_back(musicMixerBGLine);
+
+		float percentage = Audio::SoundManager::MusicBus.mVolume;
+
+		{
+			//Calculate where the knob should display based on the existing volume.
+			float yPosAdd = percentage * (musicMixerBGLine->GetScale().Y - musicMixerKnob->GetScale().Y / 2.f) - musicMixerKnob->GetScale().Y / 2.f;
+			musicMixerKnob->SetPosition({ musicMixerKnob->GetPosition().X, yPosAdd + musicMixerKnob->GetPosition().Y });
+		}
+
+
+		auto musicMixerHeader = TextRenderer::RenderWord("Music", Vec2{ musicMixerKnob->GetPosition().X + musicMixerKnob->GetScale().X + 6.f, musicMixerBGLine->GetPosition().Y + musicMixerBGLine->GetScale().Y - 6.f }, 6.f, 0.f, 2);
+		m_currentPageElements.insert(m_currentPageElements.end(), musicMixerHeader.begin(), musicMixerHeader.end());
+
+		Vec2 musicMixerPercentagePosition = musicMixerHeader.at(0)->GetPosition() - Vec2{ 0.f, 6.75f };
+		m_musicMixerPercentage = TextRenderer::RenderNumber(static_cast<int>(percentage * 100), musicMixerPercentagePosition, 0.25f, 0.f, 3);
+
+		//SFX MIXER (id_3)
+		GUI::GUIButton* sfxMixerKnob = new GUI::GUIButton({ 108.6f, 15.f }, { 12.2f, 6.11f }, Renderer::GetSprite(72)->GetSpriteId(), new std::function(soundMenu_guiCallback), Vec4{ 1.f, 1.f, 1.f, 1.f });
+		Renderer::LoadGUIElement(sfxMixerKnob, 2);
+		m_currentPageElements.push_back(sfxMixerKnob);
+		GUI::GUIManager::RegisterButton(sfxMixerKnob);
+
+		GUI::StaticGUIElement* sfxMixerBGLine = new GUI::StaticGUIElement(sfxMixerKnob->GetPosition() + Vec2{ sfxMixerKnob->GetScale().X / 2.f - 0.5f, 0.f }, { 1.f, 100.f }, Renderer::GetSprite(72)->GetSpriteId());
+		Renderer::LoadGUIElement(sfxMixerBGLine, 2);
+		m_currentPageElements.push_back(sfxMixerBGLine);
+
+		percentage = Audio::SoundManager::SFXBus.mVolume;
+
+		{
+			//Calculate where the knob should display based on the existing volume.
+			float yPosAdd = percentage * (sfxMixerBGLine->GetScale().Y - sfxMixerKnob->GetScale().Y / 2.f) - sfxMixerKnob->GetScale().Y / 2.f;
+			sfxMixerKnob->SetPosition({ sfxMixerKnob->GetPosition().X, yPosAdd + sfxMixerKnob->GetPosition().Y });
+		}
+
+
+		auto sfxMixerHeader = TextRenderer::RenderWord("SFX", Vec2{ sfxMixerKnob->GetPosition().X + sfxMixerKnob->GetScale().X + 8.25f, sfxMixerBGLine->GetPosition().Y + sfxMixerBGLine->GetScale().Y - 6.f }, 6.f, 0.f, 2);
+		m_currentPageElements.insert(m_currentPageElements.end(), sfxMixerHeader.begin(), sfxMixerHeader.end());
+
+		Vec2 sfxMixerPercentagePosition = sfxMixerHeader.at(0)->GetPosition() - Vec2{ 0.f, 6.75f };
+		m_sfxMixerPercentage = TextRenderer::RenderNumber(static_cast<int>(percentage * 100), sfxMixerPercentagePosition, 0.25f, 0.f, 3);
+
+
+		m_currentRecordingIndex = -1;
+	}
+
+
 
 	void SettingsManager::OpenControlsMenu()
 	{
@@ -51,10 +148,7 @@ namespace GAME_NAME
 
 		//GUI::Menus::GUIMenu::LoadMenu("/settings_controls", new std::function(controlsMenu_guiCallback));
 
-		GUI::StaticGUIElement* backing = new GUI::StaticGUIElement({ 0.f, -800.f }, { 400.f, 1000.f }, Renderer::GetSprite(SpriteBase(-1))->GetSpriteId());
-		Renderer::LoadGUIElement(backing, 1);
-
-		m_currentPageElements.push_back(backing);
+		CreateMenuBacking();
 
 		Text::TextRenderer::RenderedWord controlsName = Text::TextRenderer::RenderWord("controls", Vec2(118, 161), 12.f, 0.f, 2);
 		m_currentPageElements.insert(m_currentPageElements.end(), controlsName.begin(), controlsName.end());
@@ -114,21 +208,26 @@ using namespace GUI::Text;
 	{
 		std::cout << "ID OF BUTTON: " << id << std::endl; //TESTING BUTTONS.
 
-		//Controls button.
-		if (id == 0)
+		switch (id)
 		{
+		//Controls button.
+		case 0:
 			CloseMenu();
 			OpenControlsMenu();
 			return;
-		}
-
+		//Sound button.
+		case 1:
+			CloseMenu();
+			OpenSoundMenu();
+			return;
 		//Back button.
-		if (id == 1)
-		{
+		case 2:
 			CloseMenu();
 			return;
 		}
 	}
+
+
 
 	void SettingsManager::controlsMenu_guiCallback(int id)
 	{
@@ -254,6 +353,168 @@ using namespace GUI::Text;
 		recordThread.detach();
 	}
 
+	void SettingsManager::soundMenu_guiCallback(int id)
+	{
+		if (SettingsManager_buttonCooldown > 0) { return; }
+
+		if (id == 0)
+		{
+			//Apply button.
+			Audio::SoundManager::SaveAllAudioBusVolumes();
+		}
+
+		if (id <= 1)
+		{
+
+			for (GUI::StaticGUIElement* el : m_currentPageElements)
+			{
+				if (el == nullptr) { continue; }
+
+				Renderer::UnloadGUIElement(el, 1);
+				Renderer::UnloadGUIElement(el, 2);
+
+				/*
+					BUG WITH THE FACT TAHT UPDATING A KEYBIND CAUSES A NULL OBJECT TO EXIST IN THE m_currentPageElements ARRAY.
+				*/
+
+				try {
+					if (GUI::GUIButton* button = dynamic_cast<GUI::GUIButton*>(el))
+					{
+						GUIManager::UnregisterButton(button);
+					}
+				}
+				catch (...)
+				{
+
+				}
+
+				delete el;
+			}
+
+			for (GUI::StaticGUIElement* el : m_musicMixerPercentage)
+			{
+				Renderer::UnloadGUIElement(el);
+
+				delete el;
+			}
+
+			for (GUI::StaticGUIElement* el : m_sfxMixerPercentage)
+			{
+				Renderer::UnloadGUIElement(el);
+
+				delete el;
+			}
+
+			m_musicMixerPercentage.clear();
+			m_sfxMixerPercentage.clear();
+
+			m_currentPageElements.clear();
+
+			CloseMenu(true);
+
+			return;
+		}
+
+
+		if (m_currentRecordingIndex < 0)
+		{
+			//MUSIC Mixer Knob
+			if (id == 2)
+			{
+				m_currentRecordingIndex = id;
+			}
+
+			//SFX Mixer Knob
+			if (id == 3)
+			{
+				m_currentRecordingIndex = id;
+			}
+		}
+
+
+	}
+
+	GUI::Text::TextRenderer::RenderedDigit SettingsManager::UpdateAudioMixer(int mixerIndex, int& percentDisplay, GUI::Text::TextRenderer::RenderedDigit& const initialDigit)
+	{
+		GUI::StaticGUIElement* knob = m_currentPageElements[18 /*Elements before the first mixer knob*/ + (m_currentRecordingIndex - mixerIndex /*Buttons before the first mixer knob*/)];
+		knob->SetPosition(Vec2{ knob->GetPosition().X, InputManager::GetMouseScreenPosition().Y - knob->GetScale().Y / 2.f });
+
+		GUI::StaticGUIElement* knobTrack = (m_currentPageElements[18 + (m_currentRecordingIndex - mixerIndex) + 1 /*Next element is bg element*/]);
+
+		double percentage = (knob->GetPosition().Y - knobTrack->GetPosition().Y) / (knobTrack->GetScale().Y - knob->GetScale().Y);
+		percentDisplay = (int)(percentage * 100);
+
+		if (percentDisplay < 0)
+		{
+			percentDisplay = 0;
+			knob->SetPosition(Vec2{ knob->GetPosition().X, knobTrack->GetPosition().Y });
+		}
+		else if (percentDisplay > 100) {
+			percentDisplay = 100;
+			knob->SetPosition(Vec2{ knob->GetPosition().X, knobTrack->GetPosition().Y + knobTrack->GetScale().Y - knob->GetScale().Y });
+		}
+
+		Vec2 musicMixerPercentagePosition = initialDigit.at(0)->GetPosition() - Vec2(10.f, 0.f);
+		for (GUI::StaticGUIElement* el : initialDigit)
+		{
+			Renderer::UnloadGUIElement(el);
+
+			delete el;
+		}
+
+		return GUI::Text::TextRenderer::RenderNumber(percentDisplay, musicMixerPercentagePosition, 0.25f, 0.f, 3);
+
+	}
+	
+	void SettingsManager::Update()
+	{
+
+		if (!m_settingsMenuOpen) { return; }
+
+		if (SettingsManager_buttonCooldown > 0) {
+			SettingsManager_buttonCooldown -= Utils::Time::GameTime::DeltaTime::GetDeltaTime();
+		}
+
+		//Records audio knob position.
+		if (m_currentRecordingIndex >= 0)
+		{
+			if (InputManager::GetMouseButton(0))
+			{
+
+				//Update the actual volume of the group based on which knob is pressed.
+				switch (m_currentRecordingIndex)
+				{
+					//MUSIC group knob.
+				case (2):
+				{
+					int percentDisplay = 0;
+					m_musicMixerPercentage = UpdateAudioMixer(2, percentDisplay, m_musicMixerPercentage);
+					Audio::SoundManager::MusicBus.setVolume(static_cast<float>(percentDisplay) / 100.f);
+					break;
+				}
+
+					//SFX group knob.
+				case (3):
+				{
+					int percentDisplay = 0;
+					m_sfxMixerPercentage = UpdateAudioMixer(-4, percentDisplay, m_sfxMixerPercentage);
+					Audio::SoundManager::SFXBus.setVolume(static_cast<float>(percentDisplay) / 100.f);
+					break;
+				}
+
+				default:
+					//We clicked something else I guess.
+					break;
+				}
+
+
+			}
+			else
+			{
+				m_currentRecordingIndex = -1;
+			}
+		}
+	}
 
 	void SettingsManager::controlsMenu_scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 	{

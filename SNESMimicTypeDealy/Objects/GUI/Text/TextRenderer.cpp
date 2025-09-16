@@ -32,7 +32,7 @@ namespace GAME_NAME::Objects::GUI::Text
 		{
 			for (StaticGUIElement* sge : finalDigit)
 			{
-				sge->SetPosition(sge->GetPosition() + Vec2(TEXT_RENDERER_DIGIT_SIZE_X + digitPadding, 0));
+				sge->SetPosition(sge->GetPosition() + Vec2(TEXT_RENDERER_DIGIT_SIZE_X * scale + digitPadding, 0));
 			}
 
 			Vec2 pos(firstDigitPosition.X, firstDigitPosition.Y);
@@ -48,7 +48,7 @@ namespace GAME_NAME::Objects::GUI::Text
 		{
 			for (StaticGUIElement* sge : finalDigit)
 			{
-				sge->SetPosition(sge->GetPosition() + Vec2(TEXT_RENDERER_DIGIT_SIZE_X + digitPadding, 0));
+				sge->SetPosition(sge->GetPosition() + Vec2(TEXT_RENDERER_DIGIT_SIZE_X * scale + digitPadding, 0));
 			}
 
 			Vec2 pos(firstDigitPosition.X, firstDigitPosition.Y);

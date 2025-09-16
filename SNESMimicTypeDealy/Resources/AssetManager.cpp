@@ -112,7 +112,7 @@ namespace GAME_NAME
 #endif
 		}
 
-		void AssetManager::LoadMusic(const char* subfolder, bool reloadMusic)
+		void AssetManager::LoadMusic(const char* subfolder, bool reloadAllSounds)
 		{
 #if _DEBUG
 			DebugHeader("Music", ";2;33");
@@ -121,7 +121,7 @@ namespace GAME_NAME
 			filePath += subfolder;
 			filePath += MusicFilePath;
 
-			if (reloadMusic) { Audio::SoundManager::ClearSources(); }
+			if (reloadAllSounds) { Audio::SoundManager::ClearSources(); }
 
 			if (!std::filesystem::exists(filePath))
 			{
@@ -136,13 +136,47 @@ namespace GAME_NAME
 			{
 				if (file.is_regular_file())
 				{
-					Audio::SoundManager::RegisterAudioSource(std::make_shared<GAME_NAME::Audio::Sound>(file.path().string().c_str()));
+					Audio::SoundManager::RegisterAudioSource(file.path().stem().string(), new GAME_NAME::Audio::Sound(file.path().string().c_str()));
 #if _DEBUG
 					DEBUG::DebugLog::Log(file.path().string(), false, ";33;2");
 #endif
 				}
 			}
 
+		}
+
+		void AssetManager::LoadSFX(const char* subfolder, bool reloadAllSounds)
+		{
+#if _DEBUG
+			DebugHeader("SFX", ";2;33");
+#endif
+
+			std::string filePath = AssetPath;
+			filePath += subfolder;
+			filePath += SFXFilePath;
+
+			if (reloadAllSounds) { Audio::SoundManager::ClearSources(); }
+
+			if (!std::filesystem::exists(filePath))
+			{
+				std::string message = "Missing directory: \"" + filePath + "\"";
+				CreateResoruceErrorMessage(message);
+				return;
+			}
+
+
+			using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+
+			for (const auto& file : recursive_directory_iterator(filePath))
+			{
+				if (file.is_regular_file())
+				{
+					Audio::SoundManager::RegisterAudioSource(file.path().stem().string(), new GAME_NAME::Audio::Sound(file.path().string().c_str()));
+#if _DEBUG
+					DEBUG::DebugLog::Log(file.path().string(), false, ";33;2");
+#endif
+				}
+			}
 		}
 
 		void AssetManager::GetLevelData(const char* subfolder, std::string data[Objects::Levels::LevelDataSize])

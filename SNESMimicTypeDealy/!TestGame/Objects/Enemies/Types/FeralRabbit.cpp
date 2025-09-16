@@ -8,20 +8,21 @@
 */
 #define FERAL_RABBIT_AGRESSION_DISTANCE 200
 #define FERAL_RABBIT_AWAKEN_DISTANCE 50
-#define FERAL_RABBIT_ATTACK_DISTANCE 5
+#define FERAL_RABBIT_ATTACK_DISTANCE 10
 
 #define FERAL_RABBIT_BASE_ATTACK_DAMAGE 5
 #define FERAL_RABBIT_BASE_ATTACK_DELAY 1.25f
 
-#define FERAL_RABBIT_AGRESSION_SPEED 35.f
-#define FERAL_RABBIT_DEFAULT_SPEED 5.f
+#define FERAL_RABBIT_AGRESSION_SPEED 1400.f
+#define FERAL_RABBIT_DEFAULT_SPEED 1000.f
 
 namespace GAME_NAME::Objects::Enemies
 {
 	FeralRabbit::FeralRabbit(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, int jumpingSprite, PassiveRabbitAttributes* attributes, bool beginSleeping, size_t saveID)
 		: PassiveRabbit(position, scale, sprite, jumpingSprite, attributes, saveID), m_isAsleep(beginSleeping)
 	{
-
+		m_enemyAttributes->MovementSpeed = FERAL_RABBIT_DEFAULT_SPEED;
+		m_enemyAttributes->TerminalMovementSpeed = FERAL_RABBIT_DEFAULT_SPEED * 2;
 	}
 
 	void FeralRabbit::Update(GLFWwindow* window)
