@@ -171,7 +171,9 @@ namespace GAME_NAME::Objects::Environment::Buildings
 		//Render every segment.
 		for (SaggingSegment* segment : m_sagObjects)
 		{
+			segment->SetPosition(segment->GetPosition() + Vec2{0.f, 5.f});
 			segment->Render(cameraPosition);
+			segment->SetPosition(segment->GetPosition() - Vec2{ 0.f, 5.f });
 		}
 	}
 

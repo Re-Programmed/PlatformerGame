@@ -400,7 +400,7 @@ using namespace Enemies;
 			1 - Door (closeSprite,openSprite,openDistance[float]=DEFAULT_DOOR_OPEN_DISTANCE,rotation[float]=0)
 			2 - FrontDoor (sprite, roomFile)
 			3 - Bench (sprite)
-			4 - Sagging Object (sprite, segmentCount)
+			4 - Sagging Object (sprite, segmentCount, bouncy)
 			5 - InteriorDoor (sprite,destination,playerExitX,playerExitY,shouldLoadOnlyObjects=false)
 			6 - DialogueInteractable (sprite,dialogueKey)
 	*/
