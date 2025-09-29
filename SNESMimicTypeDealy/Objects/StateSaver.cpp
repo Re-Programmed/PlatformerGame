@@ -32,6 +32,7 @@ void GAME_NAME::Objects::StateSaver::SaveMisc()
 {
 	for (MiscStateGroup* miscState : m_miscStates)
 	{
+		if (miscState == nullptr) { continue; }
 		if (miscState->HasStates())
 		{
 			Resources::SaveManager::CreateSaveFile(miscState->GetSaveString(), miscState->GetName());

@@ -16,7 +16,7 @@ namespace GAME_NAME::Objects::Environment::Buildings
 		if (player->GetVelocity().X < 7)
 		{
 			//Player is not already sitting.
-			if (player->GetLookDirection() != Player::Player::SITTING_FORWARD)
+			if (player->GetAnimationState() != Player::Player::SITTING_FORWARD)
 			{
 				player->SetFrozen(true, Player::Player::SITTING_FORWARD);
 			}

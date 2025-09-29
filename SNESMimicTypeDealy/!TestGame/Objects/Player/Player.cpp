@@ -31,7 +31,10 @@
 #include <thread>
 #include "../Environment/Effects/Explosion.h"
 
+#include "../../DeathEventManager.h"
+
 #include "../../../Utils/CollisionDetection.h"
+#include "../../Items/Types/Placeable.h"
 
 #define PLAYER_ROOM_SPEED 40	//How fast the player moves vertically in room control mode.
 
@@ -56,6 +59,8 @@ namespace  GAME_NAME
 #define PLAYER_LOOK_BAG TextureDataBase(BagTurnaround) - 1
 #define PLAYER_LOOK_BEHIND_SPRITE TextureDataBase(BagTurnaround)
 #define PLAYER_FALLEN_SPRITE TextureDataBase(Fall)
+
+#define PLAYER_DEAD_SPRITE TextureDataBase(Dead)
 
 #define DefaultPlayerSprite TextureDataBase(DefaultSprites)		//The default sprite to use for the player.
 
@@ -157,7 +162,8 @@ namespace  GAME_NAME
 				m_particleEmitter(new Particles::ParticleEmitter(position)),
 				m_backpack(new Backpack(18)),		//Create default backpack (load save in constructor).
 				m_skillHolder({ 62.f, 7.f }),		//Skill holder (manages update and display of current skill and equipment effects)
-				m_textureData(TextureData[0])
+				m_textureData(TextureData[0]),
+				IsAlive(true)
 			{
 
 				//Change to load based on what sprite the player should be using from the selected kit.
@@ -221,6 +227,19 @@ namespace  GAME_NAME
 			float m_curr = 0;
 			void Player::Update(GLFWwindow* window)
 			{
+				//Death by falling out of level.
+				if (m_position.Y < -80.f && IsAlive)
+				{
+					this->SetFrozen(true);
+					this->m_physics->SetVelocityY(765.f);
+					//Death sound.
+
+					DeathEventManager::ShowDeathScreen(DeathEventManager::FALLEN);
+					SetAnimationState(DEAD);
+
+					IsAlive = false;
+				}
+
 				std::thread playerInput([this] {  std::srand(time(0)) /*Must reseed because thread dosen't carry over.*/; readKeys(); });
 
 				std::thread animationUpdate([this, window] { m_animator->Update(window, this); });
@@ -359,9 +378,35 @@ namespace  GAME_NAME
 					}
 				}
 				*/
-				updateLookDirection();
+
+				if (m_screenInventory->GetHeldItem() != nullptr)
+				{
+					Placeable* p = dynamic_cast<Placeable*>(m_screenInventory->GetHeldItem());
+					if (p != nullptr)
+					{
+						if (InputManager::GetKeyUpDown(PLAYER_INTERACT) & InputManager::KEY_STATE_HELD)
+						{
+							Placeable::InteractionTimer += Time::GameTime::DeltaTime::GetDeltaTime();
+
+							if (Placeable::InteractionTimer > 1.0)
+							{
+								//Remove held item and place the placeable.
+								p->Place(m_position + m_scale/2.f);
+								Placeable::InteractionTimer = 0.0;
+								
+								this->m_screenInventory->SetItem(this->m_screenInventory->GetSelectedSlot() - 1, nullptr);
+							}
+						}
+						else {
+							Placeable::InteractionTimer = 0.0;
+						}
+					}
+				}
+
+				updateAnimationState();
 
 				m_screenInventory->Update();
+
 			}
 
 			void Player::SetSwimming(bool swimming)
@@ -447,6 +492,12 @@ namespace  GAME_NAME
 				else {
 					if (m_sprite != nullptr)
 					{
+						//The player sprite must be shifted down if the dead sprite is showing.
+						if (m_currentPlayerLookDirection == DEAD)
+						{
+							m_position -= Vec2{ 0.f, 4.f };
+						}
+
 						//Check if the player's color should update.
 						if (playerColorVertsModified)
 						{
@@ -460,6 +511,12 @@ namespace  GAME_NAME
 							
 							m_sprite->Render(cameraPosition, m_position + (m_textureFlipped ? ((m_scale * m_scaleMultiplier) * Vec2::OneX) : 0), (m_scale * m_scaleMultiplier) * (m_textureFlipped ? Vec2::MinusOneXOneY : 1), m_rotation);
 						}
+
+						//The player sprite must be shifted down if the dead sprite is showing.
+						if (m_currentPlayerLookDirection == DEAD)
+						{
+							m_position += Vec2{ 0.f, 4.f };
+						}
 					}
 					//Render emotions object if it should be rendered.
 					if (m_emotionsObject != nullptr)
@@ -472,137 +529,149 @@ namespace  GAME_NAME
 					Held item rendering.
 				*/
 
-				if (m_heldItemDisplay != nullptr && m_heldItemDisplay->GetScale().X > 8 && m_screenInventory->GetHeldItem() != nullptr)
+				if (m_screenInventory->GetHeldItem() != nullptr)
 				{
-					const int&& baseSpriteId = Items::ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].HeldTexture;
-
-					//If the player is currently attacking, the item will be rendered outward from their body.
-					if (m_animator->GetCurrentAnimationIndex() == 7 /*Basic Attack Anim*/)
+					Placeable* p = dynamic_cast<Placeable*>(m_screenInventory->GetHeldItem());
+					if (p != nullptr)
 					{
-						const int frame = 0;
-						m_heldItemLastSprite = std::shared_ptr<Sprite>(Renderer::GetSprite(baseSpriteId + frame));
-						m_heldItemDisplayFrameOffset = frame;
-						m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
-
-						//Offset position is determined by what frame of attack the player is on.
-						Vec2 offsetPosition = Vec2::Zero;
-						switch (m_animator->GetCurrentAnimation()->GetFrame())
-						{
-						case 0:
-							offsetPosition = { -6.25f, 3.f };
-							break;
-						case 1:
-							offsetPosition = { -5.33f, 2.f };
-							break;
-						case 2:
-							offsetPosition = { -5.f, 1.f };
-							break;
-						case 3:
-							offsetPosition = { -4.75f, 0.f };
-							break;
-						case 4:
-							offsetPosition = { -5.f, -1.f };
-							break;
-						case 5:
-							offsetPosition = { -5.33f, -2.f };
-							break;
-						case 6:
-							offsetPosition = { -6.25f, -3.f };
-							break;
-						default:
-							offsetPosition = { -6.25f, -4.f };
-							break;
-						}
-
-						if (m_textureFlipped)
-						{
-							
-							m_heldItemDisplay->GetSprite()->Render(cameraPosition, offsetPosition + m_position + Vec2{ 16.f + m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2 { -1, 1 }, 0.0F);
-						}
-						else {
-							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_position + Vec2{ 0.f, 0.f }, m_heldItemDisplay->GetScale(), 0.0F);
-						}
+						Vec2 placePos = m_position + Vec2(0.f, m_scale.Y / 2.f);
+						p->RenderPreview(cameraPosition, p->GetPotentialPlaceLocation(placePos));
 						return;
 					}
 
-					const float playerYVel = m_physics->GetVelocity().Y + m_physics->GetGravitationalVelocity();
-					if (playerYVel > 1.5f && !m_onGround)
-					{
-						const int frame = 0;
-						m_heldItemLastSprite.reset(Renderer::GetSprite(baseSpriteId + frame));
-						m_heldItemDisplayFrameOffset = frame;
-						m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
 
-						m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(6.75f, -0.5f) : Vec2(0, -0.5f)));
-					}else if (playerYVel < -1.5f && !m_onGround)
+					if (m_heldItemDisplay != nullptr && m_heldItemDisplay->GetScale().X > 8)
 					{
-						const int frame = 2;
-						m_heldItemLastSprite.reset(Renderer::GetSprite(baseSpriteId + frame));
-						m_heldItemDisplayFrameOffset = frame;
-						m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
+						const int&& baseSpriteId = Items::ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].HeldTexture;
 
-						m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(2.6f, 7.f) : Vec2(4.5f, 7.f)));
-					}
-					else if (m_physics->GetVelocity().X > 0.3 || m_physics->GetVelocity().X < -0.3)
-					{
-						if (m_animator->GetCurrentAnimation() != nullptr)
+						//If the player is currently attacking, the item will be rendered outward from their body.
+						if (m_animator->GetCurrentAnimationIndex() == 7 /*Basic Attack Anim*/)
 						{
-							int&& frame = m_animator->GetCurrentAnimation()->GetFrame();
-
-							//Determine what frame of item animation to show.
-							switch (frame)
-							{
-							case 0:
-								frame = 0;
-								break;
-							case 1:
-								frame = 1;
-								break;
-							case 2:
-								frame = 2;
-								break;
-							case 3:
-								frame = 1;
-								break;
-							case 4:
-								frame = 0;
-								break;
-							case 5:
-								frame = 3;
-								break;
-							case 6:
-								frame = 4;
-								break;
-							case 7:
-								frame = 3;
-								break;
-							}
-
+							const int frame = 0;
 							m_heldItemLastSprite = std::shared_ptr<Sprite>(Renderer::GetSprite(baseSpriteId + frame));
 							m_heldItemDisplayFrameOffset = frame;
 							m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
 
-							m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(6.75f, -0.5f) : Vec2(0, -0.5f)));
+							//Offset position is determined by what frame of attack the player is on.
+							Vec2 offsetPosition = Vec2::Zero;
+							switch (m_animator->GetCurrentAnimation()->GetFrame())
+							{
+							case 0:
+								offsetPosition = { -6.25f, 3.f };
+								break;
+							case 1:
+								offsetPosition = { -5.33f, 2.f };
+								break;
+							case 2:
+								offsetPosition = { -5.f, 1.f };
+								break;
+							case 3:
+								offsetPosition = { -4.75f, 0.f };
+								break;
+							case 4:
+								offsetPosition = { -5.f, -1.f };
+								break;
+							case 5:
+								offsetPosition = { -5.33f, -2.f };
+								break;
+							case 6:
+								offsetPosition = { -6.25f, -3.f };
+								break;
+							default:
+								offsetPosition = { -6.25f, -4.f };
+								break;
+							}
+
+							if (m_textureFlipped)
+							{
+							
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, offsetPosition + m_position + Vec2{ 16.f + m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2 { -1, 1 }, 0.0F);
+							}
+							else {
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_position + Vec2{ 0.f, 0.f }, m_heldItemDisplay->GetScale(), 0.0F);
+							}
+							return;
 						}
-					}
-					else {
-						if (m_heldItemDisplayFrameOffset != 0)
+
+						const float playerYVel = m_physics->GetVelocity().Y + m_physics->GetGravitationalVelocity();
+						if (playerYVel > 1.5f && !m_onGround)
 						{
-							m_heldItemDisplay->SetSprite(new Sprite(m_heldItemDisplay->GetSprite()->GetSpriteId() - m_heldItemDisplayFrameOffset));
-							m_heldItemDisplayFrameOffset = 0;
+							const int frame = 0;
+							m_heldItemLastSprite.reset(Renderer::GetSprite(baseSpriteId + frame));
+							m_heldItemDisplayFrameOffset = frame;
+							m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
+
+							m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(6.75f, -0.5f) : Vec2(0, -0.5f)));
+						}else if (playerYVel < -1.5f && !m_onGround)
+						{
+							const int frame = 2;
+							m_heldItemLastSprite.reset(Renderer::GetSprite(baseSpriteId + frame));
+							m_heldItemDisplayFrameOffset = frame;
+							m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
+
+							m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(2.6f, 7.f) : Vec2(4.5f, 7.f)));
 						}
-						m_heldItemDisplay->SetPosition(m_position + Vec2(3.5, 0.95f));
+						else if (m_physics->GetVelocity().X > 0.3 || m_physics->GetVelocity().X < -0.3)
+						{
+							if (m_animator->GetCurrentAnimation() != nullptr)
+							{
+								int&& frame = m_animator->GetCurrentAnimation()->GetFrame();
+
+								//Determine what frame of item animation to show.
+								switch (frame)
+								{
+								case 0:
+									frame = 0;
+									break;
+								case 1:
+									frame = 1;
+									break;
+								case 2:
+									frame = 2;
+									break;
+								case 3:
+									frame = 1;
+									break;
+								case 4:
+									frame = 0;
+									break;
+								case 5:
+									frame = 3;
+									break;
+								case 6:
+									frame = 4;
+									break;
+								case 7:
+									frame = 3;
+									break;
+								}
+
+								m_heldItemLastSprite = std::shared_ptr<Sprite>(Renderer::GetSprite(baseSpriteId + frame));
+								m_heldItemDisplayFrameOffset = frame;
+								m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
+
+								m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(6.75f, -0.5f) : Vec2(0, -0.5f)));
+							}
+						}
+						else {
+							if (m_heldItemDisplayFrameOffset != 0)
+							{
+								m_heldItemDisplay->SetSprite(new Sprite(m_heldItemDisplay->GetSprite()->GetSpriteId() - m_heldItemDisplayFrameOffset));
+								m_heldItemDisplayFrameOffset = 0;
+							}
+							m_heldItemDisplay->SetPosition(m_position + Vec2(3.5, 0.95f));
+						}
+
+						if (m_textureFlipped)
+						{
+							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + Vec2{ m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2{ -1, 1 }, 0.0F);
+						}
+						else {
+							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition(), m_heldItemDisplay->GetScale(), 0.0F);
+						}
 					}
 
-					if (m_textureFlipped)
-					{
-						m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + Vec2{ m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2{ -1, 1 }, 0.0F);
-					}
-					else {
-						m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition(), m_heldItemDisplay->GetScale(), 0.0F);
-					}
 				}
-
 
 			}
 
@@ -700,7 +769,14 @@ namespace  GAME_NAME
 
 			void Player::Kill()
 			{
+				if (!IsAlive) { return; }
 
+				SetFrozen(true);
+				
+				DeathEventManager::ShowDeathScreen(DeathEventManager::KILLED_BY_ENEMY);
+				SetAnimationState(DEAD);
+
+				IsAlive = false;
 			}
 
 #define GetObjectW GetObject //Stupid windows define thing that needs fixed.
@@ -1546,7 +1622,7 @@ namespace  GAME_NAME
 				}
 			}
 
-			void Player::updateLookDirection()
+			void Player::updateAnimationState()
 			{
 				//Player is currently in an attacking animation, do not interrupt.
 				if (m_animator->GetCurrentAnimationIndex() == 7) { return; }
@@ -1704,6 +1780,13 @@ namespace  GAME_NAME
 
 						m_animator->SetCurrentAnimation(8);
 
+						break;
+					}
+
+					case DEAD:
+					{
+						m_scale = Vec2(26, 16);
+						m_sprite.reset(Renderer::GetSprite(PLAYER_DEAD_SPRITE));
 						break;
 					}
 

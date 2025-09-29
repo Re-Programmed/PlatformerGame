@@ -30,6 +30,7 @@ namespace GAME_NAME
 			}
 #endif
 			UpdateManager::RemoveUpdateable(m_index);
+			m_index = -1;
 		}
 
 		void RemoveableUpdateable::EnableUpdates()

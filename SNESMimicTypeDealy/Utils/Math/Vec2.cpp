@@ -44,7 +44,7 @@ namespace GAME_NAME
 			this->X = std::clamp(this->X, minX, maxX);
 			this->Y = std::clamp(this->X, minY, maxY);
 		}
-		float Vec2::Distance(Vec2 a, Vec2 b)
+		float Vec2::Distance(const Vec2& a, const Vec2& b)
 		{
 			float aDist = abs(a.X - b.X);
 			float bDist = abs(a.Y - b.Y);

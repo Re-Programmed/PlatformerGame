@@ -141,6 +141,7 @@
     <ClCompile Include="!TestGame\Cutscenes\DialogueManager.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\DialogueSequence.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\InnerThoughtScene.cpp" />
+    <ClCompile Include="!TestGame\DeathEventManager.cpp" />
     <ClCompile Include="!TestGame\Debug\DebugCommands.cpp" />
     <ClCompile Include="!TestGame\InputDisplay\DisplayIconManager.cpp" />
     <ClCompile Include="!TestGame\ItemMapping.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="!TestGame\Items\Inventory.cpp" />
     <ClCompile Include="!TestGame\Items\InventoryItem.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Food.cpp" />
+    <ClCompile Include="!TestGame\Items\Types\Placeable.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Tool.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Weapon.cpp" />
     <ClCompile Include="!TestGame\Level\GlobalLevelData.cpp" />
@@ -275,6 +277,7 @@
     <ClInclude Include="!TestGame\Cutscenes\DialogueManager.h" />
     <ClInclude Include="!TestGame\Cutscenes\DialogueSequence.h" />
     <ClInclude Include="!TestGame\Cutscenes\InnerThoughtScene.h" />
+    <ClInclude Include="!TestGame\DeathEventManager.h" />
     <ClInclude Include="!TestGame\Debug\DebugCommands.h" />
     <ClInclude Include="!TestGame\InputDisplay\DisplayIconManager.h" />
     <ClInclude Include="!TestGame\Interiors\InteriorRoom.h" />
@@ -292,6 +295,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="!TestGame\Items\Types\Food.h" />
+    <ClInclude Include="!TestGame\Items\Types\Placeable.h" />
     <ClInclude Include="!TestGame\Items\Types\Tool.h" />
     <ClInclude Include="!TestGame\Items\Types\Weapon.h" />
     <ClInclude Include="!TestGame\Level\GlobalLevelData.h" />

@@ -3,6 +3,8 @@
 #include <sstream>
 #include "./Items/Types/Tool.h"
 #include "./Items/Types/Weapon.h"
+#include "./Items/Types/Food.h"
+#include "./Items/Types/Placeable.h"
 
 namespace GAME_NAME
 {
@@ -45,6 +47,12 @@ using namespace std;
 		case ITEM_PREFIX_WEAPON: //Weapon
 			return new Weapon((ITEM_TYPE)std::stoi(parameters[0]), std::stoi(parameters[1]));
 
+		case ITEM_PREFIX_FOOD:
+			return new Food((ITEM_TYPE)std::stoi(parameters[0]), std::stoi(parameters[1]));
+
+		case ITEM_PREFIX_PLACEABLE:
+			return new Placeable((ITEM_TYPE)std::stoi(parameters[0]));
+			
 		case ITEM_PREFIX_ITEM:
 		default:
 			return new InventoryItem((ITEM_TYPE)std::stoi(parameters[0]));

@@ -3,6 +3,7 @@
 #include "./Types/Tool.h"
 #include "./Types/Weapon.h"
 #include "./Types/Food.h"
+#include "./Types/Placeable.h"
 
 namespace GAME_NAME
 {
@@ -89,6 +90,15 @@ namespace GAME_NAME
 				Food* f = new Food();
 				f->Decode(data);
 				item = f;
+				break;
+			}
+
+			case ITEM_PREFIX_PLACEABLE:
+			{
+				delete item;
+				Placeable* p = new Placeable();
+				p->Decode(data);
+				item = p;
 				break;
 			}
 			}

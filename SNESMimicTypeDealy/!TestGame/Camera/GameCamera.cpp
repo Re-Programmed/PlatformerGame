@@ -82,9 +82,8 @@ namespace GAME_NAME
 					}
 				}
 				else {
-					if (!(playerPos.X + m_offset.X > m_position.X + resX + deadzoneRadius || playerPos.X + m_offset.X < m_position.X + resX - deadzoneRadius) || std::abs(m_position.Y + resY - playerPos.Y) < 25.f)
+					if (!(playerPos.X + m_offset.X > m_position.X + resX + deadzoneRadius || playerPos.X + m_offset.X < m_position.X + resX - deadzoneRadius))
 					{
-
 						return;
 
 					}

@@ -98,12 +98,17 @@ namespace GAME_NAME
 			/// <param name="a">Vec2 1</param>
 			/// <param name="b">Vec2 2</param>
 			/// <returns>The distance between a and b.</returns>
-			static float Distance(Vec2 a, Vec2 b);
+			static float Distance(const Vec2& a, const Vec2& b);
 
 			//Returns the normalized X coord of this vector.
 			inline float NormalizeX()
 			{
 				return X == 0 ? 0.f : (X < 0 ? -1.f : 1.f);
+			}
+
+			inline float Length()
+			{
+				return std::sqrtf(this->X * this->X + this->Y * this->Y);
 			}
 
 			/// <summary>

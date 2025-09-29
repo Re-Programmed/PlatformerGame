@@ -12,7 +12,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 9
+#define ITEM_COUNT 10
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -26,7 +26,8 @@ namespace GAME_NAME
 			WOODEN_SHOES = 5,
 			SHARP_STICK = 6,
 			TOAST = 7,
-			APPLE = 8
+			APPLE = 8,
+			WOODEN_PLANK = 9
 		};
 
 		/// <summary>
@@ -34,11 +35,12 @@ namespace GAME_NAME
 		/// </summary>
 		enum TOOL_ACTION
 		{
-			CHOP = 0b00001, //Can cut down trees.
-			EQUIPMENT = 0b00010, //Can be equipped to equipment slots.
-			MINE = 0b00100, //Can break BreakableBlocks. (provide a strength attribute)
-			WEAPON = 0b01000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
-			FOOD = 0b10000	//Can be eaten.
+			CHOP = 0b000001, //Can cut down trees.
+			EQUIPMENT = 0b000010, //Can be equipped to equipment slots.
+			MINE = 0b000100, //Can break BreakableBlocks. (provide a strength attribute)
+			WEAPON = 0b001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
+			FOOD = 0b010000,	//Can be eaten.
+			PLACEABLE = 0b100000 //Can be placed.
 		};
 
 		/// <summary>
@@ -89,6 +91,7 @@ namespace GAME_NAME
 			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.2,26"}}, ""},
 			{ "Toast", SpriteBase(132), SpriteBase(233), 0, {}, "Probably made in a toaster." },							//7
 			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "20" } }, "Apple."},					//8
+			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."}							//9
 		};
 
 

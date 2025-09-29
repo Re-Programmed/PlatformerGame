@@ -121,6 +121,11 @@ namespace  GAME_NAME
 				void Damage(float damage, GameObject* cause, bool causeFainting = true);
 
 				/// <summary>
+				/// True if the player is alive.
+				/// </summary>
+				bool IsAlive = true;
+
+				/// <summary>
 				/// Heal the player and ensure that the players health doesn't exceed the maximum with armour effects applied.
 				/// </summary>
 				/// <param name="health"></param>
@@ -193,6 +198,7 @@ namespace  GAME_NAME
 					int BasicAttack = SpriteBase(122);		//A basic punching animation.
 					int Climbing = SpriteBase(134);			//Climbing backwards animation.
 					int IdleAnimations = SpriteBase(148);	//The beginning of all idle animations.
+					int Dead = SpriteBase(250);
 
 					PlayerAnimationData* AnimationOverride = nullptr;
 
@@ -258,7 +264,7 @@ namespace  GAME_NAME
 					return m_screenInventory;
 				}
 
-				enum PLAYER_LOOK_DIRECTION
+				enum PLAYER_ANIMATION_STATE
 				{
 					NO_LOOK_DIRECTION,
 					BEHIND,
@@ -267,18 +273,19 @@ namespace  GAME_NAME
 					BAG,
 					FALLEN,
 					SITTING_FORWARD,
-					CLIMBING_BACK	//Climbing with back turned to the camera.
+					CLIMBING_BACK,	//Climbing with back turned to the camera.
+					DEAD
 				};
 
 				/// <summary>
 				/// Sets an object to freeze the player.
 				/// </summary>
 				/// <param name="frozen">Freeze the player?</param>
-				inline void SetFrozen(bool frozen, PLAYER_LOOK_DIRECTION direction = NO_LOOK_DIRECTION, Vec2 point = Vec2::Zero)
+				inline void SetFrozen(bool frozen, PLAYER_ANIMATION_STATE direction = NO_LOOK_DIRECTION, Vec2 point = Vec2::Zero)
 				{
 					m_frozen += frozen ? 1 : -1;
 					if (m_frozen < 0) { m_frozen = 0; }
-					SetLookDirection(direction, point);
+					SetAnimationState(direction, point);
 				}
 
 				/// <summary>
@@ -295,13 +302,13 @@ namespace  GAME_NAME
 					return m_backpack;
 				}
 				
-				inline void SetLookDirection(PLAYER_LOOK_DIRECTION direction, Vec2 point = Vec2::Zero)
+				inline void SetAnimationState(PLAYER_ANIMATION_STATE direction, Vec2 point = Vec2::Zero)
 				{
 					m_currentPlayerLookDirection = direction;
 					m_playerLookPoint = point;
 				}
 
-				inline PLAYER_LOOK_DIRECTION GetLookDirection()
+				inline PLAYER_ANIMATION_STATE GetAnimationState()
 				{
 					return m_currentPlayerLookDirection;
 				}
@@ -389,7 +396,7 @@ namespace  GAME_NAME
 				/// <summary>
 				/// The current player look state.
 				/// </summary>
-				PLAYER_LOOK_DIRECTION m_currentPlayerLookDirection = NO_LOOK_DIRECTION;
+				PLAYER_ANIMATION_STATE m_currentPlayerLookDirection = NO_LOOK_DIRECTION;
 
 				/// <summary>
 				/// The players current skill data.
@@ -500,7 +507,7 @@ namespace  GAME_NAME
 
 				void readKeys();						//Called to determine what buttons are pressed and apply velocity based on those buttons.
 				void setAnimations(bool playerIsSkidding, float& anim_momentum);	//Called to determine what animation the player should be playing.
-				void updateLookDirection();				//Used to update player look state.
+				void updateAnimationState();				//Used to update player look state.
 
 
 #if _DEBUG
