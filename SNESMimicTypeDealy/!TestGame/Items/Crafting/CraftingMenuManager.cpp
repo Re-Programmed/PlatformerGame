@@ -18,7 +18,7 @@ namespace GAME_NAME::Items::Crafting
 		for (int i = 0; i < CRAFTING_DATA_NUM_RECIPES; i++)
 		{
 			const Recipe& data = CraftingDataManager::GetRecipe(i);
-			m_recipeDisplays[i] = addRecipeOption(data.Input1, data.Input2, data.Input3, data.Return, i);
+			//m_recipeDisplays[i] = addRecipeOption(data.Inputs[0], data.Input2, data.Input3, data.Return, i);
 		}
 	}
 

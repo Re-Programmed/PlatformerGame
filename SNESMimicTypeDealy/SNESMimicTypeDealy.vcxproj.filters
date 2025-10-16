@@ -408,6 +408,9 @@
     <ClCompile Include="!TestGame\DeathEventManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Objects\Environment\Buildings\SpinningObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -864,6 +867,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\DeathEventManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Environment\Buildings\SpinningObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

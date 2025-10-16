@@ -231,7 +231,8 @@ namespace  GAME_NAME
 				if (m_position.Y < -80.f && IsAlive)
 				{
 					this->SetFrozen(true);
-					this->m_physics->SetVelocityY(765.f);
+					this->m_physics->SetGravitationalVelocity(0.f);
+					this->m_physics->SetVelocityY(310.f);
 					//Death sound.
 
 					DeathEventManager::ShowDeathScreen(DeathEventManager::FALLEN);
@@ -1351,6 +1352,7 @@ namespace  GAME_NAME
 							}
 							else
 							{
+								m_physics->SetFrictionDrag(3.f);
 								playerIsSkidding = true;
 							}
 						}
@@ -1378,6 +1380,7 @@ namespace  GAME_NAME
 						}
 						else
 						{
+							m_physics->SetFrictionDrag(3.f);
 							playerIsSkidding = true;
 						}
 					}

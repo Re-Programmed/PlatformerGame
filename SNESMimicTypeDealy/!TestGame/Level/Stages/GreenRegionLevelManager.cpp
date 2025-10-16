@@ -10,6 +10,8 @@
 
 #include "../../Objects/Environment/Effects/Explosion.h"
 
+#include "../../../MusicSync/MusicSync.h"
+
 #define HOUSE_EXPLOSION_TRIGGER_TAG "HouseExplosionTrigger"
 #define HOUSE_EXPLOSION_DIALOGUE "HouseExplode"
 #define RABBIT_TRIGGER_TAG "SleepingRabbitTrigger"
@@ -108,11 +110,15 @@ namespace GAME_NAME::Level
 	{
 		GreenRegionLevelManager_houseExplosionTrigger = nullptr;
 		GreenRegionLevelManager_createdExplosionTrigger = false;
+
+		MusicSync::MusicSync::SetBPM(120);
+		MusicSync::MusicSync::SetBPMeasure(4);
 	}
 
-	constexpr const char* dialogueTriggers[2] = {
+	constexpr const char* dialogueTriggers[3] = {
 		"NeighborHouse",
-		"TreeShakeTrigger"
+		"TreeShakeTrigger",
+		"ImpossibleJump"
 	};
 
 	void GreenRegionLevelManager::Update(GLFWwindow* window)

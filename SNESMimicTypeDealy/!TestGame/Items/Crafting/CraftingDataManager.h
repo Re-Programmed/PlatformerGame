@@ -8,8 +8,8 @@ namespace GAME_NAME::Items::Crafting
 
 	struct Recipe
 	{
-		ITEM_TYPE Input1, Input2, Input3;
 		ITEM_TYPE Return;
+		std::unordered_map<ITEM_TYPE, int> Inputs;
 	};
 
 	class CraftingDataManager

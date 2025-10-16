@@ -11,6 +11,8 @@
 #include "../!TestGame/Objects/Platforms/RotatingPlatform.h"
 #include "../!TestGame/Objects/Platforms/FallingPlatform.h"
 
+#include "../!TestGame/Objects/Environment/Buildings/SpinningObject.h"
+
 #include "../Objects/Instantiate/LevelObjectHandler.h"
 
 #include "../!TestGame/Items/FloorItem.h"
@@ -403,6 +405,7 @@ using namespace Enemies;
 			4 - Sagging Object (sprite, segmentCount, bouncy)
 			5 - InteriorDoor (sprite,destination,playerExitX,playerExitY,shouldLoadOnlyObjects=false)
 			6 - DialogueInteractable (sprite,dialogueKey)
+			7 - SpinningObject (sprite, rotationSpeed, enabled)
 	*/
 	[](std::vector<std::string> data, size_t n)
 	{
@@ -477,6 +480,12 @@ using namespace Objects::Environment::Buildings;
 		{
 			GAME_NAME::Objects::Environment::DialogueInteractable* di = new GAME_NAME::Objects::Environment::DialogueInteractable(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), data[7]);
 			Renderer::LoadObject(di, std::stoi(data[5]));
+			break;
+		}
+		case 7:
+		{
+			GAME_NAME::Objects::Environment::SpinningObject* so = new GAME_NAME::Objects::Environment::SpinningObject(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), std::stof(data[7]), std::stoi(data[8]) == 1);
+			Renderer::LoadObject(so, std::stoi(data[5]));
 			break;
 		}
 		}
