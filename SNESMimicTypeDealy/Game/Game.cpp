@@ -49,6 +49,8 @@ namespace GAME_NAME
 			
 			if ((dataToLoad & LEVEL_DATA_DATA_LEVEL) != 0)
 			{
+				m_level.Path = levelPath;
+
 				SaveManager::SetCurrentLevelFile(SaveManager::GetCurrentFile() + levelPath);
 
 				std::string data[LevelDataSize];
@@ -58,7 +60,6 @@ namespace GAME_NAME
 
 				delete ldp;
 
-				m_level.Path = levelPath;
 #if _DEBUG
 				DEBUG::DebugLog::Log("Loaded Level: " + m_level.Name, true, ";39;41;1;4");
 				std::string start = "ID: " + std::to_string(m_level.ID.World);

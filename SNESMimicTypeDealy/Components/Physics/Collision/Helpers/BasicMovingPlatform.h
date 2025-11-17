@@ -1,5 +1,6 @@
 #pragma once
 #include "StaticBoxCollisionObject.h"
+#include "../../../../Utils/Time/GameTime.h"
 
 namespace GAME_NAME::Components::Physics::Collision
 {
@@ -27,8 +28,8 @@ namespace GAME_NAME::Components::Physics::Collision
 				
 				float moveDistanceX = object->GetPosition().X - bp->m_lastPositionX;
 
-				//Move the collided object with the platform, add -0.5 for a bit of a hack that allows the object to stay on when moving down.
-				collider->Translate(moveDistanceX, -0.5f);
+				//Move the collided object with the platform, add -0.75 for a bit of a hack that allows the object to stay on when moving down.
+				collider->Translate(moveDistanceX, Utils::Time::GameTime::DeltaTime::GetDeltaTime()  * 60.f * -0.75f);
 
 				return true;
 			}

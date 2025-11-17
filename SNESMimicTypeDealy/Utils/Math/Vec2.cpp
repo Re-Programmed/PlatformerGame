@@ -36,13 +36,13 @@ namespace GAME_NAME
 		void Vec2::Clamp(float min, float max)
 		{
 			this->X = std::clamp(this->X, min, max);
-			this->Y = std::clamp(this->X, min, max);
+			this->Y = std::clamp(this->Y, min, max);
 		}
 
 		void Vec2::Clamp(float minX, float maxX, float minY, float maxY)
 		{
 			this->X = std::clamp(this->X, minX, maxX);
-			this->Y = std::clamp(this->X, minY, maxY);
+			this->Y = std::clamp(this->Y, minY, maxY);
 		}
 		float Vec2::Distance(const Vec2& a, const Vec2& b)
 		{

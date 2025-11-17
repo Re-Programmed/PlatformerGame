@@ -35,6 +35,11 @@ namespace GAME_NAME
 			return m_destination;
 		}
 
+		inline const size_t StateCount()
+		{
+			return m_states.size();
+		}
+
 		inline bool HasStates()
 		{
 			return m_states.size() > 0;
@@ -50,12 +55,15 @@ namespace GAME_NAME
 		/// <returns></returns>
 		std::shared_ptr<std::vector<std::string>> getStates() const;
 
-		inline void clearStates()
+		inline void clearStates(bool deleteS = false)
 		{
-			/*for (MiscState* state : m_states)
+			if (deleteS)
 			{
-				delete state;
-			}*/
+				for (MiscState* state : m_states)
+				{
+					delete state;
+				}
+			}
 
 			m_states.clear();
 		}

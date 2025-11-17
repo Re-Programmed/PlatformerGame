@@ -27,11 +27,21 @@
 
 #include "../Items/Crafting/CraftingMenuManager.h"
 
+#include "../Objects/Environment/Effects/ElectricalZap.h"
+
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
 
 std::vector<std::string> DebugCommands::m_queuedCommands = std::vector<std::string>(2);
 
 #define DecodePos(x,val) x == "p" ? GAME_NAME::TestGame::ThePlayer->GetPosition().val : std::stof(x)
+
+void DebugCommands::HandleKeybinds()
+{
+	if (GAME_NAME::InputManager::GetKeyUpDown(GAME_NAME::keyRef::DEBUG_OBJECT_MENU) & GAME_NAME::InputManager::KEY_STATE::KEY_STATE_PRESSED)
+	{
+		m_queuedCommands.push_back("loadlevel,/green_region");
+	}
+}
 
 void DebugCommands::RunRecieverThread()
 {
@@ -56,6 +66,8 @@ void DebugCommands::RunRecieverThread()
 
 void DebugCommands::HandleCommands()
 {
+	HandleKeybinds();
+
 	for (auto input : m_queuedCommands)
 	{
 		if (input == "ping")
@@ -154,6 +166,19 @@ void DebugCommands::HandleCommands()
 			GAME_NAME::Objects::StateSaver::SaveMisc();
 
 			DebugCommands_Log("Saved all states.");
+
+			continue;
+		}
+
+		if (input.starts_with("createzap"))
+		{
+			std::vector<std::string> params = getParams(input);
+
+			if (params.size() < 4) { DebugCommands_Log("Provide a origin and destination (x1,y1,x2,y2)."); continue; }
+
+			GAME_NAME::Objects::Environment::Effects::ElectricalZap::CreateZapBetweenPoints(Vec2{ std::stof(params[0]), std::stof(params[1]) }, Vec2{ std::stof(params[2]), std::stof(params[3]) });
+
+			DebugCommands_Log("Created a zap.");
 
 			continue;
 		}

@@ -55,6 +55,11 @@
 #include "Objects/Environment/Buildings/InteriorDoor.h"
 #include "Objects/Environment/DialogueInteractable.h"
 
+
+#include "Objects/Environment/Buildings/Electrical/ElectricalTransformer.h"
+
+#include "./Objects/Environment/Waterfall.h"
+
 #define COMPONENT_MAPPINGS_SIZE 1	//How many component mappings there are
 #define MAPPINGS_SIZE 20			//How many object mappings there are.
 
@@ -289,7 +294,7 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 	},
 
 	/*
-		9: Particle Emitter (map, positionX,positionY,particleLifetime*100,numParticles, particle_1_objparent, particle_1_objname, ...)
+		9: Particle Emitter (map, positionX,positionY,particleLifetime*100,numParticles,spawnInterval,velX,velY,gravity, rot, posVarX, posVarY, levelsource, particle_1_objparent, particle_1_objname, ...)
 	*/
 	[](std::vector<std::string> data, size_t n)
 	{
@@ -299,13 +304,16 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 
 		using namespace Particles;
 
-		ParticleEmitter pe = ParticleEmitter(STOIVEC(data[1], data[2]), static_cast<float>(std::stoi(data[3]))/100.f);
+		ParticleEmitter* pe = new ParticleEmitter(STOIVEC(data[0], data[1]), static_cast<float>(std::stoi(data[2]))/100.f);
 
-		for (int i = 4; i < data.size(); i += 2)
+		for (int i = 12; i < data.size(); i += 2)
 		{
-			pe.RegisterParticle(Particle(Instantiate::LevelObjectHandler::GetLevelObject(data[i], data[i + 1])));
+			pe->RegisterParticle(Particle(Instantiate::LevelObjectHandler::GetLevelObject(data[i], data[i + 1], false, data[11])));
 			Renderer::DestroyObject(Renderer::GetLastLoadedObject());
 		}
+
+		Renderer::LoadObject(pe);
+		pe->SpawnParticlesLooping(std::stod(data[4]), std::stoi(data[3]), STOIVEC(data[5], data[6]), std::stof(data[7]), std::stof(data[8]), STOIVEC(data[9], data[10]));
 	},
 
 	/*
@@ -406,6 +414,7 @@ using namespace Enemies;
 			5 - InteriorDoor (sprite,destination,playerExitX,playerExitY,shouldLoadOnlyObjects=false)
 			6 - DialogueInteractable (sprite,dialogueKey)
 			7 - SpinningObject (sprite, rotationSpeed, enabled)
+			8 - ElectricalTransformer (sprite, zapRadius)
 	*/
 	[](std::vector<std::string> data, size_t n)
 	{
@@ -486,6 +495,23 @@ using namespace Objects::Environment::Buildings;
 		{
 			GAME_NAME::Objects::Environment::SpinningObject* so = new GAME_NAME::Objects::Environment::SpinningObject(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), std::stof(data[7]), std::stoi(data[8]) == 1);
 			Renderer::LoadObject(so, std::stoi(data[5]));
+			break;
+		}
+		case 8:
+		{
+			ElectricalTransformer* et = new ElectricalTransformer(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), std::stof(data[7]));
+			Renderer::LoadObject(et, std::stoi(data[5]));
+			break;
+		}
+
+		default:
+		{
+#ifdef SHOW_WINDOWS_ERROR_POPUPS
+			std::string message = "Tried to load a nonexistant building ID: ";
+			message.append(std::to_string(buildingType));
+			std::wstring stemp = std::wstring(message.begin(), message.end());
+			MessageBox(nullptr, stemp.c_str(), TEXT("Mapping Error"), MB_OK);
+#endif
 			break;
 		}
 		}
@@ -638,6 +664,16 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 
 		Environment::Trampoline* t = new Environment::Trampoline(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), std::stof(data[6]));
 		Renderer::LoadObject(t, std::stoi(data[5]), true);
+		break;
+	}
+
+	/*
+		21: Waterfall (map, positionX, positionY, scaleX, scaleY, sprite1, sprite2, sprite3, segments, layer)
+	*/
+	case 21:
+	{
+		Environment::Waterfall* w = new Environment::Waterfall(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), Renderer::GetSprite(std::stoi(data[5])), Renderer::GetSprite(std::stoi(data[6])), std::stoi(data[7]));
+		Renderer::LoadObject(w, std::stoi(data[8]));
 		break;
 	}
 	}

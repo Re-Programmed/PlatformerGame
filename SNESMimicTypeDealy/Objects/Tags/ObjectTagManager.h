@@ -2,6 +2,7 @@
 
 #include "../GameObject.h"
 #include <map>
+#include <mutex>
 
 namespace GAME_NAME::Objects::Tags
 {
@@ -19,18 +20,23 @@ namespace GAME_NAME::Objects::Tags
 
 		static inline void TagObject(GameObject* object, std::string tag)
 		{
-			m_taggedObjects.emplace(tag, object);
+			m_taggedObjectsLock.lock();
+			m_taggedObjects.insert(std::pair<std::string, GameObject*>(tag, object));
+			m_taggedObjectsLock.unlock();
 		}
 
 		static inline void ClearTaggedObjects()
 		{
+			m_taggedObjectsLock.lock();
 			if (m_taggedObjects.size() > 0)
 			{
 				m_taggedObjects.clear();
 			}
+			m_taggedObjectsLock.unlock();
 		}
 
 	private:
+		static std::mutex m_taggedObjectsLock;
 		static std::multimap<std::string, GameObject*> m_taggedObjects;
 	};
 }

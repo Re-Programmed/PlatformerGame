@@ -140,6 +140,11 @@ namespace GAME_NAME
 
 				return Vec2(randX, randY);
 			}
+
+			inline static float AngleBetween(Vec2& first, Vec2& second)
+			{
+				return std::atan2f(first.Y - second.Y, first.X - second.X);
+			}
 		private:
 
 		};

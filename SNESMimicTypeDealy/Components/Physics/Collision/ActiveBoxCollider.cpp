@@ -11,8 +11,8 @@ GameObject* m_renderDisplay = nullptr;
 GameObject* m_renderDisplayCollided = nullptr;
 #endif
 
-//The maximum/minimum height that objects can be pushed on top of other objects when colliding with the side of eachother.
-#define DAMPING_STEP_HEIGHT_MAX 3.1f		
+//The maximum/minimum height that objects can be pushed on top of other objects when colliding with the side of each other.
+#define DAMPING_STEP_HEIGHT_MAX 4.1f		
 #define DAMPING_STEP_HEIGHT_MIN 0.1f
 #define STEP_X_PUSH_MIN 0.05f
 

@@ -1,9 +1,9 @@
 #include "LevelDataParser.h"
 #include "../../../Game/Game.h"
+#include "../../../!TestGame/Objects/Environment/CloudGenerator.h"
 
 #if _DEBUG
 #include "../../../Debug/DebugLog.h"
-#include "../../../!TestGame/Objects/Environment/CloudGenerator.h"
 #endif
 
 

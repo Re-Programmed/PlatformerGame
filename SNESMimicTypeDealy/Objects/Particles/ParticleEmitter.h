@@ -71,8 +71,10 @@ namespace GAME_NAME::Objects::Particles
 
 		void SpawnParticle(Vec2 velocity = { 0, 0 }, float gravity = 0.f, float rotation = 0.f, Vec2 offset = { 0, 0 });
 
-		inline void SpawnParticles(uint8_t numParticles, Vec2 maxVelocity = { 0, 0 }, float gravity = 0.f, float rotation = 0.f, Vec2 posVariation = { 0, 0 })
+		inline void SpawnParticles(uint8_t numParticles, Vec2 maxVelocity = { 0, 0 }, float gravity = 0.f, float rotation = 0.f, Vec2 posVariation = { 0, 0 }, bool destroyOnFinish = false)
 		{
+			m_destroyOnFinish = destroyOnFinish;
+
 			if (m_allowCollisions)
 			{
 				//m_previousFrameColliders.rehash(numParticles);
@@ -127,6 +129,8 @@ namespace GAME_NAME::Objects::Particles
 
 		}
 	private:
+		bool m_destroyOnFinish = false;
+
 		std::function<void(Particle& particle)> m_onParticleCollision;
 
 		float m_maxParticleLifetime;

@@ -496,7 +496,7 @@ namespace GAME_NAME
 
 			//Define const variables.
 
-			iVec2 cameraBoundingBox = (camera->GetZoom() != 1 ? (*windowSize) * (1 / camera->GetZoom()) + (cameraBoundsPadding << 1) : (*windowSize) + cameraBoundsPadding) + Vec2(0, chunkSize);
+			iVec2 cameraBoundingBox = (camera->GetZoom() != 1 ? (*windowSize) * (1 / camera->GetZoom()) + (cameraBoundsPadding << 1) : (*windowSize) + cameraBoundsPadding) + Vec2(0, chunkSize * 2.f);
 
 			if (layer == RENDER_LAYER_ACTIVE_OBJECTS)
 			{
@@ -688,13 +688,13 @@ namespace GAME_NAME
 			iVec2 chunkPos = AsChunkPosition(bottomLeft);
 			iVec2 chunkScale = AsChunkPosition(scale) + 1;
 
-			const int8_t start = chunkPos.GetX() * levelSizeY + chunkPos.GetY();
-			const int8_t endX = chunkScale.GetX();
-			const int8_t endY = chunkScale.GetY();
+			const int16_t start = chunkPos.GetX() * levelSizeY + chunkPos.GetY();
+			const int16_t endX = chunkScale.GetX();
+			const int16_t endY = chunkScale.GetY();
 
-			for (int8_t x = 0; x < endX; x++)
+			for (int16_t x = 0; x < endX; x++)
 			{
-				for (int8_t y = 0; y < endY; y++)
+				for (int16_t y = 0; y < endY; y++)
 				{
 					for (int i = 0; i < CHUNK_OBJECT_RENDER_LAYER_COUNT; i++)
 					{

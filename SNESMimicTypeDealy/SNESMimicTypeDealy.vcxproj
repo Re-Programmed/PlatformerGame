@@ -180,6 +180,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\BreakableBlock.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\Bench.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\Door.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Buildings\Electrical\ElectricalTransformer.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\FrontDoor.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\FrontWall.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\InteriorDoor.cpp" />
@@ -189,7 +190,9 @@
     <ClCompile Include="!TestGame\Objects\Environment\CloudGenerator.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\DialogueInteractable.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\BloodMark.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Effects\ElectricalZap.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\Explosion.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Effects\FlashEffect.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\GlitchedRegion.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\GlitchEffect.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\Rain.cpp" />
@@ -198,6 +201,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Movement\Trampoline.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Plants\Tree.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Water.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Waterfall.cpp" />
     <ClCompile Include="!TestGame\Objects\LayerFlip.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.h" />
@@ -322,6 +326,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\BreakableBlock.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\Bench.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\Door.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Buildings\Electrical\ElectricalTransformer.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\FrontDoor.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\FrontWall.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\InteriorDoor.h" />
@@ -330,7 +335,9 @@
     <ClInclude Include="!TestGame\Objects\Environment\CloudGenerator.h" />
     <ClInclude Include="!TestGame\Objects\Environment\DialogueInteractable.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\BloodMark.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Effects\ElectricalZap.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\Explosion.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Effects\FlashEffect.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchableObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchedRegion.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchEffect.h" />
@@ -341,6 +348,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Plants\Tree.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\SaggingObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Water.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Waterfall.h" />
     <ClInclude Include="!TestGame\Objects\LayerFlip.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />

@@ -2,6 +2,8 @@
 #include "../../Utils/Time/GameTime.h"
 #include "../../Rendering/DynamicSprite.h"
 
+#include "../../Rendering/Renderers/Renderer.h"
+
 #include "../../Components/Physics/Collision/CollisionManager.h"
 
 namespace GAME_NAME::Objects::Particles
@@ -40,7 +42,9 @@ namespace GAME_NAME::Objects::Particles
 	{
 using namespace GAME_NAME::Components::Physics::Collision;
 
-		Particle& copy = m_particleCopy[std::rand() / (RAND_MAX / m_particleCopy.size())];
+		int index = std::rand() / (RAND_MAX / m_particleCopy.size());
+		if (index >= m_particleCopy.size()) { return; }
+		Particle& copy = m_particleCopy[index];
 		Particle emit(copy.Position, copy.Scale, copy.Rotation, copy.Velocity, copy.RotationalVelocity, copy.Opacity, copy.PSprite, copy.Lifetime);
 		emit.TargetOpacity = copy.TargetOpacity;
 		emit.TargetScale = copy.TargetScale;
@@ -136,7 +140,7 @@ using namespace GAME_NAME::Components::Physics::Collision;
 			}
 
 			//Update velocities.
-			m_spawned[i].Position += m_spawned[i].Velocity + m_spawned[i].ConstantVelocity;
+			m_spawned[i].Position += (m_spawned[i].Velocity + m_spawned[i].ConstantVelocity) * (static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 60.f);
 			m_spawned[i].Rotation += m_spawned[i].RotationalVelocity;
 
 			//Update scale and opacity.
@@ -145,8 +149,8 @@ using namespace GAME_NAME::Components::Physics::Collision;
 			m_spawned[i].Scale.Y = std::lerp(m_spawned[i].Scale.Y, m_spawned[i].TargetScale.Y, 1.f / (m_maxParticleLifetime * 30.f));
 
 			//Add drag.
-			if (m_spawned[i].Velocity.X >= 0.1f) { m_spawned[i].Velocity.X -= (float)std::rand() / (RAND_MAX * 100.f); }
-			else if (m_spawned[i].Velocity.X <= -0.1f) { m_spawned[i].Velocity.X += (float)std::rand() / (RAND_MAX * 100.f); }
+			if (m_spawned[i].Velocity.X >= 0.1f) { m_spawned[i].Velocity.X -= (static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 60.f) * (float)std::rand() / (RAND_MAX * 100.f); }
+			else if (m_spawned[i].Velocity.X <= -0.1f) { m_spawned[i].Velocity.X += (static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 60.f) * (float)std::rand() / (RAND_MAX * 100.f); }
 			else
 			{
 				m_spawned[i].Velocity.X = 0.f;
@@ -154,11 +158,11 @@ using namespace GAME_NAME::Components::Physics::Collision;
 
 			if (m_spawned[i].Velocity.Y > -2.f)
 			{
-				m_spawned[i].Velocity.Y -= m_spawned[i].Gravity;
+				m_spawned[i].Velocity.Y -= m_spawned[i].Gravity * (static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 60.f);
 			}
 
-			if (m_spawned[i].RotationalVelocity >= 0.1f) { m_spawned[i].RotationalVelocity -= 0.1f; }
-			else if (m_spawned[i].RotationalVelocity <= -0.1f) { m_spawned[i].RotationalVelocity += 0.1f; }
+			if (m_spawned[i].RotationalVelocity >= 0.1f) { m_spawned[i].RotationalVelocity -= 0.1f * (static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 60.f); }
+			else if (m_spawned[i].RotationalVelocity <= -0.1f) { m_spawned[i].RotationalVelocity += 0.1f * (static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 60.f); }
 			else
 			{
 				m_spawned[i].RotationalVelocity = 0.f;
@@ -168,6 +172,14 @@ using namespace GAME_NAME::Components::Physics::Collision;
 			{
 				m_previousFrameColliders[i]->GetObject()->SetPosition(m_spawned[i].Position);
 			}
+		}
+
+		//Should we destroy the particle emitter when it's done?
+		if (m_destroyOnFinish && m_spawned.size() < 1 && m_loop.pl_LoopInterval <= 0.0)
+		{
+			m_destroyOnFinish = false;
+			Rendering::Renderer::DestroyObject(this);
+			return;
 		}
 
 		//Handle looping.

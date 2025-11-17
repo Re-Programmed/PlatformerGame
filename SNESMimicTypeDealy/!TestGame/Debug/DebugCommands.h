@@ -8,6 +8,8 @@
 class DebugCommands
 {
 public:
+	static void HandleKeybinds();
+
 	/// <summary>
 	/// Starts a thread for recieving debugging commands from the console.
 	/// </summary>

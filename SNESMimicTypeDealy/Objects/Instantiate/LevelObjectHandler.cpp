@@ -5,12 +5,12 @@
 
 namespace GAME_NAME::Objects::Instantiate
 {
-	GameObject* LevelObjectHandler::GetLevelObject(std::string parent, std::string code, bool spawnObject)
+	GameObject* LevelObjectHandler::GetLevelObject(std::string parent, std::string code, bool spawnObject, std::string levelSource)
 	{
 using string = std::string;
 
 		string objectFile = AssetPath;
-		objectFile += TestGame::GetGlobalLevelData()->GetLevelPath();
+		objectFile += levelSource == "" ? TestGame::INSTANCE->GetCurrentLevelPath() : levelSource;
 		objectFile += ObjectSubfolder;
 		objectFile += "/" + parent + ".pk";
 

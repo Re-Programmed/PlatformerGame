@@ -55,6 +55,10 @@
 #include "../Objects/GUI/GUIManager.h"
 #include "../Rendering/Lighting/SimpleLightingManager.h"
 
+#include "./Items/Types/Placeable.h"
+
+#include "./Objects/Environment/Effects/ElectricalZap.h"
+
 #define SKIP_MAIN_MENU
 #define SKIP_INTRODUCTION
 
@@ -170,6 +174,7 @@ namespace GAME_NAME
 		InputManager::UpdateKeyStates();
 		InputManager::GetJoystick();
 
+
 		//Update all cutscenes detection.
 		Cutscenes::CutsceneManager::UpdateCutsceneTriggers();
 
@@ -204,6 +209,10 @@ namespace GAME_NAME
 
 		//Initilize dialogue systems.
 		Cutscenes::DialogueManager::Init();
+
+		//Init zap effect update.
+		Environment::Effects::ElectricalZap::Init();
+
 
 		SaveManager::SetCurrentFile("default_s");
 
@@ -350,6 +359,8 @@ namespace GAME_NAME
 			}
 		}
 
+		//Load all saved placeables for this level.
+		Placeable::LoadPlaceables();
 
 		//TODO: Add a check on weather the current level uses lighting or not.
 		//Rendering::Lighting::SimpleLightingManager::EnableLighting(DEFAULT_LEVEL_SIZE_X/10, true);

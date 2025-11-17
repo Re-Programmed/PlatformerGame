@@ -9,6 +9,7 @@
 namespace GAME_NAME::Objects::Tags
 {
 	std::multimap<std::string, GameObject*> ObjectTagManager::m_taggedObjects;
+	std::mutex ObjectTagManager::m_taggedObjectsLock;
 
 	std::pair<std::multimap<std::string, GameObject*>::const_iterator, std::multimap<std::string, GameObject*>::const_iterator> ObjectTagManager::GetObjectsWithTag(std::string tag)
 	{
@@ -33,6 +34,7 @@ namespace GAME_NAME::Objects::Tags
 		{
 			return begin->second;
 		}
+
 
 		return nullptr;
 	}

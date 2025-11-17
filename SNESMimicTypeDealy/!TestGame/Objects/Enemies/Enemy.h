@@ -96,7 +96,31 @@ namespace GAME_NAME::Objects::Enemies
 		{
 			m_physics->AddRotationalVelocity(rotVelocity);
 		}
+
+		/// <summary>
+		/// Increases the enemies power, can provide some scaling factor if you want.
+		/// </summary>
+		inline void Supercharge(uint8_t scalingFactor)
+		{
+			//Don't supercharge if already supercharged more.
+			if (m_supercharge >= scalingFactor) { return; }
+
+			m_supercharge = scalingFactor;
+		}
+		
+		inline void RemoveSupercharge()
+		{
+			m_supercharge = 0;
+		}
+
+		void onCollision(Vec2 push, GameObject* cause) override;
 	protected:
+		/// <summary>
+		/// Occurs when an enemy is zapped by electricity.
+		/// </summary>
+		uint8_t m_supercharge = 0;
+
+		bool m_onGround = false;
 
 		bool m_isDead = false; //Is dead?
 

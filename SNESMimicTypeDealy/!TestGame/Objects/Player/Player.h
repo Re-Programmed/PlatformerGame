@@ -132,6 +132,7 @@ namespace  GAME_NAME
 				void Heal(float health);
 				void Kill();
 
+
 				/// <summary>
 				/// Uses the specified damage and range to play an attacking animation and create a damage hitbox.
 				/// </summary>
@@ -403,6 +404,8 @@ namespace  GAME_NAME
 				/// </summary>
 				SkillHolder m_skillHolder;
 
+				void spawnBloodOnFloor(GameObject* floor);
+
 				/// <summary>
 				/// Decodes the given string as player save data.
 				/// </summary>
@@ -413,6 +416,7 @@ namespace  GAME_NAME
 				/// </summary>
 				/// <returns></returns>
 				std::string encodeSave();
+
 
 				/// <summary>
 				/// Misc state for player save data.
@@ -447,6 +451,11 @@ namespace  GAME_NAME
 				/// The players current backpack that can be used to store items and equip gear.
 				/// </summary>
 				Backpack* m_backpack;
+
+				/// <summary>
+				/// Used to track when blood should spawn if the player is dead.
+				/// </summary>
+				double m_deadBloodTimer = 0.0;
 
 				/// <summary>
 				/// Drops the currently held item and returns true if the item was sucussfully dropped.

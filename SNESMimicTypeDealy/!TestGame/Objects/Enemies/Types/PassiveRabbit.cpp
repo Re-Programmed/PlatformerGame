@@ -3,6 +3,7 @@
 #include "../../../../Utils/Time/GameTime.h"
 
 #include "../../../../Rendering/Renderers/Renderer.h"
+#include "FeralRabbit.h"
 
 namespace GAME_NAME::Objects::Enemies
 {
@@ -22,8 +23,19 @@ namespace GAME_NAME::Objects::Enemies
 		Enemy::~Enemy();
 	}
 
+
 	void PassiveRabbit::Update(GLFWwindow* window)
 	{
+		//If the passive rabbit becomes supercharged, it will become angry.
+		if (m_supercharge > 0)
+		{
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(new FeralRabbit(this->m_position, this->m_scale, this->m_sprite.get(), this->m_jumpingSprite), true, 2, false));
+			Renderer::DestroyActiveObject(this);
+			RemoveSupercharge();
+			m_isDead = true;
+			return;
+		}
+
 		if (m_isDead) { 
 			Enemy::Update(window); 
 			return; 
@@ -61,7 +73,10 @@ namespace GAME_NAME::Objects::Enemies
 			//Add randomness to jumps.
 			float xRand = ((float)std::rand() * 46.f / RAND_MAX) - 23.f;
 
-			m_physics->AddVelocity({ moveDirection ? (-37.f - xRand) : (37.f - xRand), (((PassiveRabbitAttributes*)(m_enemyAttributes))->JumpHeight * 5.f) });
+			if (m_onGround)
+			{
+				m_physics->AddVelocity({ moveDirection ? (-37.f - xRand) : (37.f - xRand), (((PassiveRabbitAttributes*)(m_enemyAttributes))->JumpHeight * 5.f) });
+			}
 		}
 		//Rabbit is jumping or waiting right now, update timer.
 		else {
@@ -76,6 +91,8 @@ namespace GAME_NAME::Objects::Enemies
 
 	void PassiveRabbit::onCollision(Vec2 push, GameObject* cause)
 	{
+		Enemy::onCollision(push, cause);
+
 		m_physics->SetVelocity({ 0.f, 0.f });
 	}
 

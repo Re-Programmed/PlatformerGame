@@ -12,6 +12,29 @@ void GAME_NAME::Objects::StateSaver::RegisterToBeSaved(GameObjectState* state)
 
 void GAME_NAME::Objects::StateSaver::RegisterToBeSaved(MiscStateGroup* state)
 {
+	//Remove duplicate states and use newest version.
+	for (int i = 0; i < m_miscStates.size(); i++)
+	{
+		MiscStateGroup*& miscState = m_miscStates[i];
+		if (miscState == nullptr || miscState->StateCount() > 1000) 
+		{ 
+			m_miscStates.erase(m_miscStates.begin() + i);
+			i--;
+			continue;
+		}
+
+		for (int z = i + 1; z < m_miscStates.size(); z++)
+		{
+			if (miscState->GetName() == m_miscStates[z]->GetName())
+			{
+				m_miscStates.erase(m_miscStates.begin() + i);
+				i--;
+				continue;
+			}
+		}
+
+	}
+
 	m_miscStates.push_back(state);
 }
 
@@ -32,7 +55,7 @@ void GAME_NAME::Objects::StateSaver::SaveMisc()
 {
 	for (MiscStateGroup* miscState : m_miscStates)
 	{
-		if (miscState == nullptr) { continue; }
+		if (miscState == nullptr || miscState->StateCount() > 1000) { continue; }
 		if (miscState->HasStates())
 		{
 			Resources::SaveManager::CreateSaveFile(miscState->GetSaveString(), miscState->GetName());

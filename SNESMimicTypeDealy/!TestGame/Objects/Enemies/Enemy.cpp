@@ -26,8 +26,7 @@ namespace GAME_NAME::Objects::Enemies
 				return;
 			}
 
-			Renderer::DestroyActiveObjectImmediate(this);
-			delete this;
+			Renderer::DestroyActiveObject(this);
 			return;
 		}
 
@@ -71,8 +70,10 @@ namespace GAME_NAME::Objects::Enemies
 
 			m_pathfindTimeout.Distance = distance;
 
+			std::cout << m_onGround << "\n";
+
 			//Move the enemy towards the pathfinding point if they are not already at it and ensure the enemy dosent exceed terminal velocity.
-			if (std::abs(m_physics->GetVelocity().X) < m_enemyAttributes->TerminalMovementSpeed)
+			if (std::abs(m_physics->GetVelocity().X) < m_enemyAttributes->TerminalMovementSpeed && m_onGround)
 			{
 				m_physics->AddVelocity(Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0) * Utils::Time::GameTime::GetScaledDeltaTime());
 			}
@@ -144,6 +145,24 @@ finish_pathfind:
 		destroyHealthBar();
 	}
 
+	void Enemy::onCollision(Vec2 push, GameObject* cause)
+	{
+		if (push.Y > 0)
+		{
+			m_onGround = true;
+		}
+		else {
+			m_onGround = false;
+		}
+	}
+
+	Vec4 Enemy_redTextureColor[4] = {
+	{1, 0.25, 0.25, 1},
+	{1, 0.25, 0.25, 1},
+	{1, 0.25, 0.25, 1},
+	{1, 0.25, 0.25, 1}
+	};
+
 	void Enemy::Render(const Vec2& cameraPostion)
 	{
 		//Either in the first or last 1/3 of the attacking animation, turn sprite red.
@@ -151,20 +170,36 @@ finish_pathfind:
 		{
 			Rendering::DynamicSprite* redSprite = new Rendering::DynamicSprite(m_sprite->GetSpriteId());
 
-			Vec4 redTextureColor[4] = {
-				{1, 0.25, 0.25, 1},
-				{1, 0.25, 0.25, 1},
-				{1, 0.25, 0.25, 1},
-				{1, 0.25, 0.25, 1}
-			};
-
-			redSprite->UpdateTextureColor(redTextureColor);
+			redSprite->UpdateTextureColor(Enemy_redTextureColor);
 
 			redSprite->Render(cameraPostion, { m_position.X + m_scale.X, m_position.Y + m_scale.Y }, { -m_scale.X, -m_scale.Y });
 			delete redSprite;
 
 			m_attackedAnimationTimer -= Utils::Time::GameTime::GetScaledDeltaTime();
 
+			m_didRender = true;
+			return;
+		}
+
+		if (m_supercharge > 0)
+		{
+			Rendering::DynamicSprite superchargedSpriteVersion(m_sprite->GetSpriteId());
+
+			//Darken the enemy's color as they become more supercharged.
+			float brightenScale = 1 - ((float)(m_supercharge) / 5.f);
+
+			Vec4 blueTextureColor[4] = {
+				{ brightenScale, brightenScale, 1, 1 },
+				//Purpleish hue.
+				{ brightenScale, std::clamp(brightenScale, 0.4f, 1.f) - 0.4f, 1, 1 },
+				{ brightenScale, std::clamp(brightenScale, 0.4f, 1.f) - 0.4f, 1, 1 },
+				{ brightenScale, brightenScale, 1, 1 }
+			};
+
+			superchargedSpriteVersion.UpdateTextureColor(blueTextureColor);
+			
+			superchargedSpriteVersion.Render(cameraPostion, { m_position.X + m_scale.X, m_position.Y + m_scale.Y }, { -m_scale.X, -m_scale.Y });
+			
 			m_didRender = true;
 			return;
 		}

@@ -728,10 +728,11 @@ namespace  GAME_NAME
 
 #endif
 
-#define KNOCKBACK_DAMAGE_MULTIPLIER 60.f
+#define KNOCKBACK_DAMAGE_MULTIPLIER 100.f
 
 			void Player::Damage(float damage, GameObject* cause, bool causeFainting)
 			{
+
 				float maxHealth = 100.f + m_skillHolder.GetEquipmentBoostEffect("Health", m_backpack);
 
 				//Damage knockback.
@@ -888,10 +889,22 @@ namespace  GAME_NAME
 				}
 			}
 
+
 			void Player::onCollision(Vec2 push, GameObject* collided)
 			{
 				if (m_swimming) { return; }
 				if (m_foundCollisionInTick) { return; }
+
+				if (!IsAlive)
+				{
+					m_deadBloodTimer += Time::GameTime::GetScaledDeltaTime();
+					if (m_deadBloodTimer > 0.14 && m_deadBloodTimer < 999.0)
+					{
+						spawnBloodOnFloor(collided);
+						m_deadBloodTimer = 1000.0;
+					}
+				}
+
 				if (push.Y > 0)
 				{
 					if (m_diving > 0.f)
@@ -944,6 +957,15 @@ namespace  GAME_NAME
 					m_onGround = false;
 				}
 				m_foundCollisionInTick = false;
+			}
+
+			void Player::spawnBloodOnFloor(GameObject* floor)
+			{
+				CreateBloodParticle(nullptr, false);
+
+				if (!m_onGround) { return; }
+				Environment::BloodMark* floorMark = new Environment::BloodMark(floor, m_position + Vec2((m_scale * m_scaleMultiplier).X / 2.f, 0.f));
+				Renderer::LoadObject(floorMark, 1);
 			}
 
 			void Player::decodeSave(const std::string params)
@@ -1084,7 +1106,7 @@ namespace  GAME_NAME
 					return;
 				}
 
-				if (!allowFainting) { return; }
+				if (!allowFainting || m_frozenTimer > 0.0f) { return; }
 
 				//ONLY CONTINUE TO HERE IF THE CAUSE OF DAMAGE WAS FALLING.
 
@@ -1092,6 +1114,7 @@ namespace  GAME_NAME
 				SetFrozen(true, FALLEN);
 				m_frozenTimer = 5.f;
 
+				if (!m_onGround) { return; }
 				Environment::BloodMark* floorMark = new Environment::BloodMark(cause, m_position + Vec2((m_scale * m_scaleMultiplier).X / 2.f, 0.f));
 				Renderer::LoadObject(floorMark, 1);
 				//Renderer::InstantiateObject(Renderer::InstantiateGameObject(floorMark, false, 2, false));
@@ -1233,10 +1256,10 @@ namespace  GAME_NAME
 
 				//TESTING: REMOVE
 				//Fake damage by pressing TAB
-				if ((InputManager::GetKeyUpDown(DEBUG_OBJECT_MENU) & InputManager::KEY_STATE::KEY_STATE_PRESSED) && !m_debug)
+				/*if ((InputManager::GetKeyUpDown(DEBUG_OBJECT_MENU) & InputManager::KEY_STATE::KEY_STATE_PRESSED) && !m_debug)
 				{
 					Damage(10, nullptr);
-				}
+				}*/
 
 #if _DEBUG
 				if (InputManager::GetKey(PLAYER_DEBUG))
@@ -1576,7 +1599,7 @@ namespace  GAME_NAME
 
 					int myRand = std::rand();
 
-					if (myRand < RAND_MAX / std::abs(800 - m_timeSpentNotMoving * 50))
+					if (myRand < m_timeSpentNotMoving * (RAND_MAX / 20 /*How long it takes to become inevitable that the idle animation will play.*/))
 					{
 						int ran = std::rand();
 						int chosen = (int)(std::floor((float)(ran) / (float)(RAND_MAX) * 4));

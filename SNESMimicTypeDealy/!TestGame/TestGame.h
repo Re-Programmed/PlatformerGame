@@ -67,6 +67,11 @@ namespace GAME_NAME
 			return m_currentLevelSystem.get();
 		}
 
+		inline std::string GetCurrentLevelPath()
+		{
+			return m_level.Path;
+		}
+
 		/// <summary>
 		/// The basic level loading function. Loads everything with global_assets in order.
 		/// </summary>

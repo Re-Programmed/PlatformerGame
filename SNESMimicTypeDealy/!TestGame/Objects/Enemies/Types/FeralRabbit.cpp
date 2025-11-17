@@ -10,10 +10,10 @@
 #define FERAL_RABBIT_AWAKEN_DISTANCE 50
 #define FERAL_RABBIT_ATTACK_DISTANCE 10
 
-#define FERAL_RABBIT_BASE_ATTACK_DAMAGE 5
+#define FERAL_RABBIT_BASE_ATTACK_DAMAGE 12
 #define FERAL_RABBIT_BASE_ATTACK_DELAY 1.25f
 
-#define FERAL_RABBIT_AGRESSION_SPEED 1400.f
+#define FERAL_RABBIT_AGRESSION_SPEED 2400.f
 #define FERAL_RABBIT_DEFAULT_SPEED 1000.f
 
 namespace GAME_NAME::Objects::Enemies
@@ -56,7 +56,7 @@ namespace GAME_NAME::Objects::Enemies
 		//Player is close, use attacking AI
 		if (distanceToPlayer < FERAL_RABBIT_AGRESSION_DISTANCE && m_actionTimer <= 0.f)
 		{
-			m_enemyAttributes->MovementSpeed = FERAL_RABBIT_AGRESSION_SPEED;
+			m_enemyAttributes->MovementSpeed = FERAL_RABBIT_AGRESSION_SPEED * (m_supercharge + 1.25f)/1.5f;
 			m_allowPathfinding = true;
 			setPathfinding(TestGame::ThePlayer->GetPosition());
 			updateTextures(window);
@@ -72,7 +72,7 @@ namespace GAME_NAME::Objects::Enemies
 
 				//Damage player since rabbit is in range.
 				//TODO: Add slashing animation.
-				TestGame::ThePlayer->Damage(FERAL_RABBIT_BASE_ATTACK_DAMAGE, this, false);
+				TestGame::ThePlayer->Damage(FERAL_RABBIT_BASE_ATTACK_DAMAGE * (m_supercharge + 1), this, false);
 				m_actionTimer = FERAL_RABBIT_BASE_ATTACK_DELAY;
 			}
 
@@ -84,4 +84,5 @@ namespace GAME_NAME::Objects::Enemies
 
 		PassiveRabbit::Update(window);
 	}
+
 }

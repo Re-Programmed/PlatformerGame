@@ -9,6 +9,7 @@
 namespace GAME_NAME::Items
 {
 	double Placeable::InteractionTimer = 0.0;
+	Placeable::PlaceableStateGroup* Placeable::m_placedObjects = nullptr;
 
 	Placeable::Placeable(ITEM_TYPE type)
 		: InventoryItem(type)
@@ -62,19 +63,86 @@ namespace GAME_NAME::Items
 	void Placeable::Place(Vec2 playerPosition)
 	{
 		Vec2 placePosition = GetPotentialPlaceLocation(playerPosition);
+		Rendering::Sprite* const sprite = ITEMTYPE_GetItemTypeTexture(m_itemType);
+		Vec2 placeScale = GetPlaceScale();
 
-		Collision::StaticBoxCollisionObject* placedObject = new Collision::StaticBoxCollisionObject(placePosition, GetPlaceScale(), ITEMTYPE_GetItemTypeTexture(m_itemType));
+		//Save the state of the placed object.
+		m_placedObjects->AddState(new PlacedPlaceable(placePosition, this->m_itemType));
+		
+		Collision::StaticBoxCollisionObject* placedObject = new Collision::StaticBoxCollisionObject(placePosition, placeScale, sprite);
 		Renderer::InstantiateObject(Renderer::InstantiateGameObject(placedObject, false, 2, false));
 	}
 
-	GAME_NAME::MiscState::SaveParam Placeable::Encode()
+	void Placeable::PlaceExact(Vec2 position)
 	{
-		return InventoryItem::Encode();
+		Rendering::Sprite* const sprite = ITEMTYPE_GetItemTypeTexture(m_itemType);
+		Vec2 placeScale = GetPlaceScale();
+
+		//Save the state of the placed object.
+		m_placedObjects->AddState(new PlacedPlaceable(position, this->m_itemType));
+
+		Collision::StaticBoxCollisionObject* placedObject = new Collision::StaticBoxCollisionObject(position, placeScale, sprite);
+		Renderer::InstantiateObject(Renderer::InstantiateGameObject(placedObject, false, 2, false));
 	}
 
-	void Placeable::Decode(const SaveParam params)
+	void Placeable::LoadPlaceables()
 	{
-		InventoryItem::Decode(params);
+		if (m_placedObjects == nullptr)
+		{
+			m_placedObjects = new Placeable::PlaceableStateGroup();
+		}
+		m_placedObjects->LoadStates();
 	}
+
+	void Placeable::PlaceableStateGroup::AddState(PlacedPlaceable* placeable)
+	{
+		this->assignState(placeable);
+	}
+
+	void Placeable::PlaceableStateGroup::LoadStates()
+	{
+		//If we are loading all the placeables, we need to clear the current ones first so they get replaced.
+		//Also, when the loaded states are placed, they will get added again.
+		clearStates();
+
+		auto states = this->getStates();
+
+		for (std::string data : *states)
+		{
+			PlacedPlaceable p;
+
+			p.Decode(data);
+			p.Place();
+		}
+	}
+
+	void Placeable::PlacedPlaceable::Decode(const SaveParam params)
+	{
+		std::string positionStr = params.substr(0, params.find_first_of(":"));
+		std::string itemTypeStr = params.substr(params.find_first_of(":") + 1);
+
+		this->Position.X = std::stof(positionStr.substr(0, params.find_first_of(",")));
+		this->Position.Y = std::stof(positionStr.substr(params.find_first_of(",") + 1));
+		this->Type = static_cast<ITEM_TYPE>(std::stoi(itemTypeStr));
+	}
+
+	GAME_NAME::MiscState::SaveParam Placeable::PlacedPlaceable::Encode()
+	{
+		SaveParam param;
+
+		param.append(std::to_string(this->Position.X))
+			.append(",")
+			.append(std::to_string(this->Position.Y))
+			.append(":")
+			.append(std::to_string(this->Type));
+
+		return param;
+	}
+
+	void Placeable::PlacedPlaceable::Place()
+	{
+		Placeable(this->Type).PlaceExact(this->Position);
+	}
+
 }
 
