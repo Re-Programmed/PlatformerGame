@@ -26,6 +26,11 @@ namespace GAME_NAME
 {
 	Vec2* lastWindowSize;
 
+	/// <summary>
+	/// Set to the first window created.
+	/// </summary>
+	Window* Window::INSTANCE = nullptr;
+
 	void windowSizeCallback(GLFWwindow* window, int width, int height)
 	{
 		//Window was minimized or has no size.
@@ -73,6 +78,11 @@ namespace GAME_NAME
 		/*----------------------
 			ADD INITS
 		------------------------*/
+
+		if (INSTANCE == nullptr)
+		{
+			INSTANCE = this;
+		}
 
 		int count;
 		GLFWmonitor* primaryMonitor = glfwGetMonitors(&count)[count - 1]; //Change later to choose a monitor. [FIX]
@@ -149,6 +159,9 @@ namespace GAME_NAME
 		///CHUNK DATA HAS BACKGROUND INFO (THIS NEEDS CHANGED BECAUSE THE CHUNKS OBJECTS NEED PARALLAX!)
 		
 		///WHAT ABOUT MOVING OBJECTS THAT EXCEED CHUNKS LIKE ENEMIES AND THE PLAYER!!!!! (WE CANT KEEP UPDATING WHAT CHUNK THEY ARE IN, WE NEED TO SPECIFICALLY CHECK THEIR POSITION)
+
+		//Should we be fullscreen?
+		SetFullscreen(AppData::Settings::SettingsGlobals::Fullscreen.Value);
 	}
 
 	Window::~Window()
@@ -219,6 +232,8 @@ namespace GAME_NAME
 
 	void Window::SetFullscreen(bool fullscreen)
 	{
+		if (fullscreen == this->m_fullscreen) { return; }
+
 		this->m_fullscreen = fullscreen;
 
 		int count;
@@ -233,6 +248,7 @@ namespace GAME_NAME
 
 		glfwSetWindowAttrib(m_glWindow, GLFW_RESIZABLE, m_fullscreen ? GLFW_FALSE : GLFW_TRUE);
 
+		AppData::Settings::SettingsGlobals::Fullscreen.Value = m_fullscreen;
 	}
 
 	void Window::SetClearColor(Color color)

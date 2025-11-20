@@ -10,6 +10,10 @@
 
 #include "../Utils/Time/GameTime.h"
 
+#include "../Settings/SettingsGlobals.h"
+
+#include "../Rendering/Window.h"
+
 //The amount that a GLFW_KEY should be offset to become a displayable char.
 #define LETTER_DISPLAY_OFFSET ('a' - GLFW_KEY_A)
 
@@ -134,6 +138,41 @@ using namespace GUI::Text;
 		m_currentRecordingIndex = -1;
 	}
 
+	void SettingsManager::OpenGraphicsMenu()
+	{
+		CreateMenuBacking();
+
+		m_settingsMenuOpen = true;
+		Renderer::UpdateObjects = false;
+
+using namespace GUI::Text;
+
+		Sprite* sp = Renderer::GetSprite(72);
+
+
+		GUI::GUIButton* closeButton = new GUI::GUIButton(Vec2(TargetResolutionX/2.f - 48.f, 138.f), Vec2(72.f, 16.f), sp->GetSpriteId(), new std::function(soundMenu_guiCallback), Vec4{ 0.75f, 0.f, 0.f, 1.f });
+		Renderer::LoadGUIElement(closeButton, 2);
+		m_currentPageElements.push_back(closeButton);
+		GUI::GUIManager::RegisterButton(closeButton);
+
+		auto closeWords = TextRenderer::RenderWord("Close", Vec2(TargetResolutionX / 2.f - 28.f, 140.f), 12.f, 0.f, 2);
+		m_currentPageElements.insert(m_currentPageElements.end(), closeWords.begin(), closeWords.end());
+
+
+		bool& isFullscreen = AppData::Settings::SettingsGlobals::Fullscreen.Value;
+
+		TextRenderer::RenderedWord fullscreenOptionText = GUI::Text::TextRenderer::RenderWord("Fullscreen: ", Vec2{ 24.f, 118.f }, 12.f, 0.f, 2);
+		m_currentPageElements.insert(m_currentPageElements.end(), fullscreenOptionText.begin(), fullscreenOptionText.end());
+
+		GUIButton* fullscreenOptionButton = new GUIButton(Vec2{ 162.f, 116.f }, Vec2{ 16.f, 16.f }, sp->GetSpriteId(), new std::function(graphicsMenu_guiCallback), isFullscreen ? Vec4{ 0.f, 1.f, 0.f, 1.f } : Vec4{ 1.f, 0.f, 0.f, 1.f }, Vec4{ 0.5f, 0.5f, 0.f, 1.f });
+		Renderer::LoadGUIElement(fullscreenOptionButton, 2);
+		m_currentPageElements.push_back(fullscreenOptionButton);
+		GUIManager::RegisterButton(fullscreenOptionButton);
+
+		delete sp;
+	}
+
+
 
 
 	void SettingsManager::OpenControlsMenu()
@@ -220,8 +259,13 @@ using namespace GUI::Text;
 			CloseMenu();
 			OpenSoundMenu();
 			return;
-		//Back button.
+		//Graphics button.
 		case 2:
+			CloseMenu();
+			OpenGraphicsMenu();
+			return;
+		//Back button.
+		case 3:
 			CloseMenu();
 			return;
 		}
@@ -432,6 +476,49 @@ using namespace GUI::Text;
 		}
 
 
+	}
+
+	void SettingsManager::graphicsMenu_guiCallback(int id)
+	{
+		if (SettingsManager_buttonCooldown > 0.0)
+		{
+			return;
+		}
+
+
+		if (id <= 0)
+		{
+			for (GUI::StaticGUIElement* el : m_currentPageElements)
+			{
+				if (el == nullptr) { continue; }
+
+				Renderer::UnloadGUIElement(el, 1);
+				Renderer::UnloadGUIElement(el, 2);
+
+				try {
+					if (GUI::GUIButton* button = dynamic_cast<GUI::GUIButton*>(el))
+					{
+						GUIManager::UnregisterButton(button);
+					}
+				}
+				catch (...)
+				{
+
+				}
+
+				delete el;
+			}
+		}
+
+		//Fullscreen toggle.
+		if (id == 1)
+		{
+			Window::INSTANCE->SetFullscreen(!Window::INSTANCE->GetFullscreen());
+			SettingsManager_buttonCooldown = 1.0;
+		}
+
+
+		
 	}
 
 	GUI::Text::TextRenderer::RenderedDigit SettingsManager::UpdateAudioMixer(int mixerIndex, int& percentDisplay, GUI::Text::TextRenderer::RenderedDigit& const initialDigit)

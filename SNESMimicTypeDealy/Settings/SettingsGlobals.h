@@ -18,6 +18,17 @@ namespace GAME_NAME
 				}
 			};
 
+			struct BOOL_AppDataGlobalVariable
+			{
+				const std::string VariableName;
+				bool Value;
+
+				BOOL_AppDataGlobalVariable(std::string variableName)
+					: VariableName(variableName), Value(false)
+				{
+				}
+			};
+
 			class SettingsGlobals
 			{
 			public:
@@ -25,6 +36,8 @@ namespace GAME_NAME
 
 				static UI16_AppDataGlobalVariable WindowResolutionX;
 				static UI16_AppDataGlobalVariable WindowResolutionY;
+
+				static BOOL_AppDataGlobalVariable Fullscreen;
 
 				static void LoadAppDataVariables();
 

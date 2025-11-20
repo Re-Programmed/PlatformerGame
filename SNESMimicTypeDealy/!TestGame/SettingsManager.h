@@ -33,6 +33,8 @@ namespace GAME_NAME
 		static void CreateSettingsMenu();
 
 		static void OpenSoundMenu();
+		
+		static void OpenGraphicsMenu();
 
 		static void Update();
 
@@ -81,6 +83,8 @@ namespace GAME_NAME
 		static void controlsMenu_guiCallback(int id);
 
 		static void soundMenu_guiCallback(int id);
+
+		static void graphicsMenu_guiCallback(int id);
 
 		static GUI::Text::TextRenderer::RenderedDigit UpdateAudioMixer(int mixerIndex, int& percentDisplay, GUI::Text::TextRenderer::RenderedDigit& const initialDigit);
 

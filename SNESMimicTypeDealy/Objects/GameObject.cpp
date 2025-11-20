@@ -118,7 +118,7 @@ namespace GAME_NAME
         void GameObject::Render(const Vec2& cameraPosition)
         {
             //It is possible for a game object to have no texture.
-            if (m_sprite != nullptr)
+            if (m_sprite != nullptr && m_sprite->GetSpriteId() < 1000000)
             {
                 m_sprite->Render(cameraPosition, m_rotationOffset + m_position + (m_textureFlipped ? (m_scale * Vec2::OneX) : 0), m_scale * (m_textureFlipped ? Vec2::MinusOneX : 1), m_rotation);
             }

@@ -25,6 +25,8 @@ namespace GAME_NAME
 	class Window	//The game window.
 	{
 	public:
+		static Window* INSTANCE;
+
 		GLFWwindow* GetWindow();
 
 		Window(bool fullscreen, GAME_NAME::Game::Game* game);
@@ -43,6 +45,12 @@ namespace GAME_NAME
 		/// Sets if the window should be displayed in fullscreen or windowed mode.
 		/// </summary>
 		void SetFullscreen(bool fullscreen);
+
+		inline bool GetFullscreen()
+		{
+			return m_fullscreen;
+		}
+
 		/// <summary>
 		/// Sets the clear color for the window.
 		/// </summary>
