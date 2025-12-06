@@ -225,6 +225,7 @@ namespace GAME_NAME::Resources
 
 	void SaveManager::SetCurrentFile(std::string fileName)
 	{
+
 		m_currentSaveFile = fileName;
 	}
 

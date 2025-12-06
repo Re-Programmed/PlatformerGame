@@ -21,6 +21,7 @@ namespace GAME_NAME
 			/// playerX
 			/// playerY
 			/// Background Color (r,g,b) (255)
+			/// cloud data (x,y)
 			/// flags
 			/// </summary>
 			const std::function<void(std::string,Game::Level&)> LevelDataParser::m_ops[LevelDataSize] {

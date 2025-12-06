@@ -5,6 +5,7 @@
 
 #include "../Objects/GUI/Text/TextRenderer.h"
 #include "Level/LevelManager.h"
+#include "Objects/StartState.h"
 
 namespace GAME_NAME
 {
@@ -13,6 +14,9 @@ namespace GAME_NAME
 
 	void DeathEventManager::ReloadFromSave()
 	{
+		//Load data from the last created start state.
+		StartState::SetToBeLoaded();
+
 		TestGame::INSTANCE->SetLoadLevelWithSavedPlayer(true);
 		TestGame::INSTANCE->LoadLevelAndAllData(TestGame::GetGlobalLevelData()->GetLevelPath().c_str());
 	}

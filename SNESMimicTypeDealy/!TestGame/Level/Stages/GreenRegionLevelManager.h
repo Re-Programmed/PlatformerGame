@@ -16,8 +16,5 @@ namespace GAME_NAME::Level
 		GreenRegionLevelManager();
 
 		void Update(GLFWwindow* window) override;
-
-
-
 	};
 }

@@ -17,6 +17,7 @@
 #include "../../Utils/Time/GameTime.h"
 
 #include "../../Objects/StateSaver.h"
+#include "../Objects/StartState.h"
 #include "../Mappings.h"
 
 #include "../Camera/LevelBuilderCam.h"
@@ -169,6 +170,19 @@ void DebugCommands::HandleCommands()
 
 			continue;
 		}
+
+		if (input.starts_with("startstate"))
+		{
+			GAME_NAME::Objects::StateSaver::SaveStates();
+			GAME_NAME::Objects::StateSaver::SaveMisc();
+			GAME_NAME::Objects::StartState::CreateStartState();
+
+
+			DebugCommands_Log("Saved all states and created a start state.");
+
+			continue;
+		}
+
 
 		if (input.starts_with("createzap"))
 		{

@@ -30,6 +30,8 @@
 
 #include "../Objects/GUI/Text/TextRenderer.h"
 
+#include "./Objects/StartState.h"
+
 #if _DEBUG
 #include "../Debug/LevelBuilder/LevelBuilder.h"
 #include "./Debug/DebugCommands.h"
@@ -47,6 +49,7 @@
 #include "./Level/MainMenu/MainMenuManager.h"
 #include "./Level/Introduction/IntroductionLevelManager.h"
 #include "./Level/Stages/GreenRegionLevelManager.h"
+#include "./Level/Hub/HubLevelManager.h"
 
 //TESTING:
 #include "./Objects/Environment/Buildings/Door.h"
@@ -60,7 +63,9 @@
 #include "./Objects/Environment/Effects/ElectricalZap.h"
 
 #define SKIP_MAIN_MENU
+#define STANDARD_LOAD
 #define SKIP_INTRODUCTION
+//#define LOAD_TO_LEVEL
 
 namespace GAME_NAME
 {
@@ -213,11 +218,40 @@ namespace GAME_NAME
 		//Init zap effect update.
 		Environment::Effects::ElectricalZap::Init();
 
-
+		//Game begin.
+		// 
+		//Account select?
 		SaveManager::SetCurrentFile("default_s");
 
+		if (!StartState::SetToBeLoaded())
+		{
+			m_loadLevelWithSavedPlayer = false;
+		}
+
 #ifdef SKIP_MAIN_MENU
+
+#ifdef STANDARD_LOAD
+
+		std::string level = "hub"; //Default level to load.
+		SaveManager::GetSaveString(CURRENT_LEVEL_SAVE_STRING, level);
+
+		level = "/" + level;
+
+		LoadLevel(level.c_str(), LEVEL_DATA_TEXTURES_BACKGROUND);
+		LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
+		LoadLevel(level.c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
+		Mappings::LoadObjectsWithDefaultMapping(level.c_str());
+		LoadLevel(level.c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
+		Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences(level.c_str());
+		RenderFront = true;
+
+#else	//STANDARD_LOAD
+
 #ifdef SKIP_INTRODUCTION
+
+
+#ifdef LOAD_TO_LEVEL
+
 		LoadLevel("/green_region", LEVEL_DATA_TEXTURES_BACKGROUND);
 		LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
 		LoadLevel("/green_region", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
@@ -225,7 +259,22 @@ namespace GAME_NAME
 		LoadLevel("/green_region", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
 		Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences("/green_region");
 		RenderFront = true;
-#else
+
+
+#else	//LOAD_TO_LEVEL
+
+		LoadLevel("/hub", LEVEL_DATA_TEXTURES_BACKGROUND);
+		LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
+		LoadLevel("/hub", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
+		Mappings::LoadObjectsWithDefaultMapping("/hub");
+		LoadLevel("/hub", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
+		Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences("/hub");
+		RenderFront = true;
+
+#endif	//LOAD_TO_LEVEL
+
+#else	//SKIP_INTRODUCTION
+
 		LoadLevel("/introduction", LEVEL_DATA_TEXTURES_BACKGROUND);
 		LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
 		LoadLevel("/introduction", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
@@ -233,14 +282,18 @@ namespace GAME_NAME
 		LoadLevel("/introduction", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
 		Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences("/introduction");
 		RenderFront = true;
-#endif
-#else
+
+#endif	//SKIP_INTRODUCTION
+
+#endif	//STANDARD_LOAD
+
+#else	//SKIP_MAIN_MENU
 		LoadLevel("/main_menu", LEVEL_DATA_TEXTURES_BACKGROUND);
 		LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
 		LoadLevel("/main_menu", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_ALL));
 		Mappings::LoadObjectsWithDefaultMapping("/main_menu");
 		RenderFront = true;
-#endif
+#endif	//SKIP_MAIN_MENU
 
 		/* TESTING OTHER LEVELS
 		LoadLevel("/green_region", LEVEL_DATA_TEXTURES_BACKGROUND);
@@ -253,11 +306,6 @@ namespace GAME_NAME
 		RenderFront = true;
 		*/
 
-		//SAVE DATA TEST.
-		std::string data_0("null");
-		SaveManager::GetSaveString("data_0", data_0);
-
-		SaveManager::SaveString("testing string", "data_0");
 
 		Input::DisplayIconManager::CreateKeyDisplayObjects();
 	}
@@ -282,6 +330,11 @@ namespace GAME_NAME
 		{
 			ThePlayer = std::make_shared<Objects::Player::Player>(Vec2(-20, level.PlayerStartPosition.Y), m_loadLevelWithSavedPlayer);
 			m_loadLevelWithSavedPlayer = false;
+
+			if (level.Flags.contains(LEVEL_ROOM_CONTROLS_FLAG))
+			{
+				ThePlayer->SetControlType(Objects::Player::Player::ControlType::ROOM);
+			}
 
 			//If this is false we must have loaded a save file, so don't run in from the left.
 			if (ThePlayer->GetPosition().X <= level.PlayerStartPosition.X + 2)
@@ -336,6 +389,10 @@ namespace GAME_NAME
 					//Main Menu
 					m_currentLevelSystem = std::unique_ptr<LevelSystem>(new MainMenuManager());
 					break;
+
+				case 1:
+					//Hub Area
+					m_currentLevelSystem = std::unique_ptr<LevelSystem>(new HubLevelManager());
 				}
 				break;
 			}
@@ -447,6 +504,11 @@ namespace GAME_NAME
 		
 		//Test Chest
 		//Renderer::LoadObject(new GAME_NAME::Items::Inventories::InventoryContainer("Test Chest", 10, { 100, 21 }, { 12, 8 }, Renderer::GetSprite(19), 0), 2);
+
+
+		//Finish load after any and all objects have been created.
+		//This function will only work if a StartState is getting loaded, so it won't affect anything when using doors or changing levels.
+		StartState::FinishLoad();
 
 	}
 

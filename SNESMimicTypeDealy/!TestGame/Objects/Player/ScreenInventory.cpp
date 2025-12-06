@@ -37,7 +37,7 @@ namespace GAME_NAME
 			for (int i = 0; i < data->size(); i++)
 			{
 				InventoryItem* ii = InventoryItem::DecodeItemString(data->at(i));
-				if (ii != nullptr) { AddItem(ii, true); }
+				if (ii != nullptr) { AddItem(ii, false); }
 			}
 		}
 	}

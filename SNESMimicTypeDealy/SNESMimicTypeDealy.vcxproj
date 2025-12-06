@@ -159,6 +159,7 @@
     <ClCompile Include="!TestGame\Items\Types\Tool.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Weapon.cpp" />
     <ClCompile Include="!TestGame\Level\GlobalLevelData.cpp" />
+    <ClCompile Include="!TestGame\Level\Hub\HubLevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\Introduction\IntroductionLevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\LevelInfoDisplay.cpp" />
     <ClCompile Include="!TestGame\Level\LevelManager.cpp" />
@@ -210,6 +211,7 @@
     <ClCompile Include="!TestGame\Objects\Player\Player.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\ScreenInventory.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Skills\SkillHolder.cpp" />
+    <ClCompile Include="!TestGame\Objects\StartState.cpp" />
     <ClCompile Include="!TestGame\SettingsManager.cpp" />
     <ClCompile Include="!TestGame\TestGame.cpp" />
     <ClCompile Include="Application.cpp" />
@@ -304,6 +306,7 @@
     <ClInclude Include="!TestGame\Items\Types\Tool.h" />
     <ClInclude Include="!TestGame\Items\Types\Weapon.h" />
     <ClInclude Include="!TestGame\Level\GlobalLevelData.h" />
+    <ClInclude Include="!TestGame\Level\Hub\HubLevelManager.h" />
     <ClInclude Include="!TestGame\Level\Introduction\IntroductionLevelManager.h" />
     <ClInclude Include="!TestGame\Level\LevelInfoDisplay.h" />
     <ClInclude Include="!TestGame\Level\LevelManager.h" />
@@ -357,6 +360,7 @@
     <ClInclude Include="!TestGame\Objects\Components\Climbable.h" />
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillHolder.h" />
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillType.h" />
+    <ClInclude Include="!TestGame\Objects\StartState.h" />
     <ClInclude Include="!TestGame\SettingsManager.h" />
     <ClInclude Include="!TestGame\TestGame.h" />
     <ClInclude Include="Audio\SoundManager.h" />
