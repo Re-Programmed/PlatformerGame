@@ -224,8 +224,15 @@ void DebugCommands::HandleCommands()
 		if (input == "wipe")
 		{
 			GAME_NAME::Level::LevelManager::LevelCircleAnimation(GAME_NAME::TestGame::ThePlayer->GetPosition() - GAME_NAME::TestGame::INSTANCE->GetCamera()->GetPosition());
-			
+
 			DebugCommands_Log("Played circle wipe.");
+
+			continue;
+		}
+
+		if (input == "getpos")
+		{			
+			DebugCommands_Log("The player is at: " + GAME_NAME::TestGame::ThePlayer->GetPosition().ToString());
 
 			continue;
 		}

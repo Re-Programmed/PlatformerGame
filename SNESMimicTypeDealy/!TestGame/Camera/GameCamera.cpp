@@ -64,7 +64,7 @@ namespace GAME_NAME
 			if (m_targetZoom > 0)
 			{
 				//Lerp zoom.
-				SetZoom(std::lerp(m_zoom, m_targetZoom, (float)CameraSpeed / 8.f * (float)sdt));
+				SetZoom(std::lerp(m_zoom, m_targetZoom, (float)CameraSpeed / 3.f * (float)sdt));
 			}
 
 			float resX = HalfTResX * (1 / m_zoom);

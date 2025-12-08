@@ -519,6 +519,8 @@ namespace GAME_NAME
 							
 						}
 
+						if (!obj->GetActive()) { continue; }
+
 						if (UpdateObjects)
 						{
 							obj->Update(window);
@@ -591,6 +593,8 @@ namespace GAME_NAME
 				//Two loops are used to ensure that all objects render, and then all objects update.
 				for (GameObject* bg2Object : m_activeGameObjects[0])
 				{
+					if (!bg2Object->GetActive()) { continue; }
+
 					if (UpdateObjects)
 					{
 						bg2Object->Update(window);

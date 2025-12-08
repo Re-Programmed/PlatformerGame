@@ -72,6 +72,7 @@ namespace GAME_NAME
 						for (int d = 0; d < m_objects[i].size(); d++)
 						{
 							if (m_objects[i][d] == nullptr) { m_objects[i].erase(m_objects[i].begin() + d); d--; continue; }
+							if (!m_objects[i][d]->GetActive()) { continue; }
 							if (Renderer::UpdateObjects) { m_objects[i][d]->Update(window); }
 							m_objects[i][d]->Render(cameraPosition);
 						}
@@ -81,6 +82,7 @@ namespace GAME_NAME
 					for (int d = 0; d < m_objects[microLayer].size(); d++)
 					{
 						if (m_objects[microLayer][d] == nullptr) { m_objects[microLayer].erase(m_objects[microLayer].begin() + d); d--; continue; }
+						if (!m_objects[microLayer][d]->GetActive()) { continue; }
 						if (Renderer::UpdateObjects) { m_objects[microLayer][d]->Update(window); }
 						m_objects[microLayer][d]->Render(cameraPosition);
 					}
@@ -90,6 +92,7 @@ namespace GAME_NAME
 				for (int d = 0; d < m_frontObjects.size(); d++)
 				{
 					if (m_frontObjects[d] == nullptr) { m_frontObjects.erase(m_frontObjects.begin() + d); d--; continue; }
+					if (!m_frontObjects[d]->GetActive()) { continue; }
 					if (Renderer::UpdateObjects) { m_frontObjects[d]->Update(window); }
 					m_frontObjects[d]->Render(cameraPosition);
 				}

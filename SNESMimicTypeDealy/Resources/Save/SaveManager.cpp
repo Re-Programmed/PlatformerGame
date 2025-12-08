@@ -21,12 +21,12 @@ namespace GAME_NAME::Resources
 		std::ifstream readFile(filePath);
 		std::getline(readFile, fullFile);
 		readFile.close();
-		std::stringstream fileDecoded(B64::Decode(fullFile));
+		std::stringstream fileDecoded(fullFile);
 		std::string line;
 
 		while (std::getline(fileDecoded, line, '\n'))
 		{
-			data->push_back(line);
+			data->push_back(B64::Decode(line));
 		}
 
 		return data;
@@ -63,20 +63,21 @@ namespace GAME_NAME::Resources
 
 			readFile.close();
 
-			std::stringstream fileDecoded(B64::Decode(fullFile));
+			std::stringstream fileDecoded(fullFile);
 			std::string decodedFile;
 
 			std::string line;
 			while (std::getline(fileDecoded, line, '\n'))
 			{
-				if (!line.starts_with(vName))
+				if (!B64::Decode(line).starts_with(vName))
 				{
 					decodedFile.append(line + '\n');
 				}
 			}
 
 			std::ofstream createstream(filePath);
-			createstream << B64::Encode(decodedFile + vName + "{" + data);
+			createstream << decodedFile;
+			createstream << B64::Encode(vName + "{" + data);
 			createstream.close();
 		}
 		else
@@ -107,11 +108,12 @@ namespace GAME_NAME::Resources
 
 			readFile.close();
 
-			std::stringstream fileDecoded(B64::Decode(fullFile));
+			std::stringstream fileDecoded(fullFile);
 
-			std::string line;
-			while (std::getline(fileDecoded, line, '\n'))
+			std::string lineData;
+			while (std::getline(fileDecoded, lineData, '\n'))
 			{
+				std::string line = B64::Decode(lineData);
 				if (line.starts_with(vName))
 				{
 					defaultValue = line.replace(line.begin(), line.begin() + vName.length() + 1, "");

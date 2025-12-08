@@ -9,7 +9,7 @@ namespace GAME_NAME::Objects::Environment
 	DialogueInteractable::DialogueInteractable(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, std::string dialogueSource)
 		: Interactable(keyRef::PLAYER_INTERACT, InputManager::KEY_STATE::KEY_STATE_NONE, (m_scale.X > m_scale.Y ? m_scale.X : m_scale.Y) + 14.f, position, scale, sprite), m_dialogueSource(dialogueSource)
 	{
-
+		
 	}
 
 	void DialogueInteractable::onInteract(std::shared_ptr<Player::Player> player, InputManager::KEY_STATE state)

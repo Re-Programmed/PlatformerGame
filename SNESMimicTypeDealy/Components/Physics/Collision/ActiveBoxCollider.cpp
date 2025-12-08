@@ -89,14 +89,19 @@ namespace GAME_NAME
 								}
 							}
 
-							//Allow active objects colliding with the side of another static object to be pushed on top of the static object if they're close enough to the top edge of the static object.
-							float topEdgeDistance = collider->GetObject()->GetPosition().Y + collider->GetObject()->GetScale().Y - objectPos.Y;
-							if (topEdgeDistance < DAMPING_STEP_HEIGHT_MAX && topEdgeDistance > DAMPING_STEP_HEIGHT_MIN && (push.X > STEP_X_PUSH_MIN || push.X < -STEP_X_PUSH_MIN))
+							if (this->m_allowStep)
 							{
-								push.Y += topEdgeDistance;
-								push.X = 0;
+								//Allow active objects colliding with the side of another static object to be pushed on top of the static object if they're close enough to the top edge of the static object.
+								float topEdgeDistance = collider->GetObject()->GetPosition().Y + collider->GetObject()->GetScale().Y - objectPos.Y;
+								if (topEdgeDistance < DAMPING_STEP_HEIGHT_MAX && topEdgeDistance > DAMPING_STEP_HEIGHT_MIN && (push.X > STEP_X_PUSH_MIN || push.X < -STEP_X_PUSH_MIN))
+								{
+									push.Y += topEdgeDistance;
+									push.X = 0;
+								}
 							}
 
+							
+							//Allow the player to jump through small platforms from the bottom.
 							if (push.Y < 0)
 							{
 								if (collider->GetObject()->GetScale().Y <= 5)

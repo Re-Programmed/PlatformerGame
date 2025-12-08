@@ -63,6 +63,20 @@ namespace GAME_NAME
 
 			}
 
+			/// <summary>
+			/// If the object is not active it will not render or do anything.
+			/// </summary>
+			/// <param name="active"></param>
+			inline void SetActive(bool active)
+			{
+				m_active = active;
+			}
+
+			inline bool GetActive()
+			{
+				return m_active;
+			}
+
 		protected:
 			Vec2 m_position;
 			Vec2 m_scale;
@@ -70,6 +84,8 @@ namespace GAME_NAME
 			float m_rotation;
 
 			bool m_textureFlipped;
+
+			bool m_active = true;
 
 		private:
 			Vec2 m_rotationOffset;

@@ -342,11 +342,22 @@ namespace  GAME_NAME
 
 				void SetControlType(ControlType type);
 
+				/// <summary>
+				/// If true, the player's collider will be shrunk vertically. Useful for ROOM control type.
+				/// </summary>
+				/// <param name="value"></param>
+				inline void SetFootOnlyCollision(bool value)
+				{
+					m_feetOnlyCollision = value;
+				}
+
 			protected:
 				void onCollision (Vec2 push, GameObject* gameObject) override;	//Called when a collision occurs.
 				void beforeCollision() override;		//Called before any collisions are calculated to allow for resetting the jump conditions.
 
 			private:
+				bool m_feetOnlyCollision = false;
+
 				ControlType m_controlType = ControlType::PLATFORMER;
 
 				/// <summary>

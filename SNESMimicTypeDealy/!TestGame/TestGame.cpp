@@ -336,6 +336,11 @@ namespace GAME_NAME
 				ThePlayer->SetControlType(Objects::Player::Player::ControlType::ROOM);
 			}
 
+			if (level.Flags.contains(LEVEL_FEET_ONLY_COLLISION_FLAG))
+			{
+				ThePlayer->SetFootOnlyCollision(true);
+			}
+
 			//If this is false we must have loaded a save file, so don't run in from the left.
 			if (ThePlayer->GetPosition().X <= level.PlayerStartPosition.X + 2)
 			{

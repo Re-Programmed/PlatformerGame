@@ -295,10 +295,9 @@ namespace  GAME_NAME
 
 				}
 
-				m_skillHolder.Update();
-
 				//Handle if the player is trying to attack an enemy.
 				handleAttack();
+				m_skillHolder.Update();
 
 				if (m_frozenTimer > 0.f)
 				{
@@ -883,9 +882,17 @@ namespace  GAME_NAME
 			void Player::SetControlType(ControlType type)
 			{
 				m_controlType = type;
-				if (type == ROOM) { m_storedRoomHeight = this->m_position.Y; m_onGround = true; dynamic_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->SetStrictFollowing(true); }
+				if (type == ROOM) {
+					m_storedRoomHeight = this->m_position.Y; 
+					m_onGround = true; 
+					dynamic_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->SetStrictFollowing(true);
+
+					//Breaks stuff in room mode if not disabled.
+					this->m_boxCollider->SetAllowStep(false);
+				}
 				else {
 					dynamic_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->SetStrictFollowing(false);
+					this->m_boxCollider->SetAllowStep(true);
 				}
 			}
 
@@ -893,7 +900,7 @@ namespace  GAME_NAME
 			void Player::onCollision(Vec2 push, GameObject* collided)
 			{
 				if (m_swimming) { return; }
-				if (m_foundCollisionInTick) { return; }
+				//if (m_foundCollisionInTick) { return; }
 
 				if (!IsAlive)
 				{
@@ -924,6 +931,12 @@ namespace  GAME_NAME
 					m_onGround = true;
 					m_foundCollisionInTick = true;
 					m_physics->SetVelocityY(0.f);
+
+					//Correct scale back to normal for rendering etc.
+					if (m_feetOnlyCollision && !m_frozen && m_currentPlayerLookDirection == NO_LOOK_DIRECTION)
+					{
+						m_scale = m_scale * Vec2{ 1.f, 3.f };
+					}
 
 					//Calculate fall damage.
 					if (m_airTime > 1.35f)
@@ -957,6 +970,12 @@ namespace  GAME_NAME
 					m_onGround = false;
 				}
 				m_foundCollisionInTick = false;
+
+				//Shrink scale before calculating collision.
+				if (m_feetOnlyCollision && !m_frozen && m_currentPlayerLookDirection == NO_LOOK_DIRECTION && !TestGame::GetGamePaused())
+				{
+					m_scale = m_scale / Vec2{ 1.f, 3.f };
+				}
 			}
 
 			void Player::spawnBloodOnFloor(GameObject* floor)
@@ -1316,6 +1335,12 @@ namespace  GAME_NAME
 					{
 						//Freeze player inputs and use bag sprite.
 						SetFrozen(true, BAG);
+
+						//Correct scale back to normal for rendering etc.
+						if (m_feetOnlyCollision)
+						{
+							m_scale = m_scale * Vec2{ 1.f, 3.f };
+						}
 						return;
 					}
 				
