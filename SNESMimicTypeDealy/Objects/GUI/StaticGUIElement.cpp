@@ -11,6 +11,7 @@ namespace GAME_NAME
 			
 			void StaticGUIElement::Render(float zoom)
 			{
+				if (!m_active) { return; }
 				m_sprite->Render(Vec2::Zero, m_position / zoom, m_scale / zoom, 0.0f);
 			}
 			

@@ -20,7 +20,7 @@ namespace GAME_NAME
 			class GUIManager
 			{
 			public:
-#define GUIMANAGER_M_ELEMENT_CODES_LENGTH 5
+#define GUIMANAGER_M_ELEMENT_CODES_LENGTH 6
 				/// <summary>
 				/// Types of GUI elements that can be created.
 				/// </summary>
@@ -30,7 +30,8 @@ namespace GAME_NAME
 					EL_BUTTON,		//Clickable button.
 					EL_NUM,			//Number display.
 					EL_BLANK,		//Object with texture.
-					EL_PROGRESS		//Progress Bar.
+					EL_PROGRESS,	//Progress Bar.
+					EL_SCROLLAREA	//Scroll Area.
 				};
 				
 			private:
@@ -39,7 +40,8 @@ namespace GAME_NAME
 					"btn",
 					"num",
 					"obj",
-					"prg"
+					"prg",
+					"scr"
 				};
 
 			public:

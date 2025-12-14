@@ -30,6 +30,9 @@
 
 #include "../Objects/Environment/Effects/ElectricalZap.h"
 
+#include "../../Objects/GUI/Menus/GUIMenu.h"
+#include "../Objects/GUI/GUIItemSelectionBox.h"
+
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
 
 std::vector<std::string> DebugCommands::m_queuedCommands = std::vector<std::string>(2);
@@ -237,12 +240,25 @@ void DebugCommands::HandleCommands()
 			continue;
 		}
 		
-		if (input == "crafting_menu")
+		if (input == "craftingmenu")
 		{
 			GAME_NAME::Items::Crafting::CraftingMenuManager::OpenCraftingMenu();
 
 			DebugCommands_Log("Opened crafting menu.");
 			
+			continue;
+		}
+
+		if (input.starts_with("loadmenu"))
+		{
+			std::vector<std::string> params = getParams(input);
+
+			if (params.size() < 1) { DebugCommands_Log("Provide a menu path."); continue; }
+
+			GAME_NAME::Objects::GUI::Menus::GUIMenu::LoadMenu(params[0].c_str(), nullptr);
+
+			DebugCommands_Log("Loaded " + params[0] + ".");
+
 			continue;
 		}
 	}

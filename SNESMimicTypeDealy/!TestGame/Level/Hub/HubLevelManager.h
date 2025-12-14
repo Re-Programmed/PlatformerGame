@@ -29,12 +29,22 @@ namespace GAME_NAME::Level
 			return m_currentHubCharacteristics.PlayerHouseLevel.second;
 		}
 
+		static void OpenShopGUI();
+
 	private:
+
+		static bool m_shopGUIOpen;
 
 		/// <summary>
 		/// Updates what objects are enabled in the hub to display the house at the current unlock level.
 		/// </summary>
 		void updateHouseUnlock();
+
+		/// <summary>
+		/// Called on entering the shop area to initilize the teller and stuff.
+		/// </summary>
+		void loadShopArea();
+
 
 		struct HubCharactersitics
 		{

@@ -203,6 +203,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Plants\Tree.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Water.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Waterfall.cpp" />
+    <ClCompile Include="!TestGame\Objects\GUI\GUIItemSelectionBox.cpp" />
     <ClCompile Include="!TestGame\Objects\LayerFlip.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.h" />
@@ -237,6 +238,7 @@
     <ClCompile Include="MusicSync\MusicSync.cpp" />
     <ClCompile Include="Objects\GUI\GUIButton.cpp" />
     <ClCompile Include="Objects\GUI\GUIManager.cpp" />
+    <ClCompile Include="Objects\GUI\GUIScrollArea.cpp" />
     <ClCompile Include="Objects\GUI\Menus\GUIMenu.cpp" />
     <ClCompile Include="Objects\GUI\Progress\ProgressBar.cpp" />
     <ClCompile Include="Objects\GUI\StaticGUIElement.cpp" />
@@ -352,6 +354,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\SaggingObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Water.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Waterfall.h" />
+    <ClInclude Include="!TestGame\Objects\GUI\GUIItemSelectionBox.h" />
     <ClInclude Include="!TestGame\Objects\LayerFlip.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />
@@ -398,6 +401,7 @@
     <ClInclude Include="MusicSync\MusicSync.h" />
     <ClInclude Include="Objects\GUI\GUIButton.h" />
     <ClInclude Include="Objects\GUI\GUIManager.h" />
+    <ClInclude Include="Objects\GUI\GUIScrollArea.h" />
     <ClInclude Include="Objects\GUI\IGUIElement.h" />
     <ClInclude Include="Objects\GUI\Menus\GUIMenu.h" />
     <ClInclude Include="Objects\GUI\Progress\ProgressBar.h" />

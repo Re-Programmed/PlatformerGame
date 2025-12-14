@@ -9,6 +9,8 @@ namespace GAME_NAME
 
 	InputManager::KEY_STATE InputManager::m_keysDown[KEY_ARRAY_SIZE];
 
+	std::vector<std::function<void(GLFWwindow*, double, double)>> InputManager::m_scrollCallbacks;
+
 	void InputManager::Init(GLFWwindow* window)
 	{
 		//LOAD KEY INPUT SETTINGS FROM SAVE
@@ -16,6 +18,8 @@ namespace GAME_NAME
 		/*if no keys are saved*/loadDefaultKeys();
 
 		m_window = window;
+
+		glfwSetScrollCallback(m_window, InputManager::scrollCallback);
 	}
 
 	/*void InputManager::SetScrollCallback(Window* window, void (*f)(Window*, double, double))
@@ -134,6 +138,8 @@ namespace GAME_NAME
 
 #define LoadKey(bind, default_k) m_keys[bind] = std::stoi(AppData::AppDataFileManager::GetValue("settings\\keybinds.dat", KeybindNames[bind].data(), std::to_string(default_k)));
 
+
+
 	void InputManager::loadDefaultKeys()
 	{
 		LoadKey(PLAYER_MOVE_UP, GLFW_KEY_W);
@@ -173,5 +179,13 @@ namespace GAME_NAME
 
 		//Default Keys (Cannot be changed in settings)
 		m_keys[DEFAULT_PAUSE_GAME] = GLFW_KEY_ESCAPE;
+	}
+
+	void InputManager::scrollCallback(GLFWwindow* window, double xScroll, double yScroll)
+	{
+		for (auto func : m_scrollCallbacks)
+		{
+			func(window, xScroll, yScroll);
+		}
 	}
 }

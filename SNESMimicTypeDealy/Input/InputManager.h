@@ -146,7 +146,21 @@ namespace GAME_NAME
 		{
 			m_keys[key] = newValue;
 		}
+
+		inline static size_t RegisterScrollCallback(std::function<void(GLFWwindow*, double, double)> scrollCallback)
+		{
+			m_scrollCallbacks.push_back(scrollCallback);
+			return m_scrollCallbacks.size() - 1;
+		}
+
+		inline static void UnregisterScrollCallback(size_t index)
+		{
+			m_scrollCallbacks.erase(m_scrollCallbacks.begin() + index);
+		}
+
 	private:
+
+		static void scrollCallback(GLFWwindow* window, double xScroll, double yScroll);
 
 		static int m_keys[KEY_ARRAY_SIZE];				//Determines what button each keyRef refers to.
 
@@ -155,6 +169,8 @@ namespace GAME_NAME
 		static GLFWwindow* m_window;					//Window pointer. :)
 
 		static KEY_STATE m_keysDown[KEY_ARRAY_SIZE];	//Stores which keys are held.
+
+		static std::vector<std::function<void(GLFWwindow*, double, double)>> m_scrollCallbacks;	//Things to call when scrolling.
 	};
 
 }

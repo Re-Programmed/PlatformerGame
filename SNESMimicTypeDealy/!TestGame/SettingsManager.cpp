@@ -177,6 +177,8 @@ using namespace GUI::Text;
 
 	void SettingsManager::OpenControlsMenu()
 	{
+		//TODO: This cannot update the scroll function because it overrides other processes scroll callbacks.
+		// USE THE INPUT MANAGER SYSTEM.
 		glfwSetScrollCallback(TestGame::FirstWindow, controlsMenu_scrollCallback);
 
 		m_settingsMenuOpen = true;

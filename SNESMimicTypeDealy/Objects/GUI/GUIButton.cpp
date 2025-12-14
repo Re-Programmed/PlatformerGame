@@ -18,6 +18,8 @@ namespace GAME_NAME
 		{
 			void GUIButton::Render(float zoom)
 			{
+				if (!m_active) { return; }
+
 				Vec2 mousePos = InputManager::GetMouseScreenPosition();
 
 				bool pwbBL = Utils::CollisionDetection::PointWithinBoxBL(mousePos, m_position, m_scale);

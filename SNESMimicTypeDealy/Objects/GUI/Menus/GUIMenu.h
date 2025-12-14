@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include <mutex>
+#include "../GUIScrollArea.h"
 
 #define LoadMenuW LoadMenu
 namespace GAME_NAME::Objects::GUI::Menus
@@ -10,6 +11,9 @@ namespace GAME_NAME::Objects::GUI::Menus
 	class GUIMenu
 	{
 	public:
+		static uint8_t ScrollAreaElementCounter;
+		static GUIScrollArea* LastScrollArea;
+
 		static unsigned int LoadMenu(const char* menu, std::function<void(int)>* elementCallback);
 
 		static void RemoveLastMenu();
@@ -41,6 +45,7 @@ namespace GAME_NAME::Objects::GUI::Menus
 		static uint8_t m_menusOpen;
 		static uint16_t m_lastMenuObjects[3];
 		static std::vector<unsigned int> m_lastRegisteredButtonIds;
+
 
 		static std::mutex m_asyncAddLock;
 	};

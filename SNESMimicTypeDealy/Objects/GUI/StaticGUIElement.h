@@ -26,6 +26,15 @@ namespace GAME_NAME
 
 #pragma region Modifier Funcs
 
+				inline void SetActive(bool active)
+				{
+					m_active = active;
+				}
+
+				inline bool GetActive()
+				{
+					return m_active;
+				}
 
 				inline void SetPosition(Vec2 position)
 				{
@@ -68,6 +77,8 @@ namespace GAME_NAME
 				/// </summary>
 				void Render(float zoom);
 			protected:
+				bool m_active = true;
+
 				Vec2 m_position;
 				Vec2 m_scale;
 				std::shared_ptr<Rendering::Sprite> m_sprite;

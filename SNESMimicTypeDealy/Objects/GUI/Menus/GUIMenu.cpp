@@ -24,11 +24,45 @@ namespace GAME_NAME::Objects::GUI::Menus
 
 	uint8_t GUIMenu::m_menusOpen = 0;
 
+	uint8_t GUIMenu::ScrollAreaElementCounter = 0;
+	GUIScrollArea* GUIMenu::LastScrollArea = nullptr;
+
 	uint16_t GUIMenu::m_lastMenuObjects[3] = {
 		0,0,0
 	};
 
 	std::vector<unsigned int> GUIMenu::m_lastRegisteredButtonIds;
+
+	void GUIMenu_checkScrollAreaAppend(StaticGUIElement* const element)
+	{
+		if (GUIMenu::ScrollAreaElementCounter > 0)
+		{
+			GUIMenu::LastScrollArea->AddElement(element);
+
+			GUIMenu::ScrollAreaElementCounter--;
+			if (GUIMenu::ScrollAreaElementCounter <= 0)
+			{
+				GUIMenu::LastScrollArea = nullptr;
+			}
+		}
+	}
+
+	void GUIMenu_checkScrollAreaAppend(const Text::TextRenderer::RenderedWord& word)
+	{
+		if (GUIMenu::ScrollAreaElementCounter > 0)
+		{
+			for (Text::TextRenderer::Letter letter : word)
+			{
+				GUIMenu::LastScrollArea->AddElement(letter);
+			}
+
+			GUIMenu::ScrollAreaElementCounter--;
+			if (GUIMenu::ScrollAreaElementCounter <= 0)
+			{
+				GUIMenu::LastScrollArea = nullptr;
+			}
+		}
+	}
 
 	void GUIMenu_loadMenuObjectThread(std::string line, std::function<void(int)>* elementCallback)
 	{
@@ -66,6 +100,8 @@ using namespace Text;
 				asyncInstantiationLock.unlock();
 
 				GUIMenu::AddLastMenuObject(std::stoi(data[5]), static_cast<int>(wObj.size()));
+				GUIMenu_checkScrollAreaAppend(wObj);
+
 				break;
 			}
 			//Creates an EL_BUTTON (pos1, pos2, sca1, sca2, sprite, buttonID, baseColorR, baseColorG, baseColorB, baseColorA, hoverColorR, hoverColorG, hoverColorB, hoverColorA) 
@@ -92,6 +128,9 @@ using namespace Text;
 
 				GUIMenu::AddLastRegisterButtonID(GUIManager::RegisterButton(gButton));
 				GUIMenu::AddLastMenuObject(1);
+
+				GUIMenu_checkScrollAreaAppend(gButton);
+
 				break;
 			}
 			///Creates an EL_BLANK (pos1, pos2, sca1, sca2, sprite, layer)
@@ -104,6 +143,8 @@ using namespace Text;
 				GUIMenu::AddLastMenuObject(std::stoi(data[5]));
 				asyncInstantiationLock.unlock();
 
+				GUIMenu_checkScrollAreaAppend(gBlank);
+
 				break;
 			}
 			case GUIManager::EL_PROGRESS:
@@ -115,6 +156,28 @@ using namespace Text;
 				asyncInstantiationLock.unlock();
 
 				GUIMenu::AddLastMenuObject(1);
+
+				GUIMenu_checkScrollAreaAppend(pBar);
+
+				break;
+			}
+
+			//Creates an EL_SCROLLAREA (posx, posy, scalex, scaley, bgTexture (can be "null"), scrollYMin, scrollYMax, itemCount)
+			case GUIManager::EL_SCROLLAREA:
+			{
+				Sprite* sp = data[4] == "null" ? nullptr : Renderer::GetSprite(std::stoi(data[4]));
+				GUIScrollArea* scrollArea = new GUIScrollArea(Vec2(std::stof(data[0]), std::stof(data[1])), Vec2(std::stof(data[2]), std::stof(data[3])), data[4] == "null" ? 0 : sp->GetSpriteId(), std::stod(data[5]), std::stod(data[6]));
+				delete sp;
+
+				asyncInstantiationLock.lock();
+				Renderer::LoadGUIElement(scrollArea);
+				asyncInstantiationLock.unlock();
+
+				GUIMenu::AddLastMenuObject(1);
+
+				GUIMenu::ScrollAreaElementCounter = std::stoi(data[7]);
+				GUIMenu::LastScrollArea = scrollArea;
+
 				break;
 			}
 		}
@@ -144,12 +207,16 @@ using namespace Text;
 			if (line.empty() || line.starts_with(";")) { continue; } //For line breaks or lines beginning with a ";" do nothing. (useful for comments etc.)
 
 			//Buttons should be loaded in main thread to prevent bugs with buttonID getting off sync.
-			if (line.starts_with("btn")) { GUIMenu_loadMenuObjectThread(line, elementCallback); continue; }
+			//if (line.starts_with("btn")) { GUIMenu_loadMenuObjectThread(line, elementCallback); continue; }
 
-			threads.push_back(new std::thread(GUIMenu_loadMenuObjectThread, line, elementCallback));
-			thCurr++;
+			//Removed thread system.
+			GUIMenu_loadMenuObjectThread(line, elementCallback);
+
+			//threads.push_back(new std::thread(GUIMenu_loadMenuObjectThread, line, elementCallback));
+			//thCurr++;
 
 		//checkthreads:
+			/*
 			if (thCurr == AppData::Settings::SettingsGlobals::MaxThreads.Value)
 			{
 				for (int i = 0; i < thCurr; i++)
@@ -163,6 +230,7 @@ using namespace Text;
 
 				thCurr = 0;
 			}
+			*/
 		}
 
 		for (int i = 0; i < thCurr; i++)
