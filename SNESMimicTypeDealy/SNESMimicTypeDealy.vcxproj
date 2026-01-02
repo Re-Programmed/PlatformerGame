@@ -152,6 +152,7 @@
     <ClCompile Include="!TestGame\Items\Inventories\InventoryContainer.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\InventoryContainerRenderer.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\InventoryTooltip.cpp" />
+    <ClCompile Include="!TestGame\Items\Inventories\ItemSelectionBox.cpp" />
     <ClCompile Include="!TestGame\Items\Inventory.cpp" />
     <ClCompile Include="!TestGame\Items\InventoryItem.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Food.cpp" />
@@ -298,6 +299,7 @@
     <ClInclude Include="!TestGame\Items\Inventories\InventoryContainer.h" />
     <ClInclude Include="!TestGame\Items\Inventories\InventoryContainerRenderer.h" />
     <ClInclude Include="!TestGame\Items\Inventories\InventoryTooltip.h" />
+    <ClInclude Include="!TestGame\Items\Inventories\ItemSelectionBox.h" />
     <ClInclude Include="!TestGame\Items\Inventory.h" />
     <ClInclude Include="!TestGame\Items\InventoryItem.h" />
     <ClInclude Include="!TestGame\Items\ItemType.h">

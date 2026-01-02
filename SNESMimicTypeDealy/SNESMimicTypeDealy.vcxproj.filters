@@ -435,6 +435,9 @@
     <ClCompile Include="!TestGame\Objects\GUI\GUIItemSelectionBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Items\Inventories\ItemSelectionBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -918,6 +921,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\Objects\GUI\GUIItemSelectionBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Items\Inventories\ItemSelectionBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

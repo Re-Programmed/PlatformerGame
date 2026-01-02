@@ -60,6 +60,8 @@
 
 #include "./Items/Types/Placeable.h"
 
+#include "./Items/Crafting/CraftingMenuManager.h"
+
 #include "./Objects/Environment/Effects/ElectricalZap.h"
 
 #define SKIP_MAIN_MENU
@@ -527,6 +529,12 @@ namespace GAME_NAME
 		{
 			currentInv->CloseGUI();
 
+			return;
+		}
+
+		//Close the crafting menu if it is open.
+		if (Crafting::CraftingMenuManager::CloseCraftingMenu())
+		{
 			return;
 		}
 

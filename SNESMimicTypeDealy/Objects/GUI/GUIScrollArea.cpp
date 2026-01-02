@@ -23,7 +23,7 @@ namespace GAME_NAME::Objects::GUI
 	{
 		m_areas.erase(std::find(m_areas.begin(), m_areas.end(), this));
 
-		InputManager::UnregisterScrollCallback(m_scrollCallbackID);
+		//InputManager::UnregisterScrollCallback(m_scrollCallbackID);
 
 		StaticGUIElement::~StaticGUIElement();
 	}

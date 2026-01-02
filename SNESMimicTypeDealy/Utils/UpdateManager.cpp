@@ -2,6 +2,7 @@
 #include "Time/GameTime.h"
 #include "../Components/Physics/Collision/CollisionManager.h"
 
+
 namespace GAME_NAME
 {
 	namespace Utils
@@ -12,8 +13,16 @@ namespace GAME_NAME
 
 		void UpdateManager::Update(GLFWwindow* window)
 		{
-			for (IUpdateable* u : m_updateables)
+			//Use const index because sometimes updatables create other updatables while they are updating! Yay!
+			size_t updateableSize = m_updateables.size();
+			for (size_t i = 0; i < updateableSize; i++)
 			{
+				if (updateableSize > m_updateables.size())
+				{
+					updateableSize = m_updateables.size();
+				}
+
+				IUpdateable*& u = m_updateables[i];
 				u->Update(window);
 			}
 
