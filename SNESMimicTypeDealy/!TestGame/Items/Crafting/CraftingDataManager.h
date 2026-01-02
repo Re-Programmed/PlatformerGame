@@ -4,7 +4,7 @@
 
 namespace GAME_NAME::Items::Crafting
 {
-#define CRAFTING_DATA_NUM_RECIPES 4
+#define CRAFTING_DATA_NUM_RECIPES 3
 
 	struct Recipe
 	{

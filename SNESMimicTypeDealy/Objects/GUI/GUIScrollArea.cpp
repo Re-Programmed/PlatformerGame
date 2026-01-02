@@ -27,7 +27,7 @@ namespace GAME_NAME::Objects::GUI
 		{
 			m_areas.erase(m_areas.begin() + m_areaID);
 
-		}
+		InputManager::UnregisterScrollCallback(m_scrollCallbackID);
 
 		StaticGUIElement::~StaticGUIElement();
 	}
