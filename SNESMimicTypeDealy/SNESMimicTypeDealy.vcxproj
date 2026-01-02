@@ -205,10 +205,12 @@
     <ClCompile Include="!TestGame\Objects\Environment\Waterfall.cpp" />
     <ClCompile Include="!TestGame\Objects\GUI\GUIItemSelectionBox.cpp" />
     <ClCompile Include="!TestGame\Objects\LayerFlip.cpp" />
+    <ClCompile Include="!TestGame\Objects\LevelCompleteZone.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.h" />
     <ClCompile Include="!TestGame\Objects\Platforms\FallingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Backpack\Backpack.cpp" />
+    <ClCompile Include="!TestGame\Objects\Player\Currency.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Player.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\ScreenInventory.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Skills\SkillHolder.cpp" />
@@ -356,8 +358,10 @@
     <ClInclude Include="!TestGame\Objects\Environment\Waterfall.h" />
     <ClInclude Include="!TestGame\Objects\GUI\GUIItemSelectionBox.h" />
     <ClInclude Include="!TestGame\Objects\LayerFlip.h" />
+    <ClInclude Include="!TestGame\Objects\LevelCompleteZone.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />
+    <ClInclude Include="!TestGame\Objects\Player\Currency.h" />
     <ClInclude Include="!TestGame\Objects\Player\Player.h" />
     <ClInclude Include="!TestGame\Objects\Player\ScreenInventory.h" />
     <ClInclude Include="!TestGame\Objects\Components\Climbable.h" />

@@ -81,6 +81,19 @@ namespace GAME_NAME
 		return s;
 	}
 
+	int ScreenInventory::RemoveItemType(ITEM_TYPE type, unsigned int count)
+	{
+		int removed = Inventory::Remove(type, count);
+
+		//Force update textures.
+		for (int i = 0; i < m_items.size(); i++)
+		{
+			SetItem(i, m_items[i]);
+		}
+
+		return removed;
+	}
+
 	bool ScreenInventory::SetItem(uint8_t slot, Items::InventoryItem* item)
 	{
 		//Attempt to call base function, returning if failure occurs.
@@ -164,16 +177,16 @@ namespace GAME_NAME
 		ScreenInventory::ScreenInventoryMetadata& metadata = m_saveMetadata;
 		assignState(&metadata);
 		//Add save data for all items.
-		for (Items::InventoryItem* item : m_items)
+		for (int i = 0; i < m_items.size(); i++)
 		{
-			if (item == nullptr)
+			if (m_items[i] == nullptr)
 			{
 				MiscState* nullItem = new Items::InventoryItem(Items::NULL_ITEM);
 				assignState(nullItem);
 				continue;
 			}
 
-			assignState(item);
+			assignState(m_items[i]);
 		}
 	}
 

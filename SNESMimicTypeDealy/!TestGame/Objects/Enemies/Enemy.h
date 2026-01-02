@@ -25,7 +25,7 @@ namespace GAME_NAME::Objects::Enemies
 
 			struct TempAttributes
 			{
-				float Gravity = 1.5F;
+				float Gravity = 6.5F;
 				float FrictionDrag = 4.F;
 			};
 

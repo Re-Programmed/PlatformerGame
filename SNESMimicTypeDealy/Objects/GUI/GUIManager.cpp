@@ -8,7 +8,7 @@ namespace GAME_NAME
 	{
 		namespace GUI
 		{
-			std::vector<GUIButton*> GUIManager::m_buttons;
+			std::unordered_map<uint32_t, GUIButton*> GUIManager::m_buttons;
 
 			GUIManager::GUI_ELEMENT_TYPE GUIManager::GetGUIComponentFromCode(std::string code)
 			{
@@ -25,7 +25,7 @@ namespace GAME_NAME
 
 			void GUIManager::ButtonClickEvent(Vec2 position, bool wasRightClick)
 			{
-				for (GUIButton* gb : m_buttons)
+				for (auto[buttonID, gb] : m_buttons)
 				{
 					if (!gb->GetActive()) { continue; }
 

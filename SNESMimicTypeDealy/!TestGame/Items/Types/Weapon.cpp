@@ -50,4 +50,8 @@ namespace GAME_NAME::Items
 		//Call base decoding.
 		InventoryItem::Decode(ITEM_PREFIX_ITEM + params.substr(1, params.find('+') - 1));
 	}
+	std::unique_ptr<InventoryItem> Weapon::GetUnique()
+	{
+		return std::unique_ptr<Weapon>(this);
+	}
 }

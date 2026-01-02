@@ -90,7 +90,7 @@ namespace GAME_NAME
 		{
 			glBindTexture(GL_TEXTURE_2D, textureID);
 
-			GLint w, h;
+			GLint w = 0, h = 0;
 			glGetTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_WIDTH, &w);
 			glGetTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_HEIGHT, &h);
 

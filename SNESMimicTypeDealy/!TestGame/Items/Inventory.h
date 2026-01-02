@@ -35,6 +35,20 @@ namespace GAME_NAME::Items
 		/// <param name="item">The item to set (or nullptr).</param>
 		bool SetItem(uint8_t slot, InventoryItem* item);
 
+		/// <summary>
+		/// Returns the amount of a given item type contained in the inventory.
+		/// </summary>
+		/// <param name="itemType"></param>
+		/// <returns></returns>
+		unsigned int Contains(ITEM_TYPE itemType);
+
+		/// <summary>
+		/// Removes the given type and specified quantity. Will return false if removal failed (but will always remove as many as possible).
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="count"></param>
+		int Remove(ITEM_TYPE type, unsigned int count);
+
 		inline uint8_t GetSize()
 		{
 			return m_size;

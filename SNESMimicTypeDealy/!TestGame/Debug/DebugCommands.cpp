@@ -71,6 +71,7 @@ void DebugCommands::RunRecieverThread()
 void DebugCommands::HandleCommands()
 {
 	HandleKeybinds();
+	
 
 	for (auto input : m_queuedCommands)
 	{
@@ -261,8 +262,60 @@ void DebugCommands::HandleCommands()
 
 			continue;
 		}
+
+		if (input.starts_with("giveitem"))
+		{
+			std::vector<std::string> params = getParams(input);
+
+			if (params.size() < 1) { DebugCommands_Log("Provide an item name."); continue; }
+
+			std::string itemParam;
+			for (std::string str : params)
+			{
+				itemParam.append(" ");
+				itemParam.append(str);
+			}
+
+			itemParam = itemParam.substr(1);
+
+			int i = 0;
+			for (ItemData data : GAME_NAME::Items::ITEM_DATA)
+			{
+				if (data.DisplayName == itemParam)
+				{
+					DebugCommands_Log("Gave " + itemParam + ".");
+					int slot = GAME_NAME::TestGame::ThePlayer->GetInventory()->AddItem(new InventoryItem(static_cast<ITEM_TYPE>(i)));
+					if (slot < 0)
+					{
+						slot = GAME_NAME::TestGame::ThePlayer->GetBackpack()->AddItem(new InventoryItem(static_cast<ITEM_TYPE>(i)));
+
+						if (slot < 0)
+						{
+							DebugCommands_Log("Inventory full!");
+						}
+					}
+
+					goto end_command_check;
+				}
+
+				i++;
+			}
+
+			DebugCommands_Log("Could not find " + itemParam + ".");
+
+			int iter = 0;
+			for (ItemData data : GAME_NAME::Items::ITEM_DATA)
+			{
+				DebugCommands_Log(std::to_string(iter++) + ": " + data.DisplayName);
+			}
+
+			continue;
+		}
+	
+
 	}
 
+end_command_check:
 	m_queuedCommands.clear();
 }
 

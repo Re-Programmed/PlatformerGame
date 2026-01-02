@@ -504,7 +504,7 @@ namespace GAME_NAME
 		Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(mainSequence);*/
 
 		//Testing Glitch Area
-		//GlitchedRegion* gr = new GlitchedRegion(Vec2(80, 0), Vec2(300, 100));
+		//GlitchedRegion* gr = new GlitchedRegion(Vec2(878*8, 0), Vec2(128, 128));
 		//Renderer::LoadObject(gr, 2, false);
 		
 		//Test Chest
@@ -528,6 +528,15 @@ namespace GAME_NAME
 			currentInv->CloseGUI();
 
 			return;
+		}
+
+		//Close the shop if it's open.
+		if (dynamic_cast<HubLevelManager*>(m_currentLevelSystem.get()))
+		{
+			if (HubLevelManager::CloseShopGUI())
+			{
+				return;
+			}
 		}
 
 		m_gamePaused = !m_gamePaused;

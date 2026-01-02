@@ -13,8 +13,8 @@
 
 namespace GAME_NAME::Objects::Environment::Buildings
 {
-	InteriorDoor::InteriorDoor(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, std::string levelDestination, Vec2 exitPosition, bool loadsObjectsOnly)
-		: Interactable(keyRef::PLAYER_INTERACT, InputManager::KEY_STATE_NONE, position, scale, sprite), m_levelDestination(levelDestination), m_loadsObjectsOnly(loadsObjectsOnly), m_exitPosition(exitPosition)
+	InteriorDoor::InteriorDoor(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, std::string levelDestination, Vec2 exitPosition, bool loadsObjectsOnly, bool useLocalState)
+		: Interactable(keyRef::PLAYER_INTERACT, InputManager::KEY_STATE_NONE, position, scale, sprite), m_levelDestination(levelDestination), m_loadsObjectsOnly(loadsObjectsOnly), m_exitPosition(exitPosition), m_useLocalState(useLocalState)
 	{
 
 	}
@@ -58,6 +58,12 @@ namespace GAME_NAME::Objects::Environment::Buildings
 				TestGame::INSTANCE->LoadLevelOnlyObjects(m_levelDestination.c_str(), m_exitPosition);
 			}
 			else {
+
+				if (m_useLocalState)
+				{
+					TestGame::INSTANCE->SetLoadLevelWithSavedPlayer(true);
+				}
+
 				TestGame::INSTANCE->LoadLevelAndAllData(m_levelDestination.c_str());
 			}
 

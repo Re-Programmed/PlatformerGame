@@ -50,10 +50,13 @@
 #include "./Objects/Environment/ClimbableObject.h"
 
 #include "./Objects/Environment/Effects/GlitchEffect.h"
+#include "./Objects/Environment/Effects/GlitchedRegion.h"
 
 #include "./Objects/Environment/Movement/Trampoline.h"
 #include "Objects/Environment/Buildings/InteriorDoor.h"
 #include "Objects/Environment/DialogueInteractable.h"
+
+#include "Objects/LevelCompleteZone.h"
 
 
 #include "Objects/Environment/Buildings/Electrical/ElectricalTransformer.h"
@@ -411,7 +414,7 @@ using namespace Enemies;
 			2 - FrontDoor (sprite, roomFile)
 			3 - Bench (sprite)
 			4 - Sagging Object (sprite, segmentCount, bouncy)
-			5 - InteriorDoor (sprite,destination,playerExitX,playerExitY,shouldLoadOnlyObjects=false)
+			5 - InteriorDoor (sprite,destination,playerExitX,playerExitY,shouldLoadOnlyObjects=false,shouldUseLocalState=false)
 			6 - DialogueInteractable (sprite,dialogueKey)
 			7 - SpinningObject (sprite, rotationSpeed, enabled)
 			8 - ElectricalTransformer (sprite, zapRadius)
@@ -481,7 +484,7 @@ using namespace Objects::Environment::Buildings;
 		}
 		case 5:
 		{
-			InteriorDoor* interiorDoor = new InteriorDoor(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), data[7], STOIVEC(data[8], data[9]), data.size() >= 11 ? (std::stoi(data[10]) == 1) : false);
+			InteriorDoor* interiorDoor = new InteriorDoor(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), data[7], STOIVEC(data[8], data[9]), data.size() >= 11 ? (std::stoi(data[10]) == 1) : false, data.size() >= 12 ? (std::stoi(data[11]) == 1) : false);
 			Renderer::LoadObject(interiorDoor, std::stoi(data[5]));
 			break;
 		}
@@ -675,6 +678,24 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 		Environment::Waterfall* w = new Environment::Waterfall(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), Renderer::GetSprite(std::stoi(data[5])), Renderer::GetSprite(std::stoi(data[6])), std::stoi(data[7]));
 		Renderer::LoadObject(w, std::stoi(data[8]));
 		break;
+	}
+	/*
+		22: LevelCompleteZone(map, positionX, positionY, scaleX, scaleY, sprite, levelDestination, layer)
+	*/
+	case 22:
+	{
+		LevelCompleteZone* z = new LevelCompleteZone(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), data[5]);
+		Renderer::LoadObject(z, std::stoi(data[6]));
+	}
+
+	/*
+		23: GlitchedRegion(map, positionX, positionY, scaleX, scaleY)
+	*/
+	case 23:
+	{
+		//TODO: Broken...
+		GlitchedRegion* region = new GlitchedRegion(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]));
+		Renderer::LoadObject(region);
 	}
 	}
 }

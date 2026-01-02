@@ -26,6 +26,7 @@ namespace GAME_NAME::Objects::Enemies
 
 	void PassiveRabbit::Update(GLFWwindow* window)
 	{
+
 		//If the passive rabbit becomes supercharged, it will become angry.
 		if (m_supercharge > 0)
 		{

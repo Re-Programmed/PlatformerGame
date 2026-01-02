@@ -27,6 +27,7 @@ namespace GAME_NAME::Objects::Enemies
 
 	void FeralRabbit::Update(GLFWwindow* window)
 	{
+
 		if (m_isDead) 
 		{		
 			PassiveRabbit::Update(window);

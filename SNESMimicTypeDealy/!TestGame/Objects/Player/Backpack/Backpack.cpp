@@ -22,6 +22,8 @@ namespace GAME_NAME::Objects::Player
 {
 	Backpack* Backpack::CurrentOpenBackpack = nullptr;
 
+	std::vector<uint32_t> Backpack::m_buttonIDSync;
+
 	InventoryItem* Backpack::m_cursorItem = nullptr;
 	StaticGUIElement* Backpack::m_cursorItemDisplay = nullptr;
 
@@ -66,6 +68,8 @@ namespace GAME_NAME::Objects::Player
 		GUI::GUIManager::PreventMenus = true;
 
 		CurrentOpenBackpack = this;
+
+		m_buttonIDSync.clear();
 
 		StaticGUIElement* equipmentSlotsBacking = new StaticGUIElement(Vec2(ignoreAnimation ? 325.f : 366.f, 26.5f), Vec2(-40.f, 64.f), Renderer::GetSprite(SpriteBase(102))->GetSpriteId());
 		Renderer::LoadGUIElement(equipmentSlotsBacking);
@@ -130,7 +134,7 @@ namespace GAME_NAME::Objects::Player
 		{
 			GUIButton* backpackItemSlot = new GUIButton(Vec2(20.f + ((i % 5) * 19.f), 140.f - (19.f * (i / 5))), Vec2(20.f, 20.f), Renderer::GetSprite(SpriteBase(229))->GetSpriteId(), new std::function(clickGeneralItemSlot), {1.f, 1.f, 1.f, ignoreAnimation ? 1.f : 0.f});
 			Renderer::LoadGUIElement(backpackItemSlot, 2);
-			GUIManager::RegisterButton(backpackItemSlot);
+			m_buttonIDSync.push_back(GUIManager::RegisterButton(backpackItemSlot));
 
 			m_generalSlots.push_back(backpackItemSlot);
 
@@ -168,6 +172,8 @@ namespace GAME_NAME::Objects::Player
 		{
 			CurrentOpenBackpack = nullptr;
 		}
+
+		m_buttonIDSync.clear();
 
 		if (!ignoreAnimation)
 		{
@@ -322,15 +328,15 @@ namespace GAME_NAME::Objects::Player
 
 		//Update current save states.
 		clearStates();
-		for (InventoryItem* item : m_items)
+		for (int i = 0; i < m_items.size(); i++)
 		{
-			if (item == nullptr)
+			if (m_items[i] == nullptr)
 			{
 				//Item was null, add temp NULL_ITEM.
 				assignState(new InventoryItem(NULL_ITEM));
 			}
 			else {
-				assignState(item);
+				assignState(m_items[i]);
 			}
 		}
 
@@ -408,7 +414,7 @@ namespace GAME_NAME::Objects::Player
 		if (m_cursorItem != nullptr) { return nullptr; }
 		if (item == nullptr) { return nullptr; }
 
-		m_cursorItem = item;
+		m_cursorItem = new InventoryItem(*item);
 		m_cursorItemDisplay = new StaticGUIElement(InputManager::GetMouseScreenPosition() - Vec2(0.f, 12.f), Vec2(12.f), ITEMTYPE_GetItemTypeTexture(item->GetType())->GetSpriteId());
 
 		return m_cursorItemDisplay;
@@ -416,11 +422,12 @@ namespace GAME_NAME::Objects::Player
 
 	void Backpack::loadEquipmentSlots(const bool& ignoreAnimation)
 	{
+
 		for (uint8_t i = 0; i < BACKPACK_NUM_EQUIPMENT_SLOTS; i++)
 		{
 			GUIButton* slot = new GUIButton(Vec2(ignoreAnimation ? 290.f : 326.f, ((BACKPACK_NUM_EQUIPMENT_SLOTS - i) * 20.f) + 10.f), Vec2(16.f, 16.f), Renderer::GetSprite(SpriteBase(101))->GetSpriteId(), new std::function(clickEquipmentSlot), Vec4(0.75f, 0.75f, 0.75f, 1.f), Vec4(1.f, 1.f, 1.f, 1.f));
 			Renderer::LoadGUIElement(slot, 2);
-			GUIManager::RegisterButton(slot);
+			m_buttonIDSync.push_back(GUIManager::RegisterButton(slot));
 
 			m_equipmentSlots[i] = slot;
 
@@ -442,6 +449,16 @@ namespace GAME_NAME::Objects::Player
 	{
 		if (m_clickDelay > 0.f) { return; }
 
+		for (int i = 0; i < m_buttonIDSync.size(); i++)
+		{
+			if (m_buttonIDSync[i] == id)
+			{
+				id = i;
+				break;
+			}
+		}
+
+
 		m_clickDelay = 0.25f;
 
 		std::cout << "CLICKED EQUIPMENT SLOT: " << id << std::endl;
@@ -452,6 +469,16 @@ namespace GAME_NAME::Objects::Player
 	void Backpack::clickGeneralItemSlot(int id)
 	{
 		if (m_clickDelay > 0.f) { return; }
+
+		for (int i = 0; i < m_buttonIDSync.size(); i++)
+		{
+			if (m_buttonIDSync[i] == id)
+			{
+				id = i;
+				break;
+			}
+		}
+
 
 		m_clickDelay = 0.25f;
 
@@ -473,6 +500,15 @@ namespace GAME_NAME::Objects::Player
 		if (m_clickDelay > 0.f) { return; }
 
 		m_clickDelay = 0.25f;
+
+		for (int i = 0; i < m_buttonIDSync.size(); i++)
+		{
+			if (m_buttonIDSync[i] == id)
+			{
+				id = i;
+				break;
+			}
+		}
 
 		const int& index = id - CurrentOpenBackpack->m_size;
 		StaticGUIElement* cursorElement = nullptr;
@@ -554,7 +590,7 @@ namespace GAME_NAME::Objects::Player
 		{
 			GUIButton* playerSlot = new GUIButton({ 2.98f + (i * 20.f), 19.f }, { 18.f, 18.f }, Renderer::GetSprite(INVENTORY_SELECTED_SLOT_SPRITE)->GetSpriteId(), new std::function(clickPlayerSlot), { 1.f, 1.f, 1.f, 0.f }, { 0.5f, 0.5f, 0.f, 0.25f });
 			Renderer::LoadGUIElement(playerSlot, 2);
-			GUIManager::RegisterButton(playerSlot);
+			m_buttonIDSync.push_back(GUIManager::RegisterButton(playerSlot));
 
 			m_playerSlots[i] = playerSlot;
 		}

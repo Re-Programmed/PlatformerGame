@@ -200,6 +200,7 @@ namespace  GAME_NAME
 					int Climbing = SpriteBase(134);			//Climbing backwards animation.
 					int IdleAnimations = SpriteBase(148);	//The beginning of all idle animations.
 					int Dead = SpriteBase(250);
+					int VictoryBalloon = SpriteBase(259);	//The player holding a balloon for the level exit.
 
 					PlayerAnimationData* AnimationOverride = nullptr;
 
@@ -275,7 +276,9 @@ namespace  GAME_NAME
 					FALLEN,
 					SITTING_FORWARD,
 					CLIMBING_BACK,	//Climbing with back turned to the camera.
-					DEAD
+					DEAD,
+					VICTORY_BALLOON,
+					VICTORY_CONFETTI
 				};
 
 				/// <summary>
@@ -287,6 +290,11 @@ namespace  GAME_NAME
 					m_frozen += frozen ? 1 : -1;
 					if (m_frozen < 0) { m_frozen = 0; }
 					SetAnimationState(direction, point);
+				}
+				
+				inline PLAYER_ANIMATION_STATE GetLookDirection()
+				{
+					return m_currentPlayerLookDirection;
 				}
 
 				/// <summary>

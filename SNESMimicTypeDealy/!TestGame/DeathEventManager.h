@@ -25,7 +25,9 @@ namespace GAME_NAME
 	private:
 		static std::unique_ptr<DeathEventManager> UPDATE_INSTANCE;
 
+
 		static void deathButtonEvents(int buttonID);
+		static unsigned int m_retryButtonID;
 
 		/// <summary>
 		/// Stores where items that save the player's position have been used.

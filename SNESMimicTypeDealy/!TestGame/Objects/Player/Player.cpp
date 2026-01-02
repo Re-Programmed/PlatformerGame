@@ -60,6 +60,9 @@ namespace  GAME_NAME
 #define PLAYER_LOOK_BEHIND_SPRITE TextureDataBase(BagTurnaround)
 #define PLAYER_FALLEN_SPRITE TextureDataBase(Fall)
 
+#define PLAYER_HOLD_BALLOON_SPRITE TextureDataBase(VictoryBalloon)
+#define PLAYER_HOLD_CONFETTI_GUN_SPRITE TextureDataBase(VictoryBalloon) + 1
+
 #define PLAYER_DEAD_SPRITE TextureDataBase(Dead)
 
 #define DefaultPlayerSprite TextureDataBase(DefaultSprites)		//The default sprite to use for the player.
@@ -1030,10 +1033,6 @@ namespace  GAME_NAME
 
 				m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
 
-				/*********************
-					TODO: without this line, wouldn't it cause a memory leak?
-					Without the line, dropping tools actually works tho...
-				**********************/
 				delete item;
 
 
@@ -1711,6 +1710,18 @@ namespace  GAME_NAME
 						Vec2 mouseDistance = InputManager::GetMouseWorldPosition(TestGame::INSTANCE->GetCamera()) - m_emotionsObject->GetPosition();
 						float rotation = -MathUtils::to_degf(std::atanf(mouseDistance.Y / mouseDistance.X));
 						m_emotionsObject->SetRotationAboutCenter(rotation);
+						break;
+					}
+
+					case VICTORY_CONFETTI:
+					{
+						m_sprite.reset(Renderer::GetSprite(PLAYER_HOLD_CONFETTI_GUN_SPRITE));
+						break;
+					}
+
+					case VICTORY_BALLOON:
+					{
+						m_sprite.reset(Renderer::GetSprite(PLAYER_HOLD_BALLOON_SPRITE));
 						break;
 					}
 

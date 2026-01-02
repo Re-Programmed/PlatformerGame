@@ -55,28 +55,22 @@ namespace GAME_NAME::Resources
 
 		if (std::filesystem::exists(filePath))
 		{
+			std::ifstream readFile(filePath);
 			std::string fullFile;
 
-			std::ifstream readFile(filePath);
-
-			std::getline(readFile, fullFile);
-
-			readFile.close();
-
-			std::stringstream fileDecoded(fullFile);
-			std::string decodedFile;
-
 			std::string line;
-			while (std::getline(fileDecoded, line, '\n'))
+			while (std::getline(readFile, line, '\n'))
 			{
 				if (!B64::Decode(line).starts_with(vName))
 				{
-					decodedFile.append(line + '\n');
+					fullFile.append(line + '\n');
 				}
 			}
 
+			readFile.close();
+
 			std::ofstream createstream(filePath);
-			createstream << decodedFile;
+			createstream << fullFile;
 			createstream << B64::Encode(vName + "{" + data);
 			createstream.close();
 		}
@@ -100,18 +94,10 @@ namespace GAME_NAME::Resources
 		
 		if (std::filesystem::exists(filePath))
 		{
-			std::string fullFile;
-
 			std::ifstream readFile(filePath);
 
-			std::getline(readFile, fullFile);
-
-			readFile.close();
-
-			std::stringstream fileDecoded(fullFile);
-
 			std::string lineData;
-			while (std::getline(fileDecoded, lineData, '\n'))
+			while (std::getline(readFile, lineData, '\n'))
 			{
 				std::string line = B64::Decode(lineData);
 				if (line.starts_with(vName))
@@ -121,6 +107,8 @@ namespace GAME_NAME::Resources
 					return;
 				}
 			}
+
+			readFile.close();
 		}
 
 		SaveString(defaultValue, vName);

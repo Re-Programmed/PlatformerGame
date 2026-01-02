@@ -28,4 +28,9 @@ namespace GAME_NAME::Items
 		InventoryItem::Decode(params);
 	}
 
+	std::unique_ptr<InventoryItem> Food::GetUnique()
+	{
+		return std::unique_ptr<Food>(this);
+	}
+
 }

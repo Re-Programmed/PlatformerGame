@@ -75,6 +75,11 @@ namespace GAME_NAME::Objects::Player
 		}
 	private:
 		/// <summary>
+		/// Links each button ID to an inventory ID.
+		/// </summary>
+		static std::vector<uint32_t> m_buttonIDSync;
+
+		/// <summary>
 		/// True if the backpack is open.
 		/// </summary>
 		bool m_isOpen = false;

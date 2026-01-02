@@ -7,10 +7,11 @@
 
 #include "../../../Objects/Helpers/Interactable.h"
 
-#include "../../Objects/GUI/GUIItemSelectionBox.h"
 #include "../../../Objects/GUI/Menus/GUIMenu.h"
 
 #include "../../InputDisplay/DisplayIconManager.h"
+
+#include "../../Objects/Player/Currency.h"
 
 #define HUB_L2_PLAYER_HOUSE_TAG "L2PlayerHouse"
 #define HUB_L3_PLAYER_HOUSE_TAG "L3PlayerHouse"
@@ -22,6 +23,8 @@ namespace GAME_NAME::Level
 	bool HubLevelManager::m_shopGUIOpen = false;
 
 	using namespace GAME_NAME::Resources;
+
+	HubLevelManager::ShopGUI HubLevelManager::m_currentShop = HubLevelManager::ShopGUI{ nullptr, nullptr };
 
 	class ShopInteractable
 		: public Interactable
@@ -37,7 +40,10 @@ namespace GAME_NAME::Level
 		{
 			if (state & InputManager::KEY_STATE_PRESSED)
 			{
-				HubLevelManager::OpenShopGUI();
+				if (!HubLevelManager::OpenShopGUI())
+				{
+					HubLevelManager::CloseShopGUI();
+				}
 			}
 
 			Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
@@ -47,21 +53,40 @@ namespace GAME_NAME::Level
 
 	HubLevelManager::HubLevelManager()
 	{
+		//--Do for any level--
 		m_currentHubCharacteristics.Load();
+
+		Currency::Load();
+		Currency::RenderCurrencyDisplay();
 
 		if (TestGame::INSTANCE->GetCurrentLevelPath().ends_with("_shop"))
 		{
+
+			//--Do for shop--
+
 			loadShopArea();
 
 			return;
 		}
 
+		//--Do for lobby only--
+
 		updateHouseUnlock();
+
+
 	}
+
+	/// <summary>
+	/// Used to ensure the mouse must be clicked again to perform a second purchase.
+	/// </summary>
+	bool HubLevelManager_PerformingPurchase = false;
 
 	void HubLevelManager::Update(GLFWwindow* window)
 	{
-
+		if (HubLevelManager_PerformingPurchase && !InputManager::GetMouseButton(0))
+		{
+			HubLevelManager_PerformingPurchase = false;
+		}
 	}
 
 	void HubLevelManager::updateHouseUnlock()
@@ -87,15 +112,58 @@ namespace GAME_NAME::Level
 		Renderer::LoadActiveObject(new ShopInteractable());
 	}
 
-	void HubLevelManager::OpenShopGUI()
+	bool HubLevelManager::OpenShopGUI()
 	{
-		if (m_shopGUIOpen) { return; }
+		if (m_shopGUIOpen) { return false; }
 
 		m_shopGUIOpen = true;
 
 		GUI::Menus::GUIMenu::LoadMenu(HUB_SHOP_SHOP_GUI_ITEMS_TO_COINS, nullptr);
 		GUI::Menus::GUIMenu::OpenMenu();
 
+		auto shopData = loadShop();
+
+		if (shopData.first.size() < 2 || shopData.second.size() < 2)
+		{
+			//Randomly generate a new shop because everything is gone...
+			generateShop();
+		}
+		else {
+			GUIItemSelectionBox* itemBox = new GUIItemSelectionBox(Vec2{ 75.f, 50.f }, 60.f, shopData.first.begin()._Ptr, shopData.first.size(), nullptr, true);
+			Renderer::LoadGUIElement(itemBox, 2);
+
+			GUIItemSelectionBox* itemOutBox = new GUIItemSelectionBox(Vec2{ 175.f, 50.f }, 60.f, shopData.second.begin()._Ptr, shopData.second.size(), new std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>(performPurchase), false);
+			Renderer::LoadGUIElement(itemOutBox, 2);
+
+			m_currentShop.ItemIn = itemBox;
+			m_currentShop.ItemOut = itemOutBox;
+		}
+
+		return true;
+	}
+
+	bool HubLevelManager::CloseShopGUI()
+	{
+		if (!m_shopGUIOpen) { return false; }
+
+		saveShop();
+
+		Renderer::UnloadGUIElement(m_currentShop.ItemIn, 2);
+		delete m_currentShop.ItemIn;
+		Renderer::UnloadGUIElement(m_currentShop.ItemOut, 2);
+		delete m_currentShop.ItemOut;
+
+		GUI::Menus::GUIMenu::RemoveLastMenu();
+
+		m_shopGUIOpen = false;
+
+		return true;
+	}
+
+
+
+	void HubLevelManager::generateShop()
+	{
 		//Load item selection area.
 		GUIItemSelectionBox::ItemSelection items[8]{
 				{ ITEM_TYPE::LOG, 1 },
@@ -107,12 +175,180 @@ namespace GAME_NAME::Level
 				{ ITEM_TYPE::LOG, 1 },
 				{ ITEM_TYPE::APPLE, 12 }
 		};
-		GUIItemSelectionBox* itemBox = new GUIItemSelectionBox(Vec2{ 75.f, 50.f }, 60.f, items, 8, new std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>(
-			[](GAME_NAME::Items::ITEM_TYPE type, int count) {
-				printf("You clicked %s with count %d.\n", ITEMTYPE_GetItemTypeName(type).c_str(), count);
-			}
-		));
+		GUIItemSelectionBox* itemBox = new GUIItemSelectionBox(Vec2{ 75.f, 50.f }, 60.f, items, 8, nullptr, true);
 		Renderer::LoadGUIElement(itemBox, 2);
+
+
+
+
+		GUIItemSelectionBox::ItemSelection outItems[8]{
+		{ ITEM_TYPE::CRUMBS, 1 },
+		{ ITEM_TYPE::CRUMBS, 3 },
+		{ ITEM_TYPE::CRUMBS, 3 },
+		{ ITEM_TYPE::CRUMBS, 2 },
+		{ ITEM_TYPE::CRUMBS, 5 },
+		{ ITEM_TYPE::CRUMBS, 4 },
+		{ ITEM_TYPE::CRUMBS, 8 },
+		{ ITEM_TYPE::CRUMBS, 1 }
+		};
+		GUIItemSelectionBox* itemOutBox = new GUIItemSelectionBox(Vec2{ 175.f, 50.f }, 60.f, outItems, 8, new std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>(performPurchase), false);
+		Renderer::LoadGUIElement(itemOutBox, 2);
+
+		m_currentShop.ItemIn = itemBox;
+		m_currentShop.ItemOut = itemOutBox;
+	}
+
+	void HubLevelManager::saveShop()
+	{
+		m_currentShop.Data->ClearItems();
+
+		if (m_currentShop.ItemIn != nullptr)
+		{
+			for (GUIItemSelectionBox::ItemSelection item : m_currentShop.ItemIn->GetContents())
+			{
+				m_currentShop.Data->AddItem(item);
+			}
+		}
+
+		if (m_currentShop.ItemOut != nullptr)
+		{
+			for (GUIItemSelectionBox::ItemSelection item : m_currentShop.ItemOut->GetContents())
+			{
+				m_currentShop.Data->AddItem(item);
+			}
+		}
+
+		Resources::SaveManager::CreateSaveFile(m_currentShop.Data->GetSaveString(), m_currentShop.Data->GetName());
+	}
+
+	std::pair<std::vector<GUIItemSelectionBox::ItemSelection>, std::vector<GUIItemSelectionBox::ItemSelection>> HubLevelManager::loadShop()
+	{
+		std::pair<std::vector<GUIItemSelectionBox::ItemSelection>, std::vector<GUIItemSelectionBox::ItemSelection>> shopData;
+
+		auto savedData = m_currentShop.Data->GetItems();
+		for (std::string itemData : *(savedData.get()))
+		{
+			ShopData::ShopItem currentItem(itemData);
+
+			GUIItemSelectionBox::ItemSelection selection = currentItem.GetSelection();
+
+			if (selection.Type == ITEM_TYPE::CRUMBS)
+			{
+				shopData.second.push_back(selection);
+			}
+			else {
+				shopData.first.push_back(selection);
+			}
+		}
+
+		return shopData;
+	}
+
+	bool HubLevelManager::removeItemFromSelectionBox(GUIItemSelectionBox*& box, std::function<bool(GUIItemSelectionBox::ItemSelection)> condition, std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>* selectCallback)
+	{
+		std::vector<GUIItemSelectionBox::ItemSelection> newSelectionContents;
+
+		bool alreadyRemoved = false;
+		for (GUIItemSelectionBox::ItemSelection item : box->GetContents())
+		{
+			if (condition(item) && !alreadyRemoved)
+			{ 
+				alreadyRemoved = true; 
+				bool found = false;
+
+				//Removed the currently selected button, reset the selection param.
+				if (box->ShowsSelected())
+				{
+					if (box->GetCurrentSelection(found).ButtonID == item.ButtonID && found)
+					{
+						box->SetCurrentSelection(-1);
+					}
+				}
+				continue; 
+			}
+
+			newSelectionContents.push_back(item);
+		}
+
+		if (!alreadyRemoved) { return false; }
+
+		const Vec2 pos = box->GetPosition();
+		const bool showsSelected = box->ShowsSelected();
+
+		Renderer::UnloadGUIElement(box, 2);
+		delete box;
+
+		GUIItemSelectionBox* itemOutBox = new GUIItemSelectionBox(pos, 60.f, newSelectionContents.begin()._Ptr, newSelectionContents.size(), selectCallback, showsSelected);
+		Renderer::LoadGUIElement(itemOutBox, 2);
+		
+		box = itemOutBox;
+
+		return true;
+	}
+
+	void HubLevelManager::performPurchase(ITEM_TYPE crumbType, int count)
+	{
+		if (HubLevelManager_PerformingPurchase)
+		{
+			return;
+		}
+
+		HubLevelManager_PerformingPurchase = true;
+
+		if (m_currentShop.ItemIn != nullptr)
+		{
+			bool isSelected = false;
+			GUIItemSelectionBox::ItemSelection desiredTrade = m_currentShop.ItemIn->GetCurrentSelection(isSelected);
+
+			//No purchase item is selected.
+			if (!isSelected) { return; }
+	
+			//Determine if the player has it.
+			int inventoryCount = TestGame::ThePlayer->GetInventory()->Contains(desiredTrade.Type);
+			int backpackCount = TestGame::ThePlayer->GetBackpack()->Contains(desiredTrade.Type);
+
+			if (inventoryCount + backpackCount < desiredTrade.Count)
+			{
+				//TODO: Play nono sound.
+
+				return;
+			}
+			else {
+
+				//Remove from the player's inventory and backpack.
+
+				int removed = TestGame::ThePlayer->GetInventory()->RemoveItemType(desiredTrade.Type, desiredTrade.Count);
+				if (removed < desiredTrade.Count)
+				{
+					TestGame::ThePlayer->GetBackpack()->Remove(desiredTrade.Type, desiredTrade.Count - removed);
+				}
+			}
+
+			bool removed = removeItemFromSelectionBox(m_currentShop.ItemIn, [desiredTrade](GUIItemSelectionBox::ItemSelection item) {
+				return item.Count == desiredTrade.Count && item.Type == desiredTrade.Type;
+			}, nullptr);
+			
+			//The items removal was unsuccessful for some reason.
+			if (!removed)
+			{
+				return;
+			}
+
+			//Determine the desired product.
+			if (m_currentShop.ItemOut != nullptr)
+			{
+				bool removed = removeItemFromSelectionBox(m_currentShop.ItemOut, [count](GUIItemSelectionBox::ItemSelection item) {
+					return item.Count == count;
+				}, new std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>(HubLevelManager::performPurchase));
+
+				if (removed)
+				{
+					//TODO: Remove the item here and give crumbs.
+					Currency::AddCrumbs(count);
+				}
+			}
+		}
+
 	}
 
 	void HubLevelManager::HubCharactersitics::Load()

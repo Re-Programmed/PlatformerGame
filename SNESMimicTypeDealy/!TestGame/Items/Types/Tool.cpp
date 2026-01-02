@@ -34,4 +34,9 @@ namespace GAME_NAME::Items
 		InventoryItem::Decode(ITEM_PREFIX_ITEM + params.substr(1, params.find('+') - 1));
 	}
 
+	std::unique_ptr<InventoryItem> Tool::GetUnique()
+	{
+		return std::unique_ptr<Tool>(this);
+	}
+
 }

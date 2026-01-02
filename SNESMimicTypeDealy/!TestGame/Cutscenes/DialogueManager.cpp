@@ -307,8 +307,8 @@ namespace GAME_NAME::Cutscenes
 			Renderer::LoadGUIElement(button1);
 			Renderer::LoadGUIElement(button2);
 
-			GUIManager::RegisterButton(button1, false);
-			GUIManager::RegisterButton(button2, false);
+			GUIManager::RegisterButton(button1);
+			GUIManager::RegisterButton(button2);
 
 			m_guiOptionButtons[0] = button1;
 			m_guiOptionButtons[1] = button2;

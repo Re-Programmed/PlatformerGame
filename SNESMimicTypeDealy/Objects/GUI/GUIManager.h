@@ -66,39 +66,46 @@ namespace GAME_NAME
 				/// <param name="btn"></param>
 				/// 
 				/// <returns></returns>
-				static inline unsigned int RegisterButton(GUIButton* btn, bool configureButtonId = true)
+				static inline unsigned int RegisterButton(GUIButton* btn)
 				{
-					m_buttons.push_back(btn);
-					if (configureButtonId) { btn->SetButtonId(static_cast<unsigned int>(m_buttons.size()) - 1); }
-					return static_cast<unsigned int>(m_buttons.size()) - 1;
+					//Find a free ID to use.
+					uint32_t tryId = static_cast<uint32_t>(m_buttons.size()) - 1;
+
+					while (m_buttons.contains(tryId))
+					{
+						tryId++;
+					}
+
+					btn->SetButtonId(tryId);
+
+					m_buttons.emplace(tryId, btn);
+					return tryId;
+				}
+
+				static inline GUIButton* GetButtonFromId(uint32_t buttonId)
+				{
+					return m_buttons[buttonId];
 				}
 
 				/// <summary>
 				/// Always unregister buttons before deleting them.
 				/// </summary>
 				/// <param name="index"></param>
-				static inline void UnregisterButton(unsigned int index)
+				static inline void UnregisterButton(uint32_t buttonId)
 				{
-					m_buttons.erase(m_buttons.begin() + index);
+					m_buttons.erase(buttonId);
 				}
 
 				static inline void UnregisterButton(GUIButton* btn)
 				{
-					for (int i = 0; i < m_buttons.size(); i++)
-					{
-						if (m_buttons[i] == btn)
-						{
-							m_buttons.erase(m_buttons.begin() + i);
-							return;
-						}
-					}
+					m_buttons.erase(btn->GetButtonId());
 				}
 
 			private:
 				/// <summary>
 				/// All buttons on screen.
 				/// </summary>
-				static std::vector<GUIButton*> m_buttons;
+				static std::unordered_map<uint32_t, GUIButton*> m_buttons;
 			};
 		}
 	}

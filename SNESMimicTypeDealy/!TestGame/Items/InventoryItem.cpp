@@ -15,16 +15,16 @@ namespace GAME_NAME
 
 		}
 
-		InventoryItem::InventoryItem(const InventoryItem& item)
+		/*InventoryItem::InventoryItem(const InventoryItem& item)
 			: m_itemType(item.m_itemType)
 		{
 			
-		}
+		}*/
 
-		InventoryItem::InventoryItem(InventoryItem&& item) noexcept
+		/*InventoryItem::InventoryItem(InventoryItem&& item) noexcept
 		{
 			m_itemType = item.m_itemType;
-		}
+		}*/
 
 
 		MiscState::SaveParam InventoryItem::Encode()
@@ -104,6 +104,11 @@ namespace GAME_NAME
 			}
 
 			return item;
+		}
+
+		std::unique_ptr<InventoryItem> InventoryItem::GetUnique()
+		{
+			return std::unique_ptr<InventoryItem>(this);
 		}
 	}
 }

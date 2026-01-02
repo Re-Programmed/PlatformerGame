@@ -12,6 +12,8 @@ namespace GAME_NAME
 	Vec2 DeathEventManager::m_playerFlaggedPosition = Vec2{ 0.f, 0.f };
 	std::unique_ptr<DeathEventManager> DeathEventManager::UPDATE_INSTANCE = nullptr;
 
+	unsigned int DeathEventManager::m_retryButtonID;
+
 	void DeathEventManager::ReloadFromSave()
 	{
 		//Load data from the last created start state.
@@ -32,7 +34,7 @@ namespace GAME_NAME
 
 		GUIManager::MenuIsOpen = true;
 		Renderer::LoadGUIElement(retry, 2);
-		GUIManager::RegisterButton(retry, false);
+		m_retryButtonID = GUIManager::RegisterButton(retry);
 	
 		Text::TextRenderer::RenderedWord retryWord = Text::TextRenderer::RenderWord("Retry", retry->GetPosition() + Vec2{30.f, 3.f}, 24.f, -1.f, 2);
 
@@ -43,6 +45,8 @@ namespace GAME_NAME
 		if (LevelManager::GetCircleAnimationCompleted())
 		{
 			GUIManager::MenuIsOpen = false;
+
+			GUIManager::UnregisterButton(m_retryButtonID);
 
 			LevelManager::SetCircleAnimationCompleted(false);
 
@@ -60,15 +64,14 @@ namespace GAME_NAME
 	void DeathEventManager::deathButtonEvents(int buttonID)
 	{
 		//Retry button.
-		if (buttonID == 0)
-		{
-			//Already loading something.
-			if (UPDATE_INSTANCE != nullptr) { return; }
+	
+	
+		//Already loading something.
+		if (UPDATE_INSTANCE != nullptr) { return; }
 
-			LevelManager::LevelCircleAnimation({ -1, -1 });
+		LevelManager::LevelCircleAnimation({ -1, -1 });
 
-			//Set the update function to begin by creating a new instance of the class.
-			UPDATE_INSTANCE = std::make_unique<DeathEventManager>();
-		}
+		//Set the update function to begin by creating a new instance of the class.
+		UPDATE_INSTANCE = std::make_unique<DeathEventManager>();
 	}
 }

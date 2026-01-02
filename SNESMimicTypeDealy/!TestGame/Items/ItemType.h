@@ -12,7 +12,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 10
+#define ITEM_COUNT 11
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -27,7 +27,8 @@ namespace GAME_NAME
 			SHARP_STICK = 6,
 			TOAST = 7,
 			APPLE = 8,
-			WOODEN_PLANK = 9
+			WOODEN_PLANK = 9,
+			CRUMBS = 10
 		};
 
 		/// <summary>
@@ -82,7 +83,7 @@ namespace GAME_NAME
 		/// </summary>
 		const ItemData ITEM_DATA[ITEM_COUNT]
 		{
-			{ "Log", SpriteBase(248), NO_HELD_TEXTURE, 0, {}, "."},
+			{ "Log", SpriteBase(248), NO_HELD_TEXTURE, 0, {}, "Log of wood."},
 			{ "Leaves", SpriteBase(246), NO_HELD_TEXTURE, 0, {}, ""},
 			{ "Stone", 55, NO_HELD_TEXTURE, 0, {}, "" },
 			{ "(Temp) Axe", 56, SpriteBase(65), WEAPON | CHOP, { { TOOL_ACTION::CHOP , "1" }, { TOOL_ACTION::WEAPON, "10,0,0.9,20" }}, ""},
@@ -91,7 +92,8 @@ namespace GAME_NAME
 			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.2,26"}}, ""},
 			{ "Toast", SpriteBase(132), SpriteBase(233), 0, {}, "Probably made in a toaster." },							//7
 			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "20" } }, "Apple."},					//8
-			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."}							//9
+			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."},			//9
+			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."}					//10
 		};
 
 

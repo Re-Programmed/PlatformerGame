@@ -32,6 +32,8 @@ namespace GAME_NAME::Items
 		void PlaceExact(Vec2 position);
 
 		static void LoadPlaceables();
+
+		std::unique_ptr<InventoryItem> GetUnique() override;
 	protected:
 		inline constexpr const char getPrefix() override { return ITEM_PREFIX_PLACEABLE; }
 

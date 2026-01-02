@@ -23,8 +23,8 @@ namespace GAME_NAME
 
 			InventoryItem() SERIALIZED = default;
 
-			InventoryItem(const InventoryItem& item);
-			InventoryItem(InventoryItem&& item) noexcept;
+			//InventoryItem(const InventoryItem& item);
+			//InventoryItem(InventoryItem&& item) noexcept;
 
 			/// <summary>
 			/// Returns the type of item.
@@ -40,6 +40,7 @@ namespace GAME_NAME
 
 			static InventoryItem* DecodeItemString(std::string data);
 
+			virtual std::unique_ptr<InventoryItem> GetUnique();
 		protected:
 			/// <summary>
 			/// The type of the item represented by this InventoryItem.

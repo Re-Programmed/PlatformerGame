@@ -94,6 +94,11 @@ namespace GAME_NAME::Items
 		m_placedObjects->LoadStates();
 	}
 
+	std::unique_ptr<InventoryItem> Placeable::GetUnique()
+	{
+		return std::unique_ptr<Placeable>(this);
+	}
+
 	void Placeable::PlaceableStateGroup::AddState(PlacedPlaceable* placeable)
 	{
 		this->assignState(placeable);

@@ -29,6 +29,8 @@ namespace GAME_NAME::Objects::GUI
 		const double m_minY, m_maxY;
 		double m_currentY = 0;
 
+		size_t m_areaID;
+
 		void onScroll(GLFWwindow* window, double offsetX, double offsetY);
 
 		static void scrollCallback(GLFWwindow* window, double offsetX, double offsetY);

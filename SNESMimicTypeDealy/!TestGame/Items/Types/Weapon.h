@@ -23,6 +23,8 @@ namespace GAME_NAME::Items
 
 		SaveParam Encode() override final;
 		void Decode(const SaveParam params) override final;
+
+		std::unique_ptr<InventoryItem> GetUnique() override;
 	protected:
 		int m_uses SERIALIZED;
 

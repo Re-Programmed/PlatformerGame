@@ -100,7 +100,6 @@ namespace GAME_NAME::Objects::GUI::Text
 			}
 		}
 
-		std::cout << "Rendering a Letter: " + texture;
 		StaticGUIElement* GUIelement = new StaticGUIElement(position, { -scale, scale }, Renderer::GetSprite(texture)->GetSpriteId());
 		Letter letterObject(GUIelement);
 

@@ -1,5 +1,6 @@
 #include "GUIScrollArea.h"
 #include "../../Input/InputManager.h"
+#include "../../Utils/CollisionDetection.h"
 
 namespace GAME_NAME::Objects::GUI
 {
@@ -16,14 +17,17 @@ namespace GAME_NAME::Objects::GUI
 			m_scrollCallbackID = InputManager::RegisterScrollCallback(scrollCallback);
 		}
 
+		m_areaID = m_areas.size();
 		m_areas.push_back(this);
 	}
 
 	GUIScrollArea::~GUIScrollArea()
 	{
-		m_areas.erase(std::find(m_areas.begin(), m_areas.end(), this));
+		if (m_areas.size() > m_areaID) 
+		{
+			m_areas.erase(m_areas.begin() + m_areaID);
 
-		InputManager::UnregisterScrollCallback(m_scrollCallbackID);
+		}
 
 		StaticGUIElement::~StaticGUIElement();
 	}
@@ -49,6 +53,13 @@ namespace GAME_NAME::Objects::GUI
 	void GUIScrollArea::onScroll(GLFWwindow* window, double offsetX, double offsetY)
 	{
 		if (m_currentY + offsetY >= m_maxY || m_currentY + offsetY <= m_minY)
+		{
+			return;
+		}
+
+		//Ensure that the mouse is over the area.
+		const Vec2& mousePos = InputManager::GetMouseScreenPosition();
+		if (!Utils::CollisionDetection::PointWithinBoxBL(mousePos, m_position, m_scale))
 		{
 			return;
 		}

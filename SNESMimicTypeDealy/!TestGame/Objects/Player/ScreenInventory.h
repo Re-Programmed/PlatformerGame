@@ -17,6 +17,8 @@ namespace GAME_NAME
 
 		int AddItem(Items::InventoryItem* item, bool ignoreSave = false);
 
+		int RemoveItemType(Items::ITEM_TYPE type, unsigned int count);
+
 		bool SetItem(uint8_t slot, Items::InventoryItem* item);
 
 		inline Items::InventoryItem* const GetHeldItem()

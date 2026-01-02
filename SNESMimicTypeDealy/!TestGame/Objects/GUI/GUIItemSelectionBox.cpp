@@ -8,6 +8,7 @@
 #define GUI_ITEM_SELECTION_BOX_OPTION_HEIGHT 10.f
 
 #define GUI_ITEM_SELECTION_BOX_OPTION_BG_SPRITE SpriteBase(255)
+#define GUI_ITEM_SELECTION_BOX_OPTION_BG_SELECTED_SPRITE SpriteBase(256)
 
 #define GUI_ITEM_SELECTION_BOX_PADDING 3.f
 
@@ -17,8 +18,9 @@
 #define GUI_ITEM_SELECTION_COVER_SPRITE SpriteBase(254)
 namespace GAME_NAME::Objects::GUI
 {
-	GUIItemSelectionBox::GUIItemSelectionBox(Vec2 position, float cutoffHeight, ItemSelection items[], size_t itemCount, std::function<void(Items::ITEM_TYPE, int)>* selectedCallback)
-		: GUIScrollArea(position, Vec2{ GUI_ITEM_SELECTION_BOX_OPTION_WIDTH, cutoffHeight } + Vec2{ GUI_ITEM_SELECTION_BOX_PADDING * 2.f }, 0 /*No Sprite*/, -(itemCount * GUI_ITEM_SELECTION_BOX_OPTION_HEIGHT - cutoffHeight), 0.0)
+	GUIItemSelectionBox::GUIItemSelectionBox(Vec2 position, float cutoffHeight, ItemSelection items[], size_t itemCount, std::function<void(Items::ITEM_TYPE, int)>* selectedCallback, bool showSelected)
+		: GUIScrollArea(position, Vec2{ GUI_ITEM_SELECTION_BOX_OPTION_WIDTH, cutoffHeight } + Vec2{ GUI_ITEM_SELECTION_BOX_PADDING * 2.f }, 0 /*No Sprite*/, -(itemCount * GUI_ITEM_SELECTION_BOX_OPTION_HEIGHT - cutoffHeight), 0.0),
+		m_showSelected(showSelected)
 	{
 		m_selectedCallback.reset(selectedCallback);
 
@@ -128,7 +130,7 @@ namespace GAME_NAME::Objects::GUI
 
 				if (isValid)
 				{
-					itemArea->selectedCallback(itemSelected.Type, itemSelected.Count);
+					itemArea->selectedCallback(itemSelected.Type, itemSelected.Count, itemSelected.ButtonID);
 					return;	//We found it, so return.
 				}
 			}
@@ -153,6 +155,59 @@ namespace GAME_NAME::Objects::GUI
 
 		isValid = true;
 		return ret[0];
+	}
+
+	void GUIItemSelectionBox::SetCurrentSelection(int buttonID)
+	{
+		m_currentSelection = buttonID;
+	}
+
+	GUIItemSelectionBox::ItemSelection GUIItemSelectionBox::GetCurrentSelection(bool& isSelected)
+	{
+		if (m_currentSelection < 0)
+		{
+			isSelected = false;
+			return GUIItemSelectionBox::ItemSelection();
+		}
+
+		std::vector<GUIItemSelectionBox::ItemSelection> ret;
+
+		std::copy_if(m_itemContents.begin(), m_itemContents.end(), std::back_inserter(ret), [this](GUIItemSelectionBox::ItemSelection selection) {
+			return selection.ButtonID == m_currentSelection;
+		});
+
+		if (ret.size() == 0)
+		{
+			isSelected = false;
+			return GUIItemSelectionBox::ItemSelection();
+		}
+
+		isSelected = true;
+		return ret[0];
+	}
+
+	void GUIItemSelectionBox::selectedCallback(Items::ITEM_TYPE type, int count, const int& buttonID)
+	{
+		//Highlight the selected box if showSelected is true for this area.
+		if (m_showSelected)
+		{
+			if (this->m_currentSelection >= 0)
+			{
+				GUIButton* button = GUIManager::GetButtonFromId(this->m_currentSelection);
+				button->SetSprite(Renderer::GetSprite(GUI_ITEM_SELECTION_BOX_OPTION_BG_SPRITE));
+			}
+
+			this->m_currentSelection = buttonID;
+
+			GUIButton* button = GUIManager::GetButtonFromId(buttonID);
+			button->SetSprite(Renderer::GetSprite(GUI_ITEM_SELECTION_BOX_OPTION_BG_SELECTED_SPRITE));
+		}
+
+		if (m_selectedCallback != nullptr)
+		{
+			auto func = *m_selectedCallback.get();
+			func(type, count);
+		}
 	}
 
 

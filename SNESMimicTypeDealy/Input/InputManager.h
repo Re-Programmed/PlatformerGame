@@ -155,6 +155,8 @@ namespace GAME_NAME
 
 		inline static void UnregisterScrollCallback(size_t index)
 		{
+			if (m_scrollCallbacks.size() < 1) { return; }
+
 			m_scrollCallbacks.erase(m_scrollCallbacks.begin() + index);
 		}
 
