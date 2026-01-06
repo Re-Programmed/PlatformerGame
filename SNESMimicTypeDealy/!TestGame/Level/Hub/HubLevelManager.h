@@ -40,13 +40,6 @@ namespace GAME_NAME::Level
 		static void saveShop();
 		static std::pair<std::vector<GUIItemSelectionBox::ItemSelection>, std::vector<GUIItemSelectionBox::ItemSelection>> loadShop();
 
-		/// <summary>
-		/// Removes an item from a selection box based on some given condition.
-		/// </summary>
-		/// <param name="box"></param>
-		/// <param name="condition"></param>
-		/// <returns></returns>
-		static bool removeItemFromSelectionBox(GUIItemSelectionBox*& box, std::function<bool(GUIItemSelectionBox::ItemSelection)> condition, std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>* selectCallback);
 
 		static void performPurchase(ITEM_TYPE crumbType, int count);
 
@@ -62,6 +55,8 @@ namespace GAME_NAME::Level
 		/// </summary>
 		void loadShopArea();
 
+
+		void loadHouseArea();
 
 		/// <summary>
 		/// Save data for the shop.

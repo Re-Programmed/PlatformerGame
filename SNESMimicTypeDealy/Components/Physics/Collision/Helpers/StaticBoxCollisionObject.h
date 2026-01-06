@@ -70,6 +70,11 @@ namespace GAME_NAME
 						return m_trueRenderScale;
 					}
 
+					inline void SetDisplayScale(Vec2 displayScale)
+					{
+						m_trueRenderScale = displayScale;
+					}
+
 					void Render(const Vec2& cameraPosition) override
 					{
 						if (m_trueRenderScale.X != m_scale.X || m_trueRenderScale.Y != m_scale.Y)

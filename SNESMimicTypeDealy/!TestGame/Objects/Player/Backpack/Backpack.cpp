@@ -408,13 +408,27 @@ namespace GAME_NAME::Objects::Player
 		}
 	}
 
+	int Backpack::AddItem(InventoryItem* item)
+	{
+		for (int i = BACKPACK_NUM_EQUIPMENT_SLOTS; i < this->m_size; i++)
+		{
+			if (this->m_items[i] == nullptr || this->m_items[i]->GetType() == ITEM_TYPE::NULL_ITEM)
+			{
+				SetItem(i, item);
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 
 	StaticGUIElement* Backpack::setCursorItem(InventoryItem* item)
 	{
 		if (m_cursorItem != nullptr) { return nullptr; }
 		if (item == nullptr) { return nullptr; }
 
-		m_cursorItem = new InventoryItem(*item);
+		m_cursorItem = item;
 		m_cursorItemDisplay = new StaticGUIElement(InputManager::GetMouseScreenPosition() - Vec2(0.f, 12.f), Vec2(12.f), ITEMTYPE_GetItemTypeTexture(item->GetType())->GetSpriteId());
 
 		return m_cursorItemDisplay;

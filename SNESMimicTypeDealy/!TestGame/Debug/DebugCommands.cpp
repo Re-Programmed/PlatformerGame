@@ -33,6 +33,10 @@
 #include "../../Objects/GUI/Menus/GUIMenu.h"
 #include "../Objects/GUI/GUIItemSelectionBox.h"
 
+#include "../Level/Hub/HouseManager.h"
+
+#include "../Objects/Player/Currency.h"
+
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
 
 std::vector<std::string> DebugCommands::m_queuedCommands = std::vector<std::string>(2);
@@ -250,6 +254,24 @@ void DebugCommands::HandleCommands()
 			continue;
 		}
 
+		if (input == "furnituremenu")
+		{
+			GAME_NAME::Level::HouseManager::OpenFurnitureInventory();
+
+			DebugCommands_Log("Opened furniture menu.");
+
+			continue;
+		}
+
+		if (input == "storefurniture")
+		{
+			GAME_NAME::Level::HouseManager::StorePlayerInventory();
+
+			DebugCommands_Log("Stopred furniture.");
+
+			continue;
+		}
+
 		if (input.starts_with("loadmenu"))
 		{
 			std::vector<std::string> params = getParams(input);
@@ -263,7 +285,45 @@ void DebugCommands::HandleCommands()
 			continue;
 		}
 
-		if (input.starts_with("giveitem"))
+		if (input.starts_with("givecrumbs"))
+		{
+			std::vector<std::string> params = getParams(input);
+			if (params.size() < 1) { DebugCommands_Log("How many?"); continue; }
+
+			int amount = std::stoi(params[0]);
+
+			GAME_NAME::Objects::Player::Currency::AddCrumbs(amount);
+			DebugCommands_Log("Gave " + std::to_string(amount) + " crumbs.");
+		}
+
+		if (input.starts_with("giveitemcode"))
+		{
+			std::vector<std::string> params = getParams(input);
+			if (params.size() < 1) { DebugCommands_Log("Provide an item code."); continue; }
+
+			std::string itemParam;
+			for (std::string str : params)
+			{
+				itemParam.append(",");
+				itemParam.append(str);
+			}
+
+			itemParam = itemParam.substr(1);
+
+			InventoryItem* item = InventoryItem::DecodeItemString(itemParam);
+			DebugCommands_Log("Gave " + ITEMTYPE_GetItemTypeName(item->GetType()) + ".");
+
+			int slot = GAME_NAME::TestGame::ThePlayer->GetInventory()->AddItem(item);
+			if (slot < 0)
+			{
+				slot = GAME_NAME::TestGame::ThePlayer->GetBackpack()->AddItem(item);
+
+				if (slot < 0)
+				{
+					DebugCommands_Log("Inventory full!");
+				}
+			}
+		}else if (input.starts_with("giveitem"))
 		{
 			std::vector<std::string> params = getParams(input);
 

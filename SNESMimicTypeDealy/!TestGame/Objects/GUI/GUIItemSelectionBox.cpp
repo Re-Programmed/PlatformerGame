@@ -48,7 +48,7 @@ namespace GAME_NAME::Objects::GUI
 			delete element; 
 		}
 
-		GUIScrollArea::~GUIScrollArea();
+		//GUIScrollArea::~GUIScrollArea();
 	}
 
 	void GUIItemSelectionBox::Render(float zoom)
@@ -184,6 +184,49 @@ namespace GAME_NAME::Objects::GUI
 
 		isSelected = true;
 		return ret[0];
+	}
+
+
+	bool GUIItemSelectionBox::RemoveItemFromSelectionBox(GUIItemSelectionBox*& box, std::function<bool(GUIItemSelectionBox::ItemSelection)> condition, std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>* selectCallback, int layer)
+	{
+		std::vector<GUIItemSelectionBox::ItemSelection> newSelectionContents;
+
+		bool alreadyRemoved = false;
+		for (GUIItemSelectionBox::ItemSelection item : box->GetContents())
+		{
+			if (condition(item) && !alreadyRemoved)
+			{
+				alreadyRemoved = true;
+				bool found = false;
+
+				//Removed the currently selected button, reset the selection param.
+				if (box->ShowsSelected())
+				{
+					if (box->GetCurrentSelection(found).ButtonID == item.ButtonID && found)
+					{
+						box->SetCurrentSelection(-1);
+					}
+				}
+				continue;
+			}
+
+			newSelectionContents.push_back(item);
+		}
+
+		if (!alreadyRemoved) { return false; }
+
+		const Vec2 pos = box->GetPosition();
+		const bool showsSelected = box->ShowsSelected();
+
+		Renderer::UnloadGUIElement(box, layer);
+		delete box;
+
+		GUIItemSelectionBox* itemOutBox = new GUIItemSelectionBox(pos, 60.f, newSelectionContents.begin()._Ptr, newSelectionContents.size(), selectCallback, showsSelected);
+		Renderer::LoadGUIElement(itemOutBox, layer);
+
+		box = itemOutBox;
+
+		return true;
 	}
 
 	void GUIItemSelectionBox::selectedCallback(Items::ITEM_TYPE type, int count, const int& buttonID)

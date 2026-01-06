@@ -62,6 +62,8 @@
 
 #include "./Items/Crafting/CraftingMenuManager.h"
 
+#include "./Level/Hub/HouseManager.h"
+
 #include "./Objects/Environment/Effects/ElectricalZap.h"
 
 #define SKIP_MAIN_MENU
@@ -310,6 +312,8 @@ namespace GAME_NAME
 
 
 		Input::DisplayIconManager::CreateKeyDisplayObjects();
+
+		Crafting::CraftingDataManager::Initilize();
 	}
 
 	void TestGame::LateUpdate(GLFWwindow* window)
@@ -534,6 +538,12 @@ namespace GAME_NAME
 
 		//Close the crafting menu if it is open.
 		if (Crafting::CraftingMenuManager::CloseCraftingMenu())
+		{
+			return;
+		}
+
+		//Close the furniture inventory if it is open.
+		if (Level::HouseManager::CloseFurnitureInventory())
 		{
 			return;
 		}

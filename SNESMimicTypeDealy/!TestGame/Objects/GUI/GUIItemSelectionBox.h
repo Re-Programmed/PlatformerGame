@@ -45,6 +45,15 @@ namespace GAME_NAME::Objects::GUI
 
 		bool ShowsSelected() { return m_showSelected; }
 
+		/// <summary>
+		/// Removes an item from a selection box based on some given condition.
+		/// </summary>
+		/// <param name="box"></param>
+		/// <param name="condition"></param>
+		/// <returns></returns>
+		static bool RemoveItemFromSelectionBox(GUIItemSelectionBox*& box, std::function<bool(GUIItemSelectionBox::ItemSelection)> condition, std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>* selectCallback, int layer = 2);
+
+
 	private:
 		bool m_showSelected = true;
 

@@ -65,7 +65,7 @@ namespace GAME_NAME::Objects::Environment::Plants
 		setChopped(true);
 
 		//DROP LOG OR APPLE
-		Items::FloorItem* myItem = new Items::FloorItem(m_position + Vec2::RandVec2(m_scale.X, m_scale.Y), Items::LOG, 0.5f);
+		Items::FloorItem* myItem = new Items::FloorItem(m_position + Vec2::RandVec2(m_scale.X, m_scale.Y), new InventoryItem(Items::LOG), 0.5f);
 		Renderer::InstantiateObject(Renderer::InstantiateGameObject(myItem, true, 1, false));
 
 		if (!m_toBeSaved)

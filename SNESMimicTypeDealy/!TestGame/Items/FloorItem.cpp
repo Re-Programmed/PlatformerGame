@@ -12,37 +12,10 @@ namespace GAME_NAME
 	{
 		std::shared_ptr<Rendering::DynamicSprite> FloorItem::m_glowSprite = nullptr;
 
-		FloorItem::FloorItem(Vec2 position, ITEM_TYPE type, float pickupDelay)
-			: ActiveRotationalBoxCollisionGravityObject(position, Vec2(DF_FLOOR_ITEM_SCALE), ITEMTYPE_GetItemTypeTexture(type), RotationalCollider_Settings(
-				53.0f,		//Bounce
-				3.25f,		//Rotation Effect
-				7.50f		//Gravity Rotation Effect
-			)), m_inventoryItem(new InventoryItem(type)), m_lifetime(0), m_pickupDelay(pickupDelay)
-		{
-			m_physics->SetGravityStrength(m_physics->GetGravityStrength() * 7);
-
-			if (!m_glowSprite)
-			{
-				auto s = Renderer::GetSprite(FLOOR_ITEM_GLOW_SPRITE);
-
-				m_glowSprite = std::make_shared<DynamicSprite>(s->GetSpriteId());
-
-				Vec4 transparentColor[4] = { 
-					{ 1.f, 1.f, 1.f, 0.3f },
-					{ 1.f, 1.f, 1.f, 0.3f },
-					{ 1.f, 1.f, 1.f, 0.3f },
-					{ 1.f, 1.f, 1.f, 0.3f }
-				};
-
-				m_glowSprite->UpdateTextureColor(transparentColor);
-
-				delete s;
-			}
-		}
-
 		FloorItem::~FloorItem()
 		{
 			ActiveRotationalBoxCollisionGravityObject::~ActiveRotationalBoxCollisionGravityObject();
+			delete m_inventoryItem;
 		}
 
 		FloorItem::FloorItem(Vec2 position, InventoryItem* item, float pickupDelay)

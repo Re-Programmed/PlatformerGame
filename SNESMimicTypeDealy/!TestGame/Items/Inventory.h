@@ -43,6 +43,14 @@ namespace GAME_NAME::Items
 		unsigned int Contains(ITEM_TYPE itemType);
 
 		/// <summary>
+		/// Returns the first item with the specified type in the inventory.
+		/// </summary>
+		/// <param name="itemType">The desired type.</param>
+		/// <param name="foundSlot">The slot the item was in.</param>
+		/// <returns>The item found.</returns>
+		ReturnItem GetItemByType(const ITEM_TYPE itemType, int& foundSlot);
+
+		/// <summary>
 		/// Removes the given type and specified quantity. Will return false if removal failed (but will always remove as many as possible).
 		/// </summary>
 		/// <param name="type"></param>

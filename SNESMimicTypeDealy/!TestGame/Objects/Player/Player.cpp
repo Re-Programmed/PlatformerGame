@@ -35,6 +35,10 @@
 
 #include "../../../Utils/CollisionDetection.h"
 #include "../../Items/Types/Placeable.h"
+#include "../../Items/Types/Blueprint.h"
+
+#include "../../Objects/Furniture.h"
+#include "../../Level/Hub/HouseManager.h"
 
 #define PLAYER_ROOM_SPEED 40	//How fast the player moves vertically in room control mode.
 
@@ -295,6 +299,11 @@ namespace  GAME_NAME
 							}
 						}
 					}
+					else if (Blueprint* bp = dynamic_cast<Blueprint*>(m_screenInventory->GetHeldItem()))
+					{
+						bp->Use();
+						m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+					}
 
 				}
 
@@ -402,6 +411,30 @@ namespace  GAME_NAME
 						}
 						else {
 							Placeable::InteractionTimer = 0.0;
+						}
+					}
+
+					ITEM_TYPE heldType = m_screenInventory->GetHeldItem()->GetType();
+					if (ITEMTYPE_GetItemData(heldType).Actions & FURNITURE)
+					{
+						if (InputManager::GetKeyUpDown(PLAYER_INTERACT) & InputManager::KEY_STATE_HELD)
+						{
+							Furniture::InteractionTimer += Time::GameTime::DeltaTime::GetDeltaTime();
+
+							if (Furniture::InteractionTimer > 1.0)
+							{
+								Furniture* f = new Furniture(m_textureFlipped ? (m_position + Vec2{ FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }) : (m_position + Vec2{ -FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }), m_textureFlipped, m_screenInventory->GetHeldItem());
+								f->Translate(Vec2{ m_textureFlipped ? (1.f - f->GetScale().X * 2.f) : -f->GetScale().X, -2.5f});
+								Renderer::InstantiateObject(Renderer::InstantiateGameObject(f, true, 2, false));
+								this->m_screenInventory->SetItem(this->m_screenInventory->GetSelectedSlot() - 1, nullptr);
+
+								HouseManager::PlaceFurniture(f);
+
+								Furniture::InteractionTimer = 0.0;
+							}
+						}
+						else {
+							Furniture::InteractionTimer = 0.0;
 						}
 					}
 				}
@@ -534,6 +567,8 @@ namespace  GAME_NAME
 
 				if (m_screenInventory->GetHeldItem() != nullptr)
 				{
+					ITEM_TYPE heldItemType = m_screenInventory->GetHeldItem()->GetType();
+
 					Placeable* p = dynamic_cast<Placeable*>(m_screenInventory->GetHeldItem());
 					if (p != nullptr)
 					{
@@ -542,10 +577,15 @@ namespace  GAME_NAME
 						return;
 					}
 
+					if (ITEMTYPE_GetItemData(heldItemType).Actions & FURNITURE)
+					{
+						Furniture::RenderPreview(cameraPosition, heldItemType, !m_textureFlipped ? (m_position - Vec2{ FURNITURE_PLACE_OFFSET, -m_scale.Y / 2.f }) : (m_position + Vec2{ FURNITURE_PLACE_OFFSET + m_scale.X, m_scale.Y / 2.f }), m_textureFlipped);
+					}
+
 
 					if (m_heldItemDisplay != nullptr && m_heldItemDisplay->GetScale().X > 8)
 					{
-						const int&& baseSpriteId = Items::ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].HeldTexture;
+						const int&& baseSpriteId = Items::ITEM_DATA[heldItemType].HeldTexture;
 
 						//If the player is currently attacking, the item will be rendered outward from their body.
 						if (m_animator->GetCurrentAnimationIndex() == 7 /*Basic Attack Anim*/)
@@ -873,6 +913,32 @@ namespace  GAME_NAME
 				m_diving = damage;
 			}
 
+			Inventory::ReturnItem Player::GetItemByType(const ITEM_TYPE& type, int& foundSlot, bool& wasBackpack)
+			{
+				Inventory::ReturnItem foundItem = { nullptr, true };
+
+				foundItem = TestGame::ThePlayer->GetInventory()->GetItemByType(type, foundSlot);
+				if (foundItem.ri_IsNull)
+				{
+					foundItem = TestGame::ThePlayer->GetBackpack()->GetItemByType(type, foundSlot);
+					wasBackpack = true;
+				}
+
+				return foundItem;
+			}
+
+			int Player::RemoveItemByType(const ITEM_TYPE& type, unsigned int count)
+			{
+				count -= m_screenInventory->RemoveItemType(type, count);
+
+				if (count > 0)
+				{
+					count -= m_backpack->Remove(type, count);
+				}
+
+				return count;
+			}
+
 			void Player::HideAllUI()
 			{
 				m_screenInventory->HidePlayerSlots();
@@ -1026,15 +1092,12 @@ namespace  GAME_NAME
 
 				//FIX, DROPPING WRONG ITEM FOR SOME REASON.
 				//Create the object for the item.
-				Items::FloorItem* createdItem = new Items::FloorItem(m_position + ((m_scale * m_scaleMultiplier) / 2), item->GetType(), 3.5F);
+				Items::FloorItem* createdItem = new Items::FloorItem(m_position + ((m_scale * m_scaleMultiplier) / 2), item, 3.5F);
 				createdItem->GetPhysics()->AddVelocity(m_textureFlipped ? Vec2{ 1.f, 0.3f } : Vec2{ -1.f, 0.3f });
 				createdItem->GetPhysics()->AddRotationalVelocity(std::rand() * 30.f / RAND_MAX);
 				Renderer::InstantiateObject(Renderer::InstantiateGameObject(createdItem, true, 1, false));
 
 				m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
-
-				delete item;
-
 
 				return true;
 			}

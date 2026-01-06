@@ -12,6 +12,7 @@
 #include "../../InputDisplay/DisplayIconManager.h"
 
 #include "../../Objects/Player/Currency.h"
+#include "HouseManager.h"
 
 #define HUB_L2_PLAYER_HOUSE_TAG "L2PlayerHouse"
 #define HUB_L3_PLAYER_HOUSE_TAG "L3PlayerHouse"
@@ -68,12 +69,17 @@ namespace GAME_NAME::Level
 
 			return;
 		}
+		else if (TestGame::INSTANCE->GetCurrentLevelPath().ends_with("_house"))
+		{
+			loadHouseArea();
+
+			return;
+		}
 
 		//--Do for lobby only--
 
 		updateHouseUnlock();
-
-
+		HouseManager::CloseHouse();
 	}
 
 	/// <summary>
@@ -110,6 +116,11 @@ namespace GAME_NAME::Level
 	{
 		//Create shop.
 		Renderer::LoadActiveObject(new ShopInteractable());
+	}
+
+	void HubLevelManager::loadHouseArea()
+	{
+		HouseManager::LoadHouse();
 	}
 
 	bool HubLevelManager::OpenShopGUI()
@@ -244,48 +255,6 @@ namespace GAME_NAME::Level
 		return shopData;
 	}
 
-	bool HubLevelManager::removeItemFromSelectionBox(GUIItemSelectionBox*& box, std::function<bool(GUIItemSelectionBox::ItemSelection)> condition, std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>* selectCallback)
-	{
-		std::vector<GUIItemSelectionBox::ItemSelection> newSelectionContents;
-
-		bool alreadyRemoved = false;
-		for (GUIItemSelectionBox::ItemSelection item : box->GetContents())
-		{
-			if (condition(item) && !alreadyRemoved)
-			{ 
-				alreadyRemoved = true; 
-				bool found = false;
-
-				//Removed the currently selected button, reset the selection param.
-				if (box->ShowsSelected())
-				{
-					if (box->GetCurrentSelection(found).ButtonID == item.ButtonID && found)
-					{
-						box->SetCurrentSelection(-1);
-					}
-				}
-				continue; 
-			}
-
-			newSelectionContents.push_back(item);
-		}
-
-		if (!alreadyRemoved) { return false; }
-
-		const Vec2 pos = box->GetPosition();
-		const bool showsSelected = box->ShowsSelected();
-
-		Renderer::UnloadGUIElement(box, 2);
-		delete box;
-
-		GUIItemSelectionBox* itemOutBox = new GUIItemSelectionBox(pos, 60.f, newSelectionContents.begin()._Ptr, newSelectionContents.size(), selectCallback, showsSelected);
-		Renderer::LoadGUIElement(itemOutBox, 2);
-		
-		box = itemOutBox;
-
-		return true;
-	}
-
 	void HubLevelManager::performPurchase(ITEM_TYPE crumbType, int count)
 	{
 		if (HubLevelManager_PerformingPurchase)
@@ -324,7 +293,7 @@ namespace GAME_NAME::Level
 				}
 			}
 
-			bool removed = removeItemFromSelectionBox(m_currentShop.ItemIn, [desiredTrade](GUIItemSelectionBox::ItemSelection item) {
+			bool removed = GUIItemSelectionBox::RemoveItemFromSelectionBox(m_currentShop.ItemIn, [desiredTrade](GUIItemSelectionBox::ItemSelection item) {
 				return item.Count == desiredTrade.Count && item.Type == desiredTrade.Type;
 			}, nullptr);
 			
@@ -337,7 +306,7 @@ namespace GAME_NAME::Level
 			//Determine the desired product.
 			if (m_currentShop.ItemOut != nullptr)
 			{
-				bool removed = removeItemFromSelectionBox(m_currentShop.ItemOut, [count](GUIItemSelectionBox::ItemSelection item) {
+				bool removed = GUIItemSelectionBox::RemoveItemFromSelectionBox(m_currentShop.ItemOut, [count](GUIItemSelectionBox::ItemSelection item) {
 					return item.Count == count;
 				}, new std::function<void(GAME_NAME::Items::ITEM_TYPE, int)>(HubLevelManager::performPurchase));
 

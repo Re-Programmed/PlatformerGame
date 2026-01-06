@@ -338,6 +338,18 @@ namespace  GAME_NAME
 				void Dive(Vec2 direction, float damage);
 
 				/// <summary>
+				/// Checks if the player's backpack or inventory has the item type and returns that item.
+				/// </summary>
+				/// <returns></returns>
+				Inventory::ReturnItem GetItemByType(const ITEM_TYPE& type, int& foundSlot, bool& wasBackpack);
+
+				/// <summary>
+				/// Checks if the player's backpack or inventory has the item type and removes it.
+				/// </summary>
+				/// <returns>Returns the amount of items that could not be removed.</returns>
+				int RemoveItemByType(const ITEM_TYPE& type, unsigned int count = 1);
+
+				/// <summary>
 				/// Call this after loading the player to remove all HUD overlays.
 				/// </summary>
 				void HideAllUI();

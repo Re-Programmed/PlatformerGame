@@ -16,7 +16,7 @@ void GAME_NAME::Objects::StateSaver::RegisterToBeSaved(MiscStateGroup* state)
 	for (int i = 0; i < m_miscStates.size(); i++)
 	{
 		MiscStateGroup*& miscState = m_miscStates[i];
-		if (miscState == nullptr || miscState->StateCount() > 1000) 
+		if (miscState == nullptr) 
 		{ 
 			m_miscStates.erase(m_miscStates.begin() + i);
 			i--;
@@ -55,7 +55,7 @@ void GAME_NAME::Objects::StateSaver::SaveMisc()
 {
 	for (MiscStateGroup* miscState : m_miscStates)
 	{
-		if (miscState == nullptr || miscState->StateCount() > 1000) { continue; }
+		if (miscState == nullptr) { continue; }
 		if (miscState->HasStates())
 		{
 			Resources::SaveManager::CreateSaveFile(miscState->GetSaveString(), miscState->GetName());

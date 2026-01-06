@@ -73,6 +73,8 @@ namespace GAME_NAME::Objects::Player
 		{
 			//TODO: COPY THE INVENTORY OF OTHER TO THIS BAG.
 		}
+
+		int AddItem(InventoryItem* item);
 	private:
 		/// <summary>
 		/// Links each button ID to an inventory ID.

@@ -12,7 +12,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 11
+#define ITEM_COUNT 13
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -28,7 +28,9 @@ namespace GAME_NAME
 			TOAST = 7,
 			APPLE = 8,
 			WOODEN_PLANK = 9,
-			CRUMBS = 10
+			CRUMBS = 10,
+			BLUEPRINT = 11,
+			SMALL_WOODEN_CHAIR = 12
 		};
 
 		/// <summary>
@@ -36,12 +38,14 @@ namespace GAME_NAME
 		/// </summary>
 		enum TOOL_ACTION
 		{
-			CHOP = 0b000001, //Can cut down trees.
-			EQUIPMENT = 0b000010, //Can be equipped to equipment slots.
-			MINE = 0b000100, //Can break BreakableBlocks. (provide a strength attribute)
-			WEAPON = 0b001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
-			FOOD = 0b010000,	//Can be eaten.
-			PLACEABLE = 0b100000 //Can be placed.
+			CHOP =		0b00000001, //Can cut down trees.
+			EQUIPMENT = 0b00000010, //Can be equipped to equipment slots.
+			MINE =		0b00000100, //Can break BreakableBlocks. (provide a strength attribute)
+			WEAPON =	0b00001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
+			FOOD =		0b00010000, //Can be eaten.
+			PLACEABLE = 0b00100000, //Can be placed.
+			FURNITURE = 0b01000000, //Furniture. (xScale, yScale)
+			VALUE =		0b10000000	//Give an item a specific price value. (crumbValue)
 		};
 
 		/// <summary>
@@ -93,7 +97,9 @@ namespace GAME_NAME
 			{ "Toast", SpriteBase(132), SpriteBase(233), 0, {}, "Probably made in a toaster." },							//7
 			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "20" } }, "Apple."},					//8
 			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."},			//9
-			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."}					//10
+			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."},					//10
+			{ "Blueprint", SpriteBase(263), NO_HELD_TEXTURE, 0, {}, "Unlocks a recipe."},					//11
+			{ "Small Wooden Chair", 2, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "15,22.5" }, { TOOL_ACTION::VALUE, "10" } }, "Might give splinters."},					//12
 		};
 
 

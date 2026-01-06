@@ -4,6 +4,7 @@
 #include "../Inventories/InventoryTooltip.h"
 #include "../../../Utils/CollisionDetection.h"
 
+
 namespace GAME_NAME::Items::Crafting
 {
 
@@ -15,17 +16,31 @@ using namespace Inventories;
 
 	CraftingMenuManager* CraftingMenuManager::m_currentManager = nullptr;
 
+	CraftingMenuManager::CraftingArea CraftingMenuManager::m_craftingArea;
+
 	GUIScrollArea* CraftingMenuManager::m_recipeDisplayListing = nullptr;
+
+	constexpr int RECIPE_ARROW_SPRITE = SpriteBase(262);
+	constexpr float RECIPE_ARROW_HEIGHT_RATIO = 7.f / 13.f;
+	constexpr float RECIPE_DISPLAY_WIDTH = 18.f;
+	constexpr float RECIPE_PADDING = 4.f;
 
 	void CraftingMenuManager::OpenCraftingMenu()
 	{
+		if (m_currentManager != nullptr)
+		{
+			return;
+		}
+
 		m_backgroundCover->SetSprite(Renderer::GetSprite(SpriteBase(-1)));
 		Renderer::LoadGUIElement(m_backgroundCover);
 
-
-		for (int i = 0; i < CRAFTING_DATA_NUM_RECIPES; i++)
+		int i = -1;
+		for (int recipeID = 0; recipeID < CRAFTING_DATA_NUM_RECIPES; recipeID++)
 		{
-			const Recipe& data = CraftingDataManager::GetRecipe(i);
+			const Recipe& data = CraftingDataManager::GetRecipe(recipeID);
+			if (!data.Unlocked) { continue; }
+			i++;
 
 			uint8_t iIn = 0;
 			ITEM_TYPE in1 = ITEM_TYPE::NULL_ITEM, in2 = ITEM_TYPE::NULL_ITEM, in3 = ITEM_TYPE::NULL_ITEM;
@@ -47,11 +62,11 @@ using namespace Inventories;
 				}
 			}
 
-			m_recipeDisplays[i] = addRecipeOption(in1, in2, in3, data.Return, i);
+			m_recipeDisplays[i] = addRecipeOption(in1, in2, in3, data.Return->GetType(), i);
 
 			if (i == 0)
 			{
-				m_recipeDisplayListing = new GUIScrollArea(m_recipeDisplays[0].BackingButton->GetPosition(), Vec2{ m_recipeDisplays[0].BackingButton->GetScale().X, m_recipeDisplays[0].BackingButton->GetScale().Y * 10.f }, 0U, 0.0, 200.0);
+				m_recipeDisplayListing = new GUIScrollArea(Vec2{ m_recipeDisplays[0].BackingButton->GetPosition().X, 0.f }, Vec2{ m_recipeDisplays[0].BackingButton->GetScale().X, TargetResolutionY }, 0U, 0, (CRAFTING_DATA_NUM_RECIPES - 7) * (RECIPE_PADDING + RECIPE_DISPLAY_WIDTH));
 				Renderer::LoadGUIElement(m_recipeDisplayListing);
 			}
 
@@ -63,6 +78,8 @@ using namespace Inventories;
 			m_recipeDisplayListing->AddElement(m_recipeDisplays[i].Output);
 		}
 
+		addCraftingDisplay();
+
 		//Ensure the tooltip object exists. (TODO: delete tooltip upon closing).
 		InventoryTooltip::CreateTooltip();
 
@@ -71,41 +88,47 @@ using namespace Inventories;
 		m_currentManager = new CraftingMenuManager();
 	}
 
-	bool CraftingMenuManager::CloseCraftingMenu()
+	bool CraftingMenuManager::CloseCraftingMenu(int maxRecipeClear)
 	{
 		if (m_currentManager == nullptr)
 		{
 			return false;
 		}
 
-		delete m_currentManager;
+		delete m_currentManager; m_currentManager = nullptr;
 
+		int i = -1;
 		for (uint16_t recipeID = 0; recipeID < CRAFTING_DATA_NUM_RECIPES; recipeID++)
 		{
-			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[recipeID].BackingButton);
-			Renderer::UnloadGUIElement(m_recipeDisplays[recipeID].BackingButton, 2);
-			delete m_recipeDisplays[recipeID].BackingButton;
-			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[recipeID].Input1);
-			Renderer::UnloadGUIElement(m_recipeDisplays[recipeID].Input1, 2);
-			delete m_recipeDisplays[recipeID].Input1;
-			if(m_recipeDisplays[recipeID].Input2 != nullptr)
+			if (!CraftingDataManager::GetRecipe(recipeID).Unlocked) { continue; }
+			i++;
+
+			if (i >= maxRecipeClear) { continue; }
+
+			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[i].BackingButton);
+			Renderer::UnloadGUIElement(m_recipeDisplays[i].BackingButton, 2);
+			delete m_recipeDisplays[i].BackingButton;
+			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[i].Input1);
+			Renderer::UnloadGUIElement(m_recipeDisplays[i].Input1, 2);
+			delete m_recipeDisplays[i].Input1;
+			if(m_recipeDisplays[i].Input2 != nullptr)
 			{
-				m_recipeDisplayListing->RemoveElement(m_recipeDisplays[recipeID].Input2); 
-				Renderer::UnloadGUIElement(m_recipeDisplays[recipeID].Input2, 2);
-				delete m_recipeDisplays[recipeID].Input2;
+				m_recipeDisplayListing->RemoveElement(m_recipeDisplays[i].Input2); 
+				Renderer::UnloadGUIElement(m_recipeDisplays[i].Input2, 2);
+				delete m_recipeDisplays[i].Input2;
 			}
-			if (m_recipeDisplays[recipeID].Input3 != nullptr)
+			if (m_recipeDisplays[i].Input3 != nullptr)
 			{
-				m_recipeDisplayListing->RemoveElement(m_recipeDisplays[recipeID].Input3);
-				Renderer::UnloadGUIElement(m_recipeDisplays[recipeID].Input3, 2);
-				delete m_recipeDisplays[recipeID].Input3;
+				m_recipeDisplayListing->RemoveElement(m_recipeDisplays[i].Input3);
+				Renderer::UnloadGUIElement(m_recipeDisplays[i].Input3, 2);
+				delete m_recipeDisplays[i].Input3;
 			}
-			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[recipeID].Output);
-			Renderer::UnloadGUIElement(m_recipeDisplays[recipeID].Output, 2);
-			delete m_recipeDisplays[recipeID].Output;
-			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[recipeID].Arrow);
-			Renderer::UnloadGUIElement(m_recipeDisplays[recipeID].Arrow, 2);
-			delete m_recipeDisplays[recipeID].Arrow;
+			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[i].Output);
+			Renderer::UnloadGUIElement(m_recipeDisplays[i].Output, 2);
+			delete m_recipeDisplays[i].Output;
+			m_recipeDisplayListing->RemoveElement(m_recipeDisplays[i].Arrow);
+			Renderer::UnloadGUIElement(m_recipeDisplays[i].Arrow, 2);
+			delete m_recipeDisplays[i].Arrow;
 		}
 
 		Renderer::UnloadGUIElement(m_recipeDisplayListing);
@@ -115,16 +138,38 @@ using namespace Inventories;
 		Renderer::UnloadGUIElement(m_backgroundCover);
 		//Don't delete backgroundCover as it is reused.
 
+		ItemSelectionSlot::RemoveItemSelectionMenu();
+		
+		Renderer::UnloadGUIElement(m_craftingArea.Arrow, 2);
+		delete m_craftingArea.Arrow;
+
+		GUIManager::UnregisterButton(m_craftingArea.Input1);
+		Renderer::UnloadGUIElement(m_craftingArea.Input1, 2);
+		delete m_craftingArea.Input1;
+		GUIManager::UnregisterButton(m_craftingArea.Input2);
+		Renderer::UnloadGUIElement(m_craftingArea.Input2, 2);
+		delete m_craftingArea.Input2;
+		GUIManager::UnregisterButton(m_craftingArea.Input3);
+		Renderer::UnloadGUIElement(m_craftingArea.Input3, 2);
+		delete m_craftingArea.Input3;
+
+		GUIManager::UnregisterButton(m_craftingArea.Output);
+		Renderer::UnloadGUIElement(m_craftingArea.Output, 2);
+		delete m_craftingArea.Output;
+
 		return true;
 	}
 
 	void CraftingMenuManager::Update(GLFWwindow* window)
 	{
-		for (uint16_t i = 0; i < CRAFTING_DATA_NUM_RECIPES; i++)
-		{
-			Vec2 mousePos = InputManager::GetMouseScreenPosition();
-			
-			const Recipe& recipe = CraftingDataManager::GetRecipe(i);
+		const Vec2 mousePos = InputManager::GetMouseScreenPosition();
+
+		int i = -1;
+		for (uint16_t recipeID = 0; recipeID < CRAFTING_DATA_NUM_RECIPES; recipeID++)
+		{			
+			const Recipe& recipe = CraftingDataManager::GetRecipe(recipeID);
+			if (!recipe.Unlocked) { continue; }
+			i++;
 
 			uint8_t iIn = 0;
 			for (auto[inputType, inputCount] : recipe.Inputs)
@@ -142,8 +187,8 @@ using namespace Inventories;
 			constexpr uint8_t outputIndex = 3;
 			if (Utils::CollisionDetection::PointWithinBoxBL(mousePos, m_recipeDisplays[i].Output->GetPosition(), m_recipeDisplays[i].Output->GetScale()))
 			{
-				InventoryItem iCheck = InventoryItem(recipe.Return);
-				InventoryTooltip::UpdateTooltip(i * CRAFTING_MENU_MANAGER_RECIPE_ELEMENT_COUNT + outputIndex, Inventory::ReturnItem{ &iCheck, false });
+				InventoryItem* iCheck = recipe.Return;
+				InventoryTooltip::UpdateTooltip(i * CRAFTING_MENU_MANAGER_RECIPE_ELEMENT_COUNT + outputIndex, Inventory::ReturnItem{ iCheck, false });
 				return;
 			}
 		}
@@ -151,11 +196,47 @@ using namespace Inventories;
 		InventoryTooltip::UpdateTooltip(255, Inventory::ReturnItem{ nullptr, true }, true);
 	}
 
-	constexpr int RECIPE_ARROW_SPRITE = SpriteBase(256);
-	constexpr float RECIPE_ARROW_HEIGHT_RATIO = 7.f / 13.f;
-	constexpr float RECIPE_DISPLAY_WIDTH = 18.f;
-	constexpr float RECIPE_PADDING = 4.f;
-	
+	void CraftingMenuManager::AttemptAutofillRecipe(const ITEM_TYPE& in1, const ITEM_TYPE& in2, const ITEM_TYPE& in3)
+	{
+		if (in1 == ITEM_TYPE::NULL_ITEM)
+		{
+			m_craftingArea.Input1->SetContainedItem(nullptr);
+		}else if (m_craftingArea.Input1 != nullptr)
+		{
+			int foundSlot = -1; bool wasBackpack;
+			Inventory::ReturnItem foundItem = TestGame::ThePlayer->GetItemByType(in1, foundSlot, wasBackpack);
+
+			m_craftingArea.Input1->SetContainedItem(foundItem.ri_Item);
+		}
+
+		if (in2 == ITEM_TYPE::NULL_ITEM)
+		{
+			m_craftingArea.Input2->SetContainedItem(nullptr);
+		}
+		else if (m_craftingArea.Input2 != nullptr)
+		{
+			int foundSlot = -1; bool wasBackpack;
+			Inventory::ReturnItem foundItem = TestGame::ThePlayer->GetItemByType(in2, foundSlot, wasBackpack);
+
+			m_craftingArea.Input2->SetContainedItem(foundItem.ri_Item);
+		}
+
+		if (in3 == ITEM_TYPE::NULL_ITEM)
+		{
+			m_craftingArea.Input3->SetContainedItem(nullptr);
+		}
+		else if (m_craftingArea.Input3 != nullptr)
+		{
+			int foundSlot = -1; bool wasBackpack;
+			Inventory::ReturnItem foundItem = TestGame::ThePlayer->GetItemByType(in3, foundSlot, wasBackpack);
+
+			m_craftingArea.Input3->SetContainedItem(foundItem.ri_Item);
+		}
+
+		detectOutput();
+	}
+
+
 	inline StaticGUIElement* CraftingMenuManager_RecipeOptionElement(const int& posIndex, StaticGUIElement* const backing, const float& itemScale, const GLuint& texture)
 	{
 		return new StaticGUIElement(backing->GetPosition() + Vec2{ RECIPE_PADDING + itemScale * posIndex, (backing->GetScale().Y - itemScale) / 2.f }, Vec2{ itemScale }, texture);
@@ -222,18 +303,174 @@ using namespace Inventories;
 		return returnData;
 	}
 
+	void CraftingMenuManager::addCraftingDisplay()
+	{
+		Sprite* sp = Renderer::GetSprite(ITEM_SELECTION_BOX_BG_SPRITE);
+		GLuint bgTexture = sp->GetSpriteId();
+		delete sp;
+
+		m_craftingArea.Input1 = new ItemSelectionSlot(Vec2{ 125.f, (TargetResolutionY / 2.f) - 10.f }, Vec2{ 20.f }, bgTexture, nullptr, true, new std::function<void(int)>(updateCraftingSlot));
+		GUIManager::RegisterButton(m_craftingArea.Input1);
+		Renderer::LoadGUIElement(m_craftingArea.Input1, 2);
+		m_craftingArea.Input2 = new ItemSelectionSlot(Vec2{ 150.f, (TargetResolutionY / 2.f) - 10.f }, Vec2{ 20.f }, bgTexture, nullptr, true, new std::function<void(int)>(updateCraftingSlot));
+		GUIManager::RegisterButton(m_craftingArea.Input2);
+		Renderer::LoadGUIElement(m_craftingArea.Input2, 2);
+		m_craftingArea.Input3 = new ItemSelectionSlot(Vec2{ 175.f, (TargetResolutionY / 2.f) - 10.f }, Vec2{ 20.f }, bgTexture, nullptr, true, new std::function<void(int)>(updateCraftingSlot));
+		GUIManager::RegisterButton(m_craftingArea.Input3);
+		Renderer::LoadGUIElement(m_craftingArea.Input3, 2);
+
+		sp = Renderer::GetSprite(RECIPE_ARROW_SPRITE);
+		m_craftingArea.Arrow = new StaticGUIElement(Vec2{ 200.f, (TargetResolutionY / 2.f) - (10.f * RECIPE_ARROW_HEIGHT_RATIO) }, Vec2{ 20.f, 20.f * RECIPE_ARROW_HEIGHT_RATIO }, sp->GetSpriteId());
+		Renderer::LoadGUIElement(m_craftingArea.Arrow, 2);
+		delete sp;
+
+		m_craftingArea.Output = new ItemSelectionSlot(Vec2{ 225.f, (TargetResolutionY / 2.f) - 10.f }, Vec2{ 20.f }, bgTexture, nullptr, false, new std::function<void(int)>(completeRecipe));
+		GUIManager::RegisterButton(m_craftingArea.Output);
+		Renderer::LoadGUIElement(m_craftingArea.Output, 2);
+	}
+
 	void CraftingMenuManager::recipeOptionButtonCallback(int buttonID)
 	{
-		std::cout << "CRAFT_" << buttonID << "\n";
-
+		int i = -1;
 		for (uint32_t recipeID = 0; recipeID < CRAFTING_DATA_NUM_RECIPES; recipeID++)
 		{
-			if (m_recipeDisplays[recipeID].BackingButton->GetButtonId() == buttonID)
+			const Recipe& recipe = CraftingDataManager::GetRecipe(recipeID);
+			if (!recipe.Unlocked) { continue; }
+			i++;
+
+			if (m_recipeDisplays[i].BackingButton->GetButtonId() == buttonID)
 			{
-				std::cout << "CREATES: " << ITEMTYPE_GetItemTypeName(CraftingDataManager::GetRecipe(recipeID).Return) << "\n";
+				ITEM_TYPE item1 = ITEM_TYPE::NULL_ITEM;
+				ITEM_TYPE item2 = ITEM_TYPE::NULL_ITEM;
+				ITEM_TYPE item3 = ITEM_TYPE::NULL_ITEM;
+
+				for (auto [type, amount] : recipe.Inputs)
+				{
+					if (item1 == ITEM_TYPE::NULL_ITEM)
+					{
+						item1 = type;
+					}else if (item2 == ITEM_TYPE::NULL_ITEM)
+					{
+						item2 = type;
+					}else if (item3 == ITEM_TYPE::NULL_ITEM)
+					{
+						item3 = type;
+					}
+				}
+
+				AttemptAutofillRecipe(item1, item2, item3);
+
+				std::cout << "CREATES: " << ITEMTYPE_GetItemTypeName(CraftingDataManager::GetRecipe(recipeID).Return->GetType()) << "\n";
 
 				return;
 			}
 		}
 	}
+
+	void CraftingMenuManager::detectOutput()
+	{
+		m_craftingArea.Output->SetContainedItem(nullptr);
+
+		for (uint32_t recipeID = 0; recipeID < CRAFTING_DATA_NUM_RECIPES; recipeID++)
+		{
+			Recipe& recipe = CraftingDataManager::GetRecipe(recipeID);
+
+			ITEM_TYPE item1 = ITEM_TYPE::NULL_ITEM;
+			ITEM_TYPE item2 = ITEM_TYPE::NULL_ITEM;
+			ITEM_TYPE item3 = ITEM_TYPE::NULL_ITEM;
+
+			for (auto [type, amount] : recipe.Inputs)
+			{
+				if (item1 == ITEM_TYPE::NULL_ITEM)
+				{
+					item1 = type;
+				}
+				else if (item2 == ITEM_TYPE::NULL_ITEM)
+				{
+					item2 = type;
+				}
+				else if (item3 == ITEM_TYPE::NULL_ITEM)
+				{
+					item3 = type;
+				}
+			}
+
+			if (((item1 == ITEM_TYPE::NULL_ITEM && m_craftingArea.Input1->GetContainedItem() == nullptr) || (m_craftingArea.Input1->GetContainedItem() != nullptr && m_craftingArea.Input1->GetContainedItem()->GetType() == item1)) &&
+				((item2 == ITEM_TYPE::NULL_ITEM && m_craftingArea.Input2->GetContainedItem() == nullptr) || (m_craftingArea.Input2->GetContainedItem() != nullptr && m_craftingArea.Input2->GetContainedItem()->GetType() == item2)) &&
+				((item3 == ITEM_TYPE::NULL_ITEM && m_craftingArea.Input3->GetContainedItem() == nullptr) || (m_craftingArea.Input3->GetContainedItem() != nullptr && m_craftingArea.Input3->GetContainedItem()->GetType() == item3)))
+			{
+				if (m_craftingArea.Output->GetContainedItem() != nullptr)
+				{
+					delete m_craftingArea.Output->GetContainedItem();
+				}
+
+				m_craftingArea.Output->SetContainedItem(recipe.Return);
+
+				//Discovered a recipe.
+				if (!recipe.Unlocked)
+				{
+					InventoryItem* i1 = m_craftingArea.Input1->GetContainedItem();
+					InventoryItem* i2 = m_craftingArea.Input2->GetContainedItem();
+					InventoryItem* i3 = m_craftingArea.Input3->GetContainedItem();
+					InventoryItem* out = m_craftingArea.Output->GetContainedItem();
+
+					int validCount = 0;
+					for (int i = 0; i < CRAFTING_DATA_NUM_RECIPES; i++)
+					{
+						if (!CraftingDataManager::GetRecipe(i).Unlocked) { continue; }
+						validCount++;
+					}
+
+					recipe.Unlocked = true;
+
+					CloseCraftingMenu(validCount);
+					OpenCraftingMenu();
+					m_craftingArea.Input1->SetContainedItem(i1);
+					m_craftingArea.Input2->SetContainedItem(i2);
+					m_craftingArea.Input3->SetContainedItem(i3);
+					m_craftingArea.Output->SetContainedItem(out);
+				}
+
+				return;
+			}
+		}
+	}
+	void CraftingMenuManager::completeRecipe(int buttonID)
+	{
+		//No output, invalid recipe.
+		if (m_craftingArea.Output->GetContainedItem() == nullptr) { return; }
+
+		if (m_craftingArea.Input1->GetContainedItem() != nullptr)
+		{
+			TestGame::ThePlayer->RemoveItemByType(m_craftingArea.Input1->GetContainedItem()->GetType());
+			//delete m_craftingArea.Input1->GetContainedItem();
+		}
+
+		if (m_craftingArea.Input2->GetContainedItem() != nullptr)
+		{
+			TestGame::ThePlayer->RemoveItemByType(m_craftingArea.Input2->GetContainedItem()->GetType());
+			//delete m_craftingArea.Input2->GetContainedItem();
+		}
+
+		if (m_craftingArea.Input3->GetContainedItem() != nullptr)
+		{
+			TestGame::ThePlayer->RemoveItemByType(m_craftingArea.Input3->GetContainedItem()->GetType());
+			//delete m_craftingArea.Input3->GetContainedItem();
+		}
+
+		m_craftingArea.Input1->SetContainedItem(nullptr);
+		m_craftingArea.Input2->SetContainedItem(nullptr);
+		m_craftingArea.Input3->SetContainedItem(nullptr);
+
+		if (TestGame::ThePlayer->GetInventory()->AddItem(m_craftingArea.Output->GetContainedItem()) < 0)
+		{
+			TestGame::ThePlayer->GetBackpack()->AddItem(m_craftingArea.Output->GetContainedItem());
+		}
+
+		m_craftingArea.Output->SetContainedItem(nullptr);
+
+		//Ensure the player must update the selection menu as their inventory has now changed.
+		ItemSelectionSlot::RemoveItemSelectionMenu();
+	}
+
 }

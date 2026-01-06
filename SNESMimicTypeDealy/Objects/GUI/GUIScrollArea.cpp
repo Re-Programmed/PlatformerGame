@@ -23,13 +23,20 @@ namespace GAME_NAME::Objects::GUI
 
 	GUIScrollArea::~GUIScrollArea()
 	{
-		if (m_areas.size() > m_areaID) 
+		if (m_areas.size() > m_areaID)
 		{
+			int i = m_areaID + 1;
+			while (i < m_areas.size())
+			{
+				m_areas[i++]->m_areaID--;
+			}
+
 			m_areas.erase(m_areas.begin() + m_areaID);
+		}
 
 		InputManager::UnregisterScrollCallback(m_scrollCallbackID);
 
-		StaticGUIElement::~StaticGUIElement();
+		//StaticGUIElement::~StaticGUIElement();
 	}
 
 	void GUIScrollArea::Render(float zoom)

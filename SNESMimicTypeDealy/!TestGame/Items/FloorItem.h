@@ -24,8 +24,6 @@ namespace GAME_NAME
 			/// <param name="item">What item the floor item is.</param>
 			FloorItem(Vec2 position, InventoryItem* item, float pickupDelay = 0);
 
-			FloorItem(Vec2 position, ITEM_TYPE type, float pickupDelay = 0);
-
 			~FloorItem();
 
 			void Update(GLFWwindow* window) override; 

@@ -152,14 +152,16 @@
     <ClCompile Include="!TestGame\Items\Inventories\InventoryContainer.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\InventoryContainerRenderer.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\InventoryTooltip.cpp" />
-    <ClCompile Include="!TestGame\Items\Inventories\ItemSelectionBox.cpp" />
+    <ClCompile Include="!TestGame\Items\Inventories\ItemSelectionSlot.cpp" />
     <ClCompile Include="!TestGame\Items\Inventory.cpp" />
     <ClCompile Include="!TestGame\Items\InventoryItem.cpp" />
+    <ClCompile Include="!TestGame\Items\Types\Blueprint.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Food.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Placeable.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Tool.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Weapon.cpp" />
     <ClCompile Include="!TestGame\Level\GlobalLevelData.cpp" />
+    <ClCompile Include="!TestGame\Level\Hub\HouseManager.cpp" />
     <ClCompile Include="!TestGame\Level\Hub\HubLevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\Introduction\IntroductionLevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\LevelInfoDisplay.cpp" />
@@ -204,8 +206,10 @@
     <ClCompile Include="!TestGame\Objects\Environment\Plants\Tree.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Water.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Waterfall.cpp" />
+    <ClCompile Include="!TestGame\Objects\Furniture.cpp" />
     <ClCompile Include="!TestGame\Objects\GUI\GUIItemSelectionBox.cpp" />
     <ClCompile Include="!TestGame\Objects\LayerFlip.cpp" />
+    <ClCompile Include="!TestGame\Objects\LayerFlipObject.cpp" />
     <ClCompile Include="!TestGame\Objects\LevelCompleteZone.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.h" />
@@ -301,17 +305,19 @@
     <ClInclude Include="!TestGame\Items\Inventories\InventoryContainer.h" />
     <ClInclude Include="!TestGame\Items\Inventories\InventoryContainerRenderer.h" />
     <ClInclude Include="!TestGame\Items\Inventories\InventoryTooltip.h" />
-    <ClInclude Include="!TestGame\Items\Inventories\ItemSelectionBox.h" />
+    <ClInclude Include="!TestGame\Items\Inventories\ItemSelectionSlot.h" />
     <ClInclude Include="!TestGame\Items\Inventory.h" />
     <ClInclude Include="!TestGame\Items\InventoryItem.h" />
     <ClInclude Include="!TestGame\Items\ItemType.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="!TestGame\Items\Types\Blueprint.h" />
     <ClInclude Include="!TestGame\Items\Types\Food.h" />
     <ClInclude Include="!TestGame\Items\Types\Placeable.h" />
     <ClInclude Include="!TestGame\Items\Types\Tool.h" />
     <ClInclude Include="!TestGame\Items\Types\Weapon.h" />
     <ClInclude Include="!TestGame\Level\GlobalLevelData.h" />
+    <ClInclude Include="!TestGame\Level\Hub\HouseManager.h" />
     <ClInclude Include="!TestGame\Level\Hub\HubLevelManager.h" />
     <ClInclude Include="!TestGame\Level\Introduction\IntroductionLevelManager.h" />
     <ClInclude Include="!TestGame\Level\LevelInfoDisplay.h" />
@@ -358,8 +364,10 @@
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\SaggingObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Water.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Waterfall.h" />
+    <ClInclude Include="!TestGame\Objects\Furniture.h" />
     <ClInclude Include="!TestGame\Objects\GUI\GUIItemSelectionBox.h" />
     <ClInclude Include="!TestGame\Objects\LayerFlip.h" />
+    <ClInclude Include="!TestGame\Objects\LayerFlipObject.h" />
     <ClInclude Include="!TestGame\Objects\LevelCompleteZone.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />

@@ -75,6 +75,22 @@ namespace GAME_NAME::Items
 		return count;
 	}
 
+	Inventory::ReturnItem Inventory::GetItemByType(const ITEM_TYPE itemType, int& foundSlot)
+	{
+		for (size_t i = 0; i < m_items.size(); i++)
+		{
+			if (m_items[i] == nullptr) { continue; }
+
+			if (m_items[i]->GetType() == itemType)
+			{
+				foundSlot = i;
+				return { m_items[i], false };
+			}
+		}
+
+		return { nullptr, true };
+	}
+
 	int Inventory::Remove(ITEM_TYPE type, unsigned int count)
 	{
 		unsigned int removed = 0;
