@@ -12,7 +12,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 13
+#define ITEM_COUNT 15
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -30,7 +30,9 @@ namespace GAME_NAME
 			WOODEN_PLANK = 9,
 			CRUMBS = 10,
 			BLUEPRINT = 11,
-			SMALL_WOODEN_CHAIR = 12
+			SMALL_WOODEN_CHAIR = 12,
+			FRIDGE = 13,
+			WOODEN_CRATE = 14,
 		};
 
 		/// <summary>
@@ -44,7 +46,7 @@ namespace GAME_NAME
 			WEAPON =	0b00001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
 			FOOD =		0b00010000, //Can be eaten.
 			PLACEABLE = 0b00100000, //Can be placed.
-			FURNITURE = 0b01000000, //Furniture. (xScale, yScale)
+			FURNITURE = 0b01000000, //Furniture. (xScale, yScale, inventorySize[optional])
 			VALUE =		0b10000000	//Give an item a specific price value. (crumbValue)
 		};
 
@@ -100,6 +102,8 @@ namespace GAME_NAME
 			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."},					//10
 			{ "Blueprint", SpriteBase(263), NO_HELD_TEXTURE, 0, {}, "Unlocks a recipe."},					//11
 			{ "Small Wooden Chair", 2, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "15,22.5" }, { TOOL_ACTION::VALUE, "10" } }, "Might give splinters."},					//12
+			{ "Fridge", 14, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "19.5,33,6" }, { TOOL_ACTION::VALUE, "42" } }, "Holds 6 items."},					//13
+			{ "Wooden Crate", 19, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "17.25,16.5,10" }, { TOOL_ACTION::VALUE, "16" } }, "Holds 10 items."},					//13
 		};
 
 

@@ -28,6 +28,7 @@ namespace GAME_NAME::Objects
 		/// </summary>
 		/// <param name="state"></param>
 		static void RegisterToBeSaved(MiscStateGroup* state);
+		static void UnregisterToBeSaved(MiscStateGroup* state);
 
 		/// <summary>
 		/// Saves all currently registered GameObjectStates and clears the cache.

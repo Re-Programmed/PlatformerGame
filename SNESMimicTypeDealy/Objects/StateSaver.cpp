@@ -10,6 +10,20 @@ void GAME_NAME::Objects::StateSaver::RegisterToBeSaved(GameObjectState* state)
 	state->SetToBeSaved(true);
 }
 
+void GAME_NAME::Objects::StateSaver::UnregisterToBeSaved(MiscStateGroup* state)
+{
+	for (int i = 0; i < m_miscStates.size(); i++)
+	{
+		MiscStateGroup*& miscState = m_miscStates[i];
+		
+		if (miscState == state)
+		{
+			m_miscStates.erase(m_miscStates.begin() + i);
+			return;
+		}
+	}
+}
+
 void GAME_NAME::Objects::StateSaver::RegisterToBeSaved(MiscStateGroup* state)
 {
 	//Remove duplicate states and use newest version.
@@ -42,6 +56,8 @@ void GAME_NAME::Objects::StateSaver::SaveStates()
 {
 	for (GameObjectState* gos : m_toBeSaved)
 	{
+		if (gos == nullptr) { continue; }
+
 		gos->SaveState();
 		gos->SetToBeSaved(false);
 

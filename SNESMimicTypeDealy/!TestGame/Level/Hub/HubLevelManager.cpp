@@ -27,6 +27,31 @@ namespace GAME_NAME::Level
 
 	HubLevelManager::ShopGUI HubLevelManager::m_currentShop = HubLevelManager::ShopGUI{ nullptr, nullptr };
 
+	class FountainInteractable
+		: public Interactable
+	{
+	public:
+		FountainInteractable()
+			: Interactable(keyRef::PLAYER_INTERACT, InputManager::KEY_STATE_NONE, 34.f, Vec2{ 204.f, 132.f }, Vec2{ 1.f, 1.f }, Renderer::GetSprite(1), false)
+		{
+
+		}
+
+	protected:
+		void onInteract(std::shared_ptr<Objects::Player::Player> player, InputManager::KEY_STATE state) override
+		{
+			if (state & InputManager::KEY_STATE_PRESSED)
+			{
+				//TODO: Play coin sound.
+				Currency::RemoveCrumbs(1);
+			}
+
+			Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
+		}
+	};
+
+	FountainInteractable* HubLevelManager_FountainInteractable = nullptr;
+
 	class ShopInteractable
 		: public Interactable
 	{
@@ -74,6 +99,10 @@ namespace GAME_NAME::Level
 			loadHouseArea();
 
 			return;
+		}
+		else {
+			HubLevelManager_FountainInteractable = new FountainInteractable();
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(HubLevelManager_FountainInteractable, false, 1, false));
 		}
 
 		//--Do for lobby only--

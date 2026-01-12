@@ -40,6 +40,7 @@
 #include "./Objects/Environment/Buildings/FrontDoor.h"
 #include "./Objects/Environment/Buildings/Bench.h"
 #include "./Objects/Environment/Buildings/SaggingObject.h"
+#include "./Objects/Environment/Buildings/InnerUpperWall.h"
 
 #include "./Objects/Environment/BreakableBlock.h"
 
@@ -62,6 +63,7 @@
 #include "Objects/Environment/Buildings/Electrical/ElectricalTransformer.h"
 
 #include "./Objects/Environment/Waterfall.h"
+#include "Objects/LayerFlipObject.h"
 
 #define COMPONENT_MAPPINGS_SIZE 1	//How many component mappings there are
 #define MAPPINGS_SIZE 20			//How many object mappings there are.
@@ -418,6 +420,7 @@ using namespace Enemies;
 			6 - DialogueInteractable (sprite,dialogueKey)
 			7 - SpinningObject (sprite, rotationSpeed, enabled)
 			8 - ElectricalTransformer (sprite, zapRadius)
+			9 - InnerUpperWall (sprite,fadeOffset) [Set layer to 4 to render infront]
 	*/
 	[](std::vector<std::string> data, size_t n)
 	{
@@ -504,6 +507,12 @@ using namespace Objects::Environment::Buildings;
 		{
 			ElectricalTransformer* et = new ElectricalTransformer(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), std::stof(data[7]));
 			Renderer::LoadObject(et, std::stoi(data[5]));
+			break;
+		}
+		case 9:
+		{
+			InnerUpperWall* innerUpperWall = new InnerUpperWall(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), data.size() > 7 ? std::stof(data[7]) : 0);
+			Renderer::LoadObject(innerUpperWall, std::stoi(data[5]) == 4 ? 2 : std::stoi(data[5]), std::stoi(data[5]) == 4);
 			break;
 		}
 
@@ -686,6 +695,7 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 	{
 		LevelCompleteZone* z = new LevelCompleteZone(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), data[5]);
 		Renderer::LoadObject(z, std::stoi(data[6]));
+		break;
 	}
 
 	/*
@@ -696,6 +706,17 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 		//TODO: Broken...
 		GlitchedRegion* region = new GlitchedRegion(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]));
 		Renderer::LoadObject(region);
+		break;
+	}
+
+	/*
+	24: LayerFlip(map, positionX, positionY, scaleX, scaleY, sprite, layer, flipOffset = 0)
+	*/
+	case 24:
+	{
+		LayerFlipObject* layerFlip = new LayerFlipObject(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), data.size() > 6 ? std::stof(data[6]) : 0.f);
+		Renderer::LoadObject(layerFlip, std::stoi(data[5]));
+		break;
 	}
 	}
 }

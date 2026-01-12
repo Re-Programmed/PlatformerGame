@@ -22,6 +22,12 @@ namespace GAME_NAME::Items
 		ReturnItem GetItem(uint8_t slot);
 
 		/// <summary>
+		/// Will return true if every item in the inventory is null.
+		/// </summary>
+		/// <returns></returns>
+		bool IsEmpty();
+
+		/// <summary>
 		/// Adds an item to the inventory at the last slot.
 		/// </summary>
 		/// <param name="item">The item to add.</param>

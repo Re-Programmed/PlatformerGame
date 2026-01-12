@@ -40,6 +40,11 @@ namespace GAME_NAME
 			{
 				m_toBeSaved = toBeSaved;
 			}
+
+			inline const size_t& GetObjectSaveId()
+			{
+				return m_objectSaveID;
+			}
 		protected:
 			/// <summary>
 			/// Object save ID, should be set on object creation and never changed.

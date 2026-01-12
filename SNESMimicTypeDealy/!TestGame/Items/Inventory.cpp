@@ -16,6 +16,23 @@ namespace GAME_NAME::Items
 		return { m_items[slot], false};
 	}
 
+	bool Inventory::IsEmpty()
+	{
+		if (m_items.size() == 0) { return true; }
+
+		for (InventoryItem* item : m_items)
+		{
+			if (item == nullptr) { continue; }
+
+			if (item->GetType() != ITEM_TYPE::NULL_ITEM)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	int Inventory::AddItem(InventoryItem* item)
 	{
 		//Search for a null spot, if none is found try to append the item at the end of the array.

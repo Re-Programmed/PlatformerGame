@@ -187,6 +187,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\Electrical\ElectricalTransformer.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\FrontDoor.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\FrontWall.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Buildings\InnerUpperWall.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\InteriorDoor.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\SaggingObject.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\SpinningObject.cpp" />
@@ -344,6 +345,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\Electrical\ElectricalTransformer.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\FrontDoor.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\FrontWall.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Buildings\InnerUpperWall.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\InteriorDoor.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\SpinningObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\ClimbableObject.h" />

@@ -181,6 +181,8 @@ namespace GAME_NAME::Items::Inventories
 
 	void InventoryTooltip::RemoveTooltip()
 	{
+		if (m_tooltip == nullptr) { return; }
+
 		//Remove tooltip.
 		Renderer::UnloadGUIElement(m_tooltip, 2);
 		delete m_tooltip;

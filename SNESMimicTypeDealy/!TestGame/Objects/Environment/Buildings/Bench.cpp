@@ -19,6 +19,7 @@ namespace GAME_NAME::Objects::Environment::Buildings
 			if (player->GetAnimationState() != Player::Player::SITTING_FORWARD)
 			{
 				player->SetFrozen(true, Player::Player::SITTING_FORWARD);
+				player->SetTextureFlipped(true);
 			}
 		}
 	}

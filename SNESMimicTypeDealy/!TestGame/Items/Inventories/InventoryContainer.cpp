@@ -10,10 +10,15 @@
 namespace GAME_NAME::Items::Inventories
 {
 
-	InventoryContainer::InventoryContainer(std::string name, uint8_t size, Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, float rotation)
-		: Inventory(name, size), Interactable(OPEN_INVENTORY_CONTAINER_KEY, InputManager::KEY_STATE_NONE, scale.X, position, scale, sprite, rotation), GameObjectState(saveID)
+	InventoryContainer::InventoryContainer(std::string name, uint8_t size, Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, float rotation, bool performSave)
+		: Inventory(name, size), Interactable(OPEN_INVENTORY_CONTAINER_KEY, InputManager::KEY_STATE_NONE, scale.X, position, scale, sprite, rotation), GameObjectState(saveID), m_performSave(performSave)
 	{
-		LoadState();
+		if (m_performSave)
+		{
+			LoadState();
+		}
+
+		this->SetToBeSaved(false);
 	}
 
 	InventoryContainer::InventoryContainer(std::string name, uint8_t size, Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, float rotation, int itemCount, ...)
@@ -116,7 +121,7 @@ using namespace std;
 			InventoryContainerRenderer::UpdateCurrentInventoryContainer();
 
 			//The inventory is open so changes may have been made, set to be saved.
-			if (!m_toBeSaved)
+			if (!m_toBeSaved && m_performSave)
 			{
 				StateSaver::RegisterToBeSaved(this);
 				SetToBeSaved(true);

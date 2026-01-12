@@ -423,14 +423,22 @@ namespace  GAME_NAME
 
 							if (Furniture::InteractionTimer > 1.0)
 							{
-								Furniture* f = new Furniture(m_textureFlipped ? (m_position + Vec2{ FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }) : (m_position + Vec2{ -FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }), m_textureFlipped, m_screenInventory->GetHeldItem());
-								f->Translate(Vec2{ m_textureFlipped ? (1.f - f->GetScale().X * 2.f) : -f->GetScale().X, -2.5f});
-								Renderer::InstantiateObject(Renderer::InstantiateGameObject(f, true, 2, false));
-								this->m_screenInventory->SetItem(this->m_screenInventory->GetSelectedSlot() - 1, nullptr);
-
-								HouseManager::PlaceFurniture(f);
-
 								Furniture::InteractionTimer = 0.0;
+
+								Furniture* f = new Furniture(m_textureFlipped ? (m_position + Vec2{ FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }) : (m_position + Vec2{ -FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }), m_textureFlipped, new InventoryItem(m_screenInventory->GetHeldItem()->GetType()));
+								f->Translate(Vec2{ m_textureFlipped ? (1.f - f->GetScale().X * 2.f) : -f->GetScale().X, -2.5f});
+
+								if (!HouseManager::CheckValidPlaceLocation(f->GetPosition(), f->GetScale()))
+								{
+									delete f;
+								}
+								else {
+									Renderer::InstantiateObject(Renderer::InstantiateGameObject(f, true, 1, false));
+									this->m_screenInventory->SetItem(this->m_screenInventory->GetSelectedSlot() - 1, nullptr);
+									delete m_screenInventory->GetHeldItem();
+
+									HouseManager::PlaceFurniture(f);
+								}
 							}
 						}
 						else {
@@ -1086,6 +1094,9 @@ namespace  GAME_NAME
 
 			bool Player::dropHeldItem()
 			{
+				//Don't allow dropping in top-down rooms.
+				if (m_feetOnlyCollision) { return false; }
+
 				Items::InventoryItem* item = m_screenInventory->GetHeldItem();
 				
 				if (item == nullptr) { return false; }
@@ -1892,7 +1903,6 @@ namespace  GAME_NAME
 							m_animator->SetSpeedMult(1);
 						}
 
-						SetTextureFlipped(true);
 						m_airTime = 0;
 						m_physics->SetVelocity(0);
 

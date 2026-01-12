@@ -30,6 +30,8 @@ namespace GAME_NAME
 	public:
 		MiscStateGroup(std::string destination);
 
+		~MiscStateGroup();
+
 		inline std::string GetName() const
 		{
 			return m_destination;

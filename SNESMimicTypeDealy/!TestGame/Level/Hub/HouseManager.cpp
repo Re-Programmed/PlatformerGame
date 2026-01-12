@@ -4,6 +4,10 @@
 
 #include "../../InputDisplay/DisplayIconManager.h"
 #include "../../Objects/Player/Currency.h"
+#include "../../../Utils/CollisionDetection.h"
+#include "../../Objects/Environment/Buildings/InteriorDoor.h"
+#include "../../../Objects/StateSaver.h"
+#include "../../Objects/StartState.h"
 
 
 #define HOUSE_MANAGER_FURNITURE_STORE_POSITION { 200, 48 }
@@ -24,6 +28,39 @@ namespace GAME_NAME::Level
 
 	HouseManager::FurnitureStoreInteractable* HouseManager::m_storeInteractable = nullptr;
 
+	class HouseFrontDoor
+		: public Objects::Environment::Buildings::InteriorDoor
+	{
+	public:
+		HouseFrontDoor()
+			: Objects::Environment::Buildings::InteriorDoor(Vec2{ 234.f, 0.f }, Vec2{ 34.f, 10.f }, Renderer::GetSprite(20), "/hub", Vec2{ 229.f, 162.f }, false, false)
+		{
+
+		}
+
+	protected:
+		void onInteract(std::shared_ptr<GAME_NAME::Objects::Player::Player> player, InputManager::KEY_STATE state) override
+		{
+			//Make sure to save so that the house is all saved.
+			if (state & InputManager::KEY_STATE::KEY_STATE_RELEASED)
+			{
+				if (!m_used)
+				{
+					//Can't take furniture with you.
+					HouseManager::StorePlayerInventory();
+
+					GAME_NAME::Objects::StateSaver::SaveStates();
+					GAME_NAME::Objects::StateSaver::SaveMisc();
+					GAME_NAME::Objects::StartState::CreateStartState();
+				}
+			}
+
+			InteriorDoor::onInteract(player, state);
+		}
+	};
+
+	HouseFrontDoor* HouseManager_HouseFrontDoor;
+
 	void HouseManager::LoadHouse()
 	{
 		if (INSTANCE != nullptr) { return; }
@@ -37,7 +74,7 @@ namespace GAME_NAME::Level
 		{
 			Furniture* furn = new Furniture();
 			furn->Decode((*states.get())[i]);
-			Renderer::InstantiateObject({ furn, true, 2, false });
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(furn, true, 1, false));
 			PlaceFurniture(furn);
 		}
 
@@ -48,6 +85,9 @@ namespace GAME_NAME::Level
 		m_houseTradeSaveManager->LoadFurnitureTrades();
 		
 		INVENTORY_INSTANCE->Load();
+
+		HouseManager_HouseFrontDoor = new HouseFrontDoor();
+		Renderer::InstantiateObject(Renderer::InstantiateGameObject(HouseManager_HouseFrontDoor, false, 2, false));
 	}
 
 	void HouseManager::CloseHouse()
@@ -60,6 +100,8 @@ namespace GAME_NAME::Level
 		delete INSTANCE; INSTANCE = nullptr;
 		delete INVENTORY_INSTANCE; INVENTORY_INSTANCE = nullptr;
 		delete m_houseTradeSaveManager; m_houseTradeSaveManager = nullptr;
+	 
+		Renderer::DestroyObject(HouseManager_HouseFrontDoor);
 	}
 
 	
@@ -84,6 +126,13 @@ namespace GAME_NAME::Level
 		delete sp;
 
 		loadFurnitureSelectionScroll();
+
+		//Furniture list has changed, update states.
+		INSTANCE->clearStates();
+		for (Furniture* existingFurniture : m_placedFurniture)
+		{
+			INSTANCE->assignState(existingFurniture);
+		}
 	}
 
 	bool HouseManager::CloseFurnitureInventory()
@@ -133,6 +182,32 @@ namespace GAME_NAME::Level
 		}
 	}
 
+#define HOUSE_MANAGER_FURNITURE_Y_VALID_ADJUSTMENT 3.f
+
+	bool HouseManager::CheckValidPlaceLocation(const Vec2 pos, const Vec2 scale)
+	{
+		for (Furniture* f : m_placedFurniture)
+		{
+			Vec2 fScale = f->GetScale();
+			Vec2 fPos = f->GetPosition();
+
+			if (fScale.X < 0)
+			{
+				fScale.X = -fScale.X;
+				fPos.X -= fScale.X;
+			}
+
+			fScale.Y -= HOUSE_MANAGER_FURNITURE_Y_VALID_ADJUSTMENT;
+
+			if (Utils::CollisionDetection::BoxWithinBox(pos, scale, fPos, fScale))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	void HouseManager::populateStore()
 	{
 		std::vector<ITEM_TYPE> allFurniture;
@@ -152,7 +227,8 @@ namespace GAME_NAME::Level
 		{
 			if (m_furnitureTrades[i].Product == Items::NULL_ITEM || m_furnitureTrades[i].Cost == 0)
 			{
-				ITEM_TYPE& type = allFurniture[allFurniture.size() * std::floor(std::rand() / RAND_MAX)];
+				int rand = std::rand();
+				ITEM_TYPE& type = allFurniture[std::floor(allFurniture.size() * (float)rand / (float)RAND_MAX)];
 
 				bool exists = false;
 				for (FurnitureTrade typeCheck : m_furnitureTrades)
@@ -160,6 +236,7 @@ namespace GAME_NAME::Level
 					if (typeCheck.Product == type)
 					{
 						exists = true;
+						break;
 					}
 				}
 				if (exists) { continue; }

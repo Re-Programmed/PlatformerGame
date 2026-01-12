@@ -27,10 +27,10 @@ namespace GAME_NAME::Objects
 
 		void Update(GLFWwindow* window) override;
 
+		GameObject* const m_frontDisplay;
 	private:
 		bool m_frontDisplayed = false;
 
-		GameObject* const m_frontDisplay;
 		const float m_flipOffset;
 	};
 }

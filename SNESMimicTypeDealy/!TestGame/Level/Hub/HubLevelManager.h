@@ -35,6 +35,8 @@ namespace GAME_NAME::Level
 		static bool CloseShopGUI();
 
 	private:
+
+
 		static void generateShop();
 
 		static void saveShop();

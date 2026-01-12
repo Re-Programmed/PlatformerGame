@@ -10,9 +10,19 @@
 
 #include "../Level/Hub/HouseManager.h"
 
+#include "../InputDisplay/DisplayIconManager.h"
+
+
 namespace GAME_NAME::Objects
 {
 	double Furniture::InteractionTimer = 0.0;
+
+
+	const std::unordered_map<ITEM_TYPE, Furniture::FurnitureInteractions> Furniture::FurnitureAbilities = {
+		{ ITEM_TYPE::SMALL_WOODEN_CHAIR, Furniture::FurnitureInteractions::Sit },
+		{ ITEM_TYPE::FRIDGE, Furniture::FurnitureInteractions::Inventory },
+		{ ITEM_TYPE::WOODEN_CRATE, Furniture::FurnitureInteractions::Inventory }
+	};
 
 	void Furniture::RenderPreview(const Vec2& cameraPos, Items::ITEM_TYPE item, Vec2 position, bool flipped)
 	{
@@ -20,23 +30,47 @@ namespace GAME_NAME::Objects
 		DynamicSprite sprite(sp->GetSpriteId());
 		delete sp;
 
-		const Vec4 col = { 0.6f + ((float)InteractionTimer * 0.4f), 0.6f + ((float)InteractionTimer * 0.4f), 1.f, 0.6f + ((float)InteractionTimer * 0.4f) };
+		std::string scaleData = Items::ITEMTYPE_GetItemData(item).Attributes.at(Items::FURNITURE);
+		Vec2 scale{ 0 };
+		scale.X = std::stof(scaleData.substr(0, scaleData.find_first_of(',')));
+		scale.Y = std::stof(scaleData.substr(scaleData.find_first_of(',') + 1));
+		scale = scale * Vec2{ flipped ? 1.f : -1.f, -1.f };
+
+		const bool validPos = HouseManager::CheckValidPlaceLocation(position, scale);
+
+		const Vec4 col = { 0.6f + (validPos ? ((float)InteractionTimer * 0.4f) : 0.4f), 0.6f + ((float)InteractionTimer * 0.4f), 0.6f + (validPos ? 0.4f : ((float)InteractionTimer * 0.4f)), 0.6f + ((float)InteractionTimer * 0.4f)};
 
 		const Vec4 Furniture_previewColors[4] = { col, col, col, col };
 
 		sprite.UpdateTextureColor(Furniture_previewColors);
 
-		std::string scaleData = Items::ITEMTYPE_GetItemData(item).Attributes.at(Items::FURNITURE);
-		Vec2 scale{ 0 };
-		scale.X = std::stof(scaleData.substr(0, scaleData.find_first_of(',')));
-		scale.Y = std::stof(scaleData.substr(scaleData.find_first_of(',') + 1));
-
-		sprite.Render(cameraPos, position + Vec2{ 0.f, scale.Y/2.f }, scale * Vec2{flipped ? 1.f : -1.f, -1.f});
+		sprite.Render(cameraPos, position + Vec2{ 0.f, -scale.Y/2.f }, scale);
 	}
 
 	void Furniture::Update(GLFWwindow* window)
 	{
-		LayerFlipObject::Update(window);
+		if (m_inUse)
+		{
+			use();	
+		}
+
+		if (FurnitureAbilities.at(m_item->GetType()) != FurnitureInteractions::None && FurnitureAbilities.at(m_item->GetType()) != FurnitureInteractions::Inventory)
+		{
+			if (Vec2::Distance(TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale() / 2.f, m_position + m_scale / 2.f) < 1.13f * ((m_scale.X > m_scale.Y) ? m_scale.X : m_scale.Y))
+			{
+				Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0);
+
+				if (InputManager::GetKeyUpDown(keyRef::PLAYER_INTERACT) & InputManager::KEY_STATE_PRESSED)
+				{
+					//To prevent weird softlocking when you use a chair and other stuff at the same time.
+					if (!TestGame::ThePlayer->GetFrozen())
+					{
+						use();
+						m_inUse = true;
+					}
+				}
+			}
+		}
 
 		m_hovered = false;
 
@@ -56,6 +90,17 @@ namespace GAME_NAME::Objects
 
 			if (InputManager::GetMouseButton(0))
 			{
+				//No removing furniture with items in them.
+				if (m_inventory != nullptr)
+				{
+					if (!m_inventory->IsEmpty())
+					{
+						m_interactionRemovalTimer = 0.0;
+						LayerFlipObject::Update(window);
+						return;
+					}
+				}
+
 				m_interactionRemovalTimer += Utils::Time::GameTime::DeltaTime::GetDeltaTime();
 
 				if (m_interactionRemovalTimer > 1.0)
@@ -80,6 +125,8 @@ namespace GAME_NAME::Objects
 			}
 		}
 
+		LayerFlipObject::Update(window);
+
 		m_interactionRemovalTimer = 0.0;
 	}
 
@@ -87,6 +134,17 @@ namespace GAME_NAME::Objects
 	{
 		if (m_hovered)
 		{
+			//No removing furniture with items in them.
+			if (m_inventory != nullptr)
+			{
+				if (!m_inventory->IsEmpty())
+				{
+					m_interactionRemovalTimer = 0;
+					LayerFlipObject::Render(cameraPos);
+					return;
+				}
+			}
+
 			DynamicSprite sprite(m_sprite->GetSpriteId());
 
 			const Vec4 col = { 1.f, 0.6f - ((float)m_interactionRemovalTimer * 0.6f), 0.6f - ((float)m_interactionRemovalTimer * 0.6f), 1.f - (float)m_interactionRemovalTimer };
@@ -105,10 +163,25 @@ namespace GAME_NAME::Objects
 
 	MiscState::SaveParam Furniture::Encode()
 	{
-		return std::to_string(m_position.X).append(",")
+		std::string ret = std::to_string(m_position.X).append(",")
 			.append(std::to_string(m_position.Y)).append(",")
 			.append(std::to_string(m_item->GetType())).append(",")
 			.append(m_flipped ? "t" : "f");
+
+
+		if (m_inventory != nullptr)
+		{
+			ret.append(",");
+
+			for (int i = 0; i < m_inventory->GetSize(); i++)
+			{
+				ret.append(m_inventory->GetItem(i).ri_IsNull ? "NULL" : m_inventory->GetItem(i).ri_Item->Encode()).append(";");
+			}
+
+			ret.erase(ret.end() - 1);
+		}
+
+		return ret;
 	}
 
 	void Furniture::Decode(const SaveParam param)
@@ -146,8 +219,34 @@ namespace GAME_NAME::Objects
 					m_scale.X = -m_scale.X;
 				}
 				break;
-			}
 
+			case 4:
+
+				if (FurnitureAbilities.at(m_item->GetType()) == FurnitureInteractions::Inventory)
+				{
+					std::string attr = ITEMTYPE_GetItemData(m_item->GetType()).Attributes.at(FURNITURE);
+					int invSize = std::stoi(attr.substr(attr.find_last_of(',') + 1));
+
+					m_inventory = new Items::Inventories::InventoryContainer(ITEMTYPE_GetItemTypeName(m_item->GetType()), invSize, m_position - Vec2{ m_scale.X < 0.f ? 4.f - m_scale.X : 4.f, 4.f }, (m_scale.X < 0.f ? Vec2{ -m_scale.X, m_scale.Y } : m_scale) + Vec2{ 8.f, 8.f }, nullptr, 0, 0.f, false);
+
+
+					Renderer::InstantiateObject(Renderer::InstantiateGameObject(m_inventory, false, 1, false));
+
+					std::stringstream itemStream(line);
+					std::string itemCode;
+
+					while (std::getline(itemStream, itemCode, ';'))
+					{
+						if (itemCode == "NULL") { continue; }
+
+						m_inventory->AddItem(InventoryItem::DecodeItemString(itemCode));
+					}
+				}
+
+				break;
+			
+			}
+			
 			i++;
 		}
 
@@ -160,6 +259,41 @@ namespace GAME_NAME::Objects
 		else {
 			m_collider->Translate(Vec2{ m_scale.X, 0.f });
 			m_collider->SetScale({ -m_scale.X, 10.f });
+		}
+		
+	}
+
+	//Will be called with m_inUse = false if it is the first time the Furniture is used.
+	//Will be called with m_inUse = true if it is updating.
+	void Furniture::use()
+	{
+		switch (FurnitureAbilities.at(m_item->GetType()))
+		{
+		case FurnitureInteractions::Sit:
+			useSit();
+			break;
+		}
+	}
+
+#define FURNITURE_TEXTURE_FLIP_SIT_OFFSET Vec2{ 2.f, 5.f }
+#define FURNITURE_TEXTURE_NOT_FLIP_SIT_OFFSET Vec2{ -2.f, 5.f }
+
+	void Furniture::useSit()
+	{
+		if (!m_inUse)
+		{
+			m_collider->SetActive(false);
+			TestGame::ThePlayer->SetFrozen(true, Player::Player::SITTING_FORWARD);
+			TestGame::ThePlayer->SetTextureFlipped(m_scale.X > 0);
+		}
+
+		if (TestGame::ThePlayer->GetLookDirection() == Player::Player::SITTING_FORWARD && TestGame::ThePlayer->GetFrozen())
+		{
+			TestGame::ThePlayer->SetPosition(m_position + m_scale / 2.f - TestGame::ThePlayer->GetScale() / 2.f + ((m_scale.X < 0) ? FURNITURE_TEXTURE_FLIP_SIT_OFFSET : FURNITURE_TEXTURE_NOT_FLIP_SIT_OFFSET));
+		}
+		else {
+			m_inUse = false;
+			m_collider->SetActive(true);
 		}
 	}
 }

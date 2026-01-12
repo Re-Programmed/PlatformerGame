@@ -10,6 +10,11 @@ namespace GAME_NAME
 		Objects::StateSaver::RegisterToBeSaved(this);
 	}
 
+	MiscStateGroup::~MiscStateGroup()
+	{
+		Objects::StateSaver::UnregisterToBeSaved(this);
+	}
+
 	void MiscStateGroup::assignState(MiscState* state)
 	{
 		m_states.push_back(state);

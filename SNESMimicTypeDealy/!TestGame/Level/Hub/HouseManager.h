@@ -6,6 +6,7 @@
 #include "../../Objects/GUI/GUIItemSelectionBox.h"
 
 #include "../../../Objects/Helpers/Interactable.h"
+#include "../../Objects/Environment/Buildings/InnerUpperWall.h"
 
 #define HOUSE_MANAGER_FURNITURE_TRADE_SAVE_LOCATION "house_trades"
 
@@ -34,6 +35,8 @@ namespace GAME_NAME::Level
 
 		static bool PlaceFurniture(Furniture* const furniture);
 		static bool RemoveFurniture(Furniture* const furniture);
+
+		static bool CheckValidPlaceLocation(const Vec2 pos, const Vec2 scale);
 	private:
 		static void populateStore();
 
@@ -228,6 +231,33 @@ namespace GAME_NAME::Level
 				: Interactable(keyRef::PLAYER_INTERACT, InputManager::KEY_STATE_NONE, scale.Y + 8.f, position, scale, sprite)
 			{
 
+			}
+
+			void Render(const Vec2& cameraPos)
+			{
+				const float playerY = TestGame::ThePlayer->GetPosition().Y;
+
+				if (playerY < m_position.Y)
+				{
+					GameObject::Render(cameraPos);
+					return;
+				}
+
+				if (playerY > m_position.Y && playerY < m_position.Y + m_scale.Y)
+				{
+					float prop = 1.f - ((playerY - m_position.Y) / m_scale.Y);
+
+					DynamicSprite transparentSprite(m_sprite->GetSpriteId());
+
+					const Vec4 col{ 1.f, 1.f, 1.f, prop };
+					const Vec4 colors[4] = { col, col, col, col };
+
+					transparentSprite.UpdateTextureColor(colors);
+					transparentSprite.Render(cameraPos, m_position + m_scale, Vec2{ -m_scale.X, -m_scale.Y }, m_rotation);
+					return;
+				}
+
+				//Don't render since the player is above the wall.
 			}
 
 		protected:

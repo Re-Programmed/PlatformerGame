@@ -15,7 +15,7 @@ namespace GAME_NAME::Objects::Environment::Buildings
 
 		void Update(GLFWwindow* window) override;
 
-	private:
+	protected:
 		bool m_used = false, m_loadsObjectsOnly, m_useLocalState;
 		const std::string m_levelDestination;
 		const Vec2 m_exitPosition;

@@ -297,6 +297,11 @@ namespace  GAME_NAME
 					return m_currentPlayerLookDirection;
 				}
 
+				inline bool GetFrozen()
+				{
+					return m_frozen > 0;
+				}
+
 				/// <summary>
 				/// Sets if the player should be rendered to the screen. Useful during cutscenes or events where the player is frozen and shouldn't be seen.
 				/// </summary>

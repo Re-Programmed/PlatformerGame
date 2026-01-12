@@ -4,6 +4,11 @@
 #include <algorithm>
 #include "../../../Objects/GUI/Text/TextRenderer.h"
 
+#include "../../../Input/InputManager.h"
+#include "../../../Utils/CollisionDetection.h"
+
+#include "../../Items/Inventories/InventoryTooltip.h"
+
 #define GUI_ITEM_SELECTION_BOX_OPTION_WIDTH 44.f
 #define GUI_ITEM_SELECTION_BOX_OPTION_HEIGHT 10.f
 
@@ -30,6 +35,9 @@ namespace GAME_NAME::Objects::GUI
 		{
 			AddItemSelection(items[i]);
 		}
+
+		//Create the tooltip stuff if it hasn't been.
+		Items::Inventories::InventoryTooltip::CreateTooltip();
 	}
 
 	GUIItemSelectionBox::~GUIItemSelectionBox()
@@ -48,11 +56,27 @@ namespace GAME_NAME::Objects::GUI
 			delete element; 
 		}
 
+		//TODO: Might create issues if multiple scroll areas are being used.
+		Items::Inventories::InventoryTooltip::RemoveTooltip();
+
 		//GUIScrollArea::~GUIScrollArea();
 	}
 
 	void GUIItemSelectionBox::Render(float zoom)
 	{
+		Vec2 mouse = InputManager::GetMouseScreenPosition();
+		for (auto selection : m_itemContents)
+		{
+			GUIButton* button = GUIManager::GetButtonFromId(selection.ButtonID);
+			if (Utils::CollisionDetection::PointWithinBoxBL(mouse, button->GetPosition(), button->GetScale()))
+			{
+				InventoryItem* itemPtr = new InventoryItem(selection.Type);
+				Items::Inventories::InventoryTooltip::UpdateTooltip(selection.ButtonID, Inventory::ReturnItem{ itemPtr, false });
+				delete itemPtr;
+			}
+		}
+		
+
 		//Disable scroll contents if they are not within the scale of the scroll area.
 		for (StaticGUIElement* element : m_contents)
 		{

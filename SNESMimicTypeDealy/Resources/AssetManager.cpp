@@ -468,14 +468,21 @@ namespace GAME_NAME
 			{
 				if (c == 0)
 				{
-					int map = std::stoi(component);
+					try
+					{
+						int map = std::stoi(component);
 
-					if (map > 19) 
-					{ 
-						mapping = nullptr;
+						if (map > 19)
+						{
+							mapping = nullptr;
+						}
+						else {
+							mapping = &mappings[map];
+						}
 					}
-					else {
-						mapping = &mappings[map];
+					catch (...)
+					{
+						CreateResoruceErrorMessage("Error decoding object line: \n" + line);
 					}
 
 				}
@@ -535,7 +542,15 @@ namespace GAME_NAME
 
 			if (mapping == nullptr)
 			{
-				Mappings::LoadOver20Switch(std::stoi(line.substr(0, line.find_first_of(","))), v, lineId);
+				try
+				{
+
+					Mappings::LoadOver20Switch(std::stoi(line.substr(0, line.find_first_of(","))), v, lineId);
+				}
+				catch (...)
+				{
+					CreateResoruceErrorMessage("Error decoding object line: \n" + line);
+				}
 
 				if (!objectTag.empty())
 				{
