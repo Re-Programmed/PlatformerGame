@@ -37,6 +37,8 @@
 
 #include "../Objects/Player/Currency.h"
 
+#include "../Cutscenes/DialogueManager.h"
+
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
 
 std::vector<std::string> DebugCommands::m_queuedCommands = std::vector<std::string>(2);
@@ -223,6 +225,7 @@ void DebugCommands::HandleCommands()
 			GAME_NAME::TestGame::INSTANCE->LoadLevel(params[0].c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(GAME_NAME::TestGame::LEVEL_DATA_ALL xor GAME_NAME::TestGame::LEVEL_DATA_TEXTURES_BACKGROUND xor GAME_NAME::TestGame::LEVEL_DATA_DATA_LEVEL));
 			GAME_NAME::Mappings::LoadObjectsWithDefaultMapping(params[0].c_str());
 			GAME_NAME::TestGame::INSTANCE->LoadLevel(params[0].c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(GAME_NAME::TestGame::LEVEL_DATA_DATA_LEVEL));
+			GAME_NAME::Cutscenes::DialogueManager::INSTANCE->LoadStoredDialogueSequences(params[0].c_str());
 			GAME_NAME::TestGame::INSTANCE->RenderFront = true;
 			DebugCommands_Log("Loaded a level.");
 

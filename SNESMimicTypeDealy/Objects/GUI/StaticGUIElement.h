@@ -58,7 +58,7 @@ namespace GAME_NAME
 
 				inline void SetSprite(Sprite* sprite)
 				{
-					m_sprite = std::shared_ptr<Sprite>(sprite);
+					m_sprite.reset(sprite);
 				}
 
 				inline std::shared_ptr<Rendering::Sprite> GetSprite()

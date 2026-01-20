@@ -50,6 +50,7 @@
 #include "./Level/Introduction/IntroductionLevelManager.h"
 #include "./Level/Stages/GreenRegionLevelManager.h"
 #include "./Level/Hub/HubLevelManager.h"
+#include "./Level/Hub/DepartManager.h"
 
 //TESTING:
 #include "./Objects/Environment/Buildings/Door.h"
@@ -544,6 +545,12 @@ namespace GAME_NAME
 
 		//Close the furniture inventory if it is open.
 		if (Level::HouseManager::CloseFurnitureInventory())
+		{
+			return;
+		}
+
+		//Close the departure menu if it is open.
+		if (Level::DepartManager::CloseDepartMenu())
 		{
 			return;
 		}

@@ -10,6 +10,7 @@ namespace GAME_NAME::Objects
 		{
 			if (TestGame::ThePlayer->GetPosition().Y > m_position.Y + m_scale.Y / 2.f + m_flipOffset)
 			{
+				m_frontDisplay->SetSprite(new Sprite(m_sprite->GetSpriteId()));
 				Renderer::InstantiateObject(Renderer::InstantiateGameObject(m_frontDisplay, true, 2, true));
 				m_frontDisplayed = true;
 			}
@@ -17,7 +18,6 @@ namespace GAME_NAME::Objects
 		else {
 			m_frontDisplay->SetScale(m_scale);
 			m_frontDisplay->SetPosition(m_position);
-			m_frontDisplay->SetSprite(m_sprite);
 			m_frontDisplay->SetTextureFlipped(m_textureFlipped);
 
 			if (TestGame::ThePlayer->GetPosition().Y <= m_position.Y + m_scale.Y / 2.f + m_flipOffset)

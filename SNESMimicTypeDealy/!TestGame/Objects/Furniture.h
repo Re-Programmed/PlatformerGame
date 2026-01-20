@@ -22,7 +22,8 @@ namespace GAME_NAME::Objects
 		{
 			None,
 			Sit,
-			Inventory
+			Inventory,
+			Workbench
 		};
 		
 		static const std::unordered_map<Items::ITEM_TYPE, FurnitureInteractions> FurnitureAbilities;

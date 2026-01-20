@@ -40,6 +40,8 @@ namespace GAME_NAME::Items::Inventories
 
 	void ItemSelectionSlot::CreateItemSelectionMenu(const int sourcesCount, ...)
 	{
+		if (sourcesCount == 0) { return; }
+
 		va_list args;
 		va_start(args, sourcesCount);
 
@@ -85,6 +87,16 @@ namespace GAME_NAME::Items::Inventories
 			}
 		}
 
+		//No items were found, no menu to make.
+		if (m_currentItemMenu.Options.size() == 0)
+		{
+			m_currentItemMenu.CurrentBox = nullptr;
+
+			Renderer::UnloadGUIElement(backing, 2);
+			delete backing; backing = nullptr;
+			return; 
+		}
+
 		backing->SetScale(Vec2{ currentButton >= 9 ? 100.f : 10.f * (currentButton % 10), 10.f * (currentButton / 10 + 1)});
 		backing->SetPosition(Vec2{ backing->GetPosition().X, m_currentItemMenu.Options[m_currentItemMenu.Options.size() - 1]->GetPosition().Y });
 
@@ -93,7 +105,7 @@ namespace GAME_NAME::Items::Inventories
 
 	void ItemSelectionSlot::RemoveItemSelectionMenu()
 	{
-		if (m_currentItemMenu.CurrentBox == nullptr)
+		if (m_currentItemMenu.CurrentBox == nullptr || m_currentItemMenu.Backing == nullptr)
 		{
 			return;
 		}
@@ -101,7 +113,7 @@ namespace GAME_NAME::Items::Inventories
 		m_currentItemMenu.CurrentBox = nullptr;
 
 		Renderer::UnloadGUIElement(m_currentItemMenu.Backing, 2);
-		delete m_currentItemMenu.Backing;
+ 		delete m_currentItemMenu.Backing;
 
 		m_currentItemMenu.Items.clear();
 

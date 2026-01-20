@@ -12,6 +12,7 @@
 
 #include "../InputDisplay/DisplayIconManager.h"
 
+#include "../Items/Crafting/CraftingMenuManager.h"
 
 namespace GAME_NAME::Objects
 {
@@ -21,7 +22,8 @@ namespace GAME_NAME::Objects
 	const std::unordered_map<ITEM_TYPE, Furniture::FurnitureInteractions> Furniture::FurnitureAbilities = {
 		{ ITEM_TYPE::SMALL_WOODEN_CHAIR, Furniture::FurnitureInteractions::Sit },
 		{ ITEM_TYPE::FRIDGE, Furniture::FurnitureInteractions::Inventory },
-		{ ITEM_TYPE::WOODEN_CRATE, Furniture::FurnitureInteractions::Inventory }
+		{ ITEM_TYPE::WOODEN_CRATE, Furniture::FurnitureInteractions::Inventory },
+		{ ITEM_TYPE::WORKBENCH, Furniture::FurnitureInteractions::Workbench },
 	};
 
 	void Furniture::RenderPreview(const Vec2& cameraPos, Items::ITEM_TYPE item, Vec2 position, bool flipped)
@@ -66,7 +68,12 @@ namespace GAME_NAME::Objects
 					if (!TestGame::ThePlayer->GetFrozen())
 					{
 						use();
-						m_inUse = true;
+						
+						//If it is a workbench, only use it once.
+						if (FurnitureAbilities.at(m_item->GetType()) != FurnitureInteractions::Workbench)
+						{
+							m_inUse = true;
+						}
 					}
 				}
 			}
@@ -271,6 +278,15 @@ namespace GAME_NAME::Objects
 		{
 		case FurnitureInteractions::Sit:
 			useSit();
+			break;
+		case FurnitureInteractions::Workbench:
+			if (m_inUse) { return; }	//Not the first use event.
+			if (!Crafting::CraftingMenuManager::CloseCraftingMenu())
+			{
+				Crafting::CraftingMenuManager::OpenCraftingMenu();
+			}
+
+			m_inUse = false;
 			break;
 		}
 	}

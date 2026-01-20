@@ -294,5 +294,17 @@ namespace GAME_NAME::Objects::GUI::Text
 		return wordRet;
 	}
 
+	void TextRenderer::UnloadWord(ExpectedRenderedWord word, int layer)
+	{
+		for (ExpectedLetter* letter : word)
+		{
+			letter->letterLock.lock();
+			Renderer::UnloadGUIElement(letter->letter, layer);
+			letter->letterLock.unlock();
+
+			delete letter;
+		}
+	}
+
 
 }

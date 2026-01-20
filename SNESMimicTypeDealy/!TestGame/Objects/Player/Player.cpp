@@ -121,6 +121,10 @@ namespace  GAME_NAME
 	TextureDataBase(IdleAnimations) + 3, TextureDataBase(IdleAnimations) + 4, TextureDataBase(IdleAnimations) + 5, TextureDataBase(IdleAnimations) + 6, TextureDataBase(IdleAnimations) + 7, TextureDataBase(IdleAnimations) + 8, TextureDataBase(IdleAnimations) + 8				\
 }
 
+#define PlayerBikeAnim {											\
+	TextureDataBase(RidingBike), TextureDataBase(RidingBike + 1)	\
+}
+
 #pragma region LowqAnimations
 
 #pragma endregion
@@ -151,7 +155,8 @@ namespace  GAME_NAME
 					Player::AnimationOverride(new int[4] { 0, 1, 0, 2 }, 4, ANIM_6_SPF),				//Climbing back
 					Player::AnimationOverride(new int[6] { 4, 5, 4, 6, 4, 7 }, 6, ANIM_6_SPF * 1.5f),	//Sitting idle
 					Player::AnimationOverride(new int[2] { 0, 1 }, 2, ANIM_12_SPF * 1.5f),				//Idle 1
-					Player::AnimationOverride(new int[2] { 2, 3 }, 2, ANIM_12_SPF * 1.5f)				//Idle 2
+					Player::AnimationOverride(new int[2] { 2, 3 }, 2, ANIM_12_SPF * 1.5f),				//Idle 2
+					Player::AnimationOverride(0, 0)														//No Biking Animation
 				))
 			};
 
@@ -1147,11 +1152,12 @@ namespace  GAME_NAME
 				RegisterAnimation(player_sitting_puff_data, PlayerSittingPuffAnim, player_sitting_puff_anim, ANIM_6_SPF, TextureDataBase(Climbing));  //9
 				RegisterAnimation(player_idle_tap_toe_data, PlayerIdleTapToe, player_idle_tap_toe_anim, ANIM_6_SPF, TextureDataBase(IdleAnimations));		//10
 				RegisterAnimation(player_idle_stomp_data, PlayerIdleStomp, player_idle_stomp_anim, ANIM_6_SPF, TextureDataBase(IdleAnimations));		    //11
+				RegisterAnimation(player_biking_data, PlayerBikeAnim, player_biking_anim, ANIM_6_SPF, TextureDataBase(RidingBike));		    //12
 
 
 #pragma endregion
 
-				std::vector<std::shared_ptr<GAME_NAME::Components::Animation::Animation>> anims{ walk_anim, run_anim, fall_anim, jump_anim, skid_anim, fall_over_anim, get_up_anim, basic_attack_anim, climbing_behind_anim, player_sitting_puff_anim, player_idle_tap_toe_anim, player_idle_stomp_anim };
+				std::vector<std::shared_ptr<GAME_NAME::Components::Animation::Animation>> anims{ walk_anim, run_anim, fall_anim, jump_anim, skid_anim, fall_over_anim, get_up_anim, basic_attack_anim, climbing_behind_anim, player_sitting_puff_anim, player_idle_tap_toe_anim, player_idle_stomp_anim, player_biking_anim };
 
 				m_animator = new AnimatorComponent(anims);
 			}
@@ -1346,6 +1352,18 @@ namespace  GAME_NAME
 					m_physics->SetFrictionDrag(Drag);
 				}
 
+				//Pedal animation! TODO: Add for other vehicles speed control here.
+				if (m_currentPlayerLookDirection == BIKING)
+				{
+					m_animator->SetSpeedMult(std::abs(m_physics->GetVelocity().X / 300.f));
+
+					//Change facing direction based on bike vehicle motion.
+					if (std::abs(m_physics->GetVelocity().X) > 0.05f)
+					{
+						m_textureFlipped = m_physics->GetVelocity().X > 0;
+					}
+				}
+
 				//TESTING: REMOVE
 				//Fake damage by pressing TAB
 				/*if ((InputManager::GetKeyUpDown(DEBUG_OBJECT_MENU) & InputManager::KEY_STATE::KEY_STATE_PRESSED) && !m_debug)
@@ -1508,7 +1526,7 @@ namespace  GAME_NAME
 				}
 				
 				//If the player is not attacking, calculate animations.
-				if(m_attackCooldown <= 0)
+				if(m_attackCooldown <= 0 && m_frozen <= 0)
 				{
 					
 					//Determines what animation to play currently.
@@ -1925,8 +1943,23 @@ namespace  GAME_NAME
 						break;
 					}
 
+					case BIKING:
+					{
+						m_scale = Vec2(26.f, 28.5f);
+						//Biking animation.
+						if (m_animator->GetCurrentAnimationIndex() != 12)
+						{
+							m_animator->SetCurrentAnimation(12, this);
+							m_animator->SetSpeedMult(0);
+						}
+
+						break;
+					}
+
 					default:
 					{
+						//Reset animation if currently playing.
+
 						m_scale = Vec2(16, 26);
 						return;
 					}

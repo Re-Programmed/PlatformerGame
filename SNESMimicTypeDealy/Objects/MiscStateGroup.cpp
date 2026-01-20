@@ -56,6 +56,8 @@ namespace GAME_NAME
 		{
 			MiscState* state = this->m_states[i++];
 
+			if (state == nullptr) { continue; }
+
 			returnVal += state->Encode() + MISC_GROUP_DELIM;
 		}
 

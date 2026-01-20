@@ -12,7 +12,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 15
+#define ITEM_COUNT 16
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -33,6 +33,7 @@ namespace GAME_NAME
 			SMALL_WOODEN_CHAIR = 12,
 			FRIDGE = 13,
 			WOODEN_CRATE = 14,
+			WORKBENCH = 15,
 		};
 
 		/// <summary>
@@ -102,8 +103,9 @@ namespace GAME_NAME
 			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."},					//10
 			{ "Blueprint", SpriteBase(263), NO_HELD_TEXTURE, 0, {}, "Unlocks a recipe."},					//11
 			{ "Small Wooden Chair", 2, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "15,22.5" }, { TOOL_ACTION::VALUE, "10" } }, "Might give splinters."},					//12
-			{ "Fridge", 14, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "19.5,33,6" }, { TOOL_ACTION::VALUE, "42" } }, "Holds 6 items."},					//13
-			{ "Wooden Crate", 19, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "17.25,16.5,10" }, { TOOL_ACTION::VALUE, "16" } }, "Holds 10 items."},					//13
+			{ "Fridge", 14, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "19.5,33,6" }, { TOOL_ACTION::VALUE, "42" } }, "Holds six items."},					//13
+			{ "Wooden Crate", 19, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "17.25,16.5,10" }, { TOOL_ACTION::VALUE, "16" } }, "Holds tem items."},					//13
+			{ "Workbench", 22, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "26,29" }, { TOOL_ACTION::VALUE, "45" } }, "Make stuff with me!"},					//14
 		};
 
 

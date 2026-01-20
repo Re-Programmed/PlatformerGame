@@ -105,7 +105,8 @@ namespace GAME_NAME::Objects::Player
 					//Fade in general slots.
 					for (uint8_t i = 0; i < m_generalSlots.size(); i++)
 					{
-						m_generalSlots[i]->SetBaseColor(Vec4::LerpBetween(m_generalSlots[i]->GetBaseColor(), { 1.f, 1.f, 1.f, 1.f }, 0.05));
+						Vec4 baseColor = m_generalSlots[i]->GetBaseColor();
+						m_generalSlots[i]->SetBaseColor(Vec4::LerpBetween(baseColor, { 1.f, 1.f, 1.f, 1.f }, 0.05));
 						/*
 						Vec2 previousScale = m_generalSlots[i]->GetScale();
 						m_generalSlots[i]->SetScale({ static_cast<float>(std::lerp(previousScale.X, 20.f, 0.15)), static_cast<float>(std::lerp(previousScale.Y, 20.f, 0.05)) });

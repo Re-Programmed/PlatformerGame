@@ -14,6 +14,8 @@
 #include "../../Objects/Player/Currency.h"
 #include "HouseManager.h"
 
+#include "DepartManager.h"
+
 #define HUB_L2_PLAYER_HOUSE_TAG "L2PlayerHouse"
 #define HUB_L3_PLAYER_HOUSE_TAG "L3PlayerHouse"
 
@@ -100,6 +102,12 @@ namespace GAME_NAME::Level
 
 			return;
 		}
+		else if (TestGame::INSTANCE->GetCurrentLevelPath().ends_with("_depart"))
+		{
+			DepartManager::Load();
+
+			return;
+		}
 		else {
 			HubLevelManager_FountainInteractable = new FountainInteractable();
 			Renderer::InstantiateObject(Renderer::InstantiateGameObject(HubLevelManager_FountainInteractable, false, 1, false));
@@ -118,6 +126,11 @@ namespace GAME_NAME::Level
 
 	void HubLevelManager::Update(GLFWwindow* window)
 	{
+		if (TestGame::INSTANCE->GetCurrentLevelPath().ends_with("_depart"))
+		{
+			DepartManager::Update();
+		}
+
 		if (HubLevelManager_PerformingPurchase && !InputManager::GetMouseButton(0))
 		{
 			HubLevelManager_PerformingPurchase = false;

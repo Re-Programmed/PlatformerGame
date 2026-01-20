@@ -11,11 +11,11 @@ namespace GAME_NAME::Objects::Environment::Buildings
 		: public GameObject
 	{
 	public:
-		InnerUpperWall(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, float transitionOffset = 0.f);
+		InnerUpperWall(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, float transitionOffset = 0.f, float transitionMaxOffset = 0.f);
 
 		void Render(const Vec2& cameraPos) override;
 
 	private:
-		const float m_transitionOffset;
+		const float m_transitionOffset, m_transitionMaxOffset;
 	};
 }

@@ -29,6 +29,7 @@ namespace GAME_NAME
 				{
 					if (!gb->GetActive()) { continue; }
 
+					if (!wasRightClick && gb->OnClick == nullptr) { return; }
 					if (wasRightClick && gb->OnRightClick == nullptr) { continue; }
 					if (Utils::CollisionDetection::PointWithinBoxBL(position, gb->GetPosition(), gb->GetScale()))
 					{

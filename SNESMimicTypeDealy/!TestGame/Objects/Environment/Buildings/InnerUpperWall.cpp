@@ -4,8 +4,8 @@
 
 namespace GAME_NAME::Objects::Environment::Buildings
 {
-	InnerUpperWall::InnerUpperWall(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, float transitionOffset)
-		: GameObject(position, scale, sprite), m_transitionOffset(transitionOffset)
+	InnerUpperWall::InnerUpperWall(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, float transitionOffset, float transitionMaxOffset)
+		: GameObject(position, scale, sprite), m_transitionOffset(transitionOffset), m_transitionMaxOffset(transitionMaxOffset)
 	{
 
 	}
@@ -22,7 +22,7 @@ namespace GAME_NAME::Objects::Environment::Buildings
 
 		float max = m_scale.Y + m_transitionOffset;
 
-		if (playerY > m_position.Y && playerY < m_position.Y + max)
+		if (playerY > m_position.Y + m_transitionMaxOffset && playerY < m_position.Y + max)
 		{
 			float prop = 1.f - ((playerY - m_position.Y) / max);
 

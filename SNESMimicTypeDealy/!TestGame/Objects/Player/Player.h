@@ -163,7 +163,7 @@ namespace  GAME_NAME
 
 				struct PlayerAnimationData
 				{
-					AnimationOverride walk_anim, run_anim, jump_anim, fall_anim, skid_anim, fall_over_anim, get_up_anim, basic_attack_anim, climbing_behind_anim, player_sitting_puff_anim, player_idle_tap_toe_anim, player_idle_stomp_anim;
+					AnimationOverride walk_anim, run_anim, jump_anim, fall_anim, skid_anim, fall_over_anim, get_up_anim, basic_attack_anim, climbing_behind_anim, player_sitting_puff_anim, player_idle_tap_toe_anim, player_idle_stomp_anim, player_biking_anim;
 
 					/// <summary>
 					/// Creates a player animation system that can be used by registerAnimations when changing sprite "pallettes".
@@ -182,9 +182,10 @@ namespace  GAME_NAME
 					/// <param name="player_idle_stomp_anim"></param>
 					PlayerAnimationData(AnimationOverride walk_anim_data, AnimationOverride run_anim = AnimationOverride(0, 0), AnimationOverride jump_anim = AnimationOverride(0, 0), AnimationOverride fall_anim = AnimationOverride(0, 0),
 						AnimationOverride skid_anim = AnimationOverride(0, 0), AnimationOverride fall_over_anim = AnimationOverride(0, 0), AnimationOverride get_up_anim = AnimationOverride(0, 0), AnimationOverride basic_attack_anim = AnimationOverride(0, 0),
-						AnimationOverride climbing_behind_anim = AnimationOverride(0, 0), AnimationOverride player_sitting_puff_anim = AnimationOverride(0, 0), AnimationOverride player_idle_tap_toe_anim = AnimationOverride(0, 0), AnimationOverride player_idle_stomp_anim = AnimationOverride(0, 0))
+						AnimationOverride climbing_behind_anim = AnimationOverride(0, 0), AnimationOverride player_sitting_puff_anim = AnimationOverride(0, 0), AnimationOverride player_idle_tap_toe_anim = AnimationOverride(0, 0), AnimationOverride player_idle_stomp_anim = AnimationOverride(0, 0),
+						AnimationOverride biking_anim = AnimationOverride(0, 0))
 						: walk_anim(walk_anim_data), run_anim(run_anim), jump_anim(jump_anim), fall_anim(fall_anim), skid_anim(skid_anim), fall_over_anim(fall_over_anim), get_up_anim(get_up_anim), basic_attack_anim(basic_attack_anim),
-						climbing_behind_anim(climbing_behind_anim), player_sitting_puff_anim(player_sitting_puff_anim), player_idle_tap_toe_anim(player_idle_tap_toe_anim), player_idle_stomp_anim(player_idle_stomp_anim)
+						climbing_behind_anim(climbing_behind_anim), player_sitting_puff_anim(player_sitting_puff_anim), player_idle_tap_toe_anim(player_idle_tap_toe_anim), player_idle_stomp_anim(player_idle_stomp_anim), player_biking_anim(biking_anim)
 						//		:(
 					{
 						
@@ -201,6 +202,7 @@ namespace  GAME_NAME
 					int IdleAnimations = SpriteBase(148);	//The beginning of all idle animations.
 					int Dead = SpriteBase(250);
 					int VictoryBalloon = SpriteBase(259);	//The player holding a balloon for the level exit.
+					int RidingBike = SpriteBase(265);		//The first sprite of the bike riding animation (2 sprites).
 
 					PlayerAnimationData* AnimationOverride = nullptr;
 
@@ -278,7 +280,8 @@ namespace  GAME_NAME
 					CLIMBING_BACK,	//Climbing with back turned to the camera.
 					DEAD,
 					VICTORY_BALLOON,
-					VICTORY_CONFETTI
+					VICTORY_CONFETTI,
+					BIKING
 				};
 
 				/// <summary>

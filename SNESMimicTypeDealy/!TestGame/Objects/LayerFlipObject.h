@@ -10,7 +10,7 @@ namespace GAME_NAME::Objects
 	{
 	public:
 		LayerFlipObject(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, float flipOffset = 0.f)
-			: GameObject(position, scale, sprite), m_flipOffset(flipOffset), m_frontDisplay(new GameObject(position, scale, sprite))
+			: GameObject(position, scale, sprite), m_flipOffset(flipOffset), m_frontDisplay(new GameObject(position, scale, nullptr))
 		{ 
 		
 		}

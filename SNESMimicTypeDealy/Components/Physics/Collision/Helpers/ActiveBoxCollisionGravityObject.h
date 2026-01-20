@@ -80,6 +80,11 @@ namespace GAME_NAME
 						GameObject::Render(cameraPosition);
 					}
 
+					inline ActiveBoxCollider* const& GetActiveBoxCollider()
+					{
+						return m_boxCollider;
+					}
+
 				protected:
 					ActiveBoxCollider* const m_boxCollider;
 					GravityComponent* const m_physics;			//Used for gravity and velocity.
