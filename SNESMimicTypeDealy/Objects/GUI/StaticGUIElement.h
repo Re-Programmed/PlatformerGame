@@ -18,6 +18,12 @@ namespace GAME_NAME
 
 			{
 			public:
+				StaticGUIElement(Vec2 position, Vec2 scale, Sprite* sprite)
+					: m_position(position), m_scale(scale), m_sprite(sprite)
+				{
+
+				}
+
 				StaticGUIElement(Vec2 position, Vec2 scale, GLuint texture)
 					: m_position(position), m_scale(scale), m_sprite(std::make_shared<Sprite>(texture))
 				{

@@ -52,5 +52,10 @@ namespace GAME_NAME
 			return sqrtf(aDist * aDist + bDist * bDist);
 		}
 
+		Vec2 Vec2::Lerp(const Vec2& original, const Vec2& target, double amount)
+		{
+			return Vec2{ static_cast<float>(std::lerp(original.X, target.X, amount)), static_cast<float>(std::lerp(original.Y, target.Y, amount)) };
+		}
+
 	}
 }

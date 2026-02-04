@@ -22,7 +22,7 @@ namespace GAME_NAME::Objects::GUI::Text
 		return go;
 	}
 
-	GAME_NAME::Objects::GUI::Text::TextRenderer::RenderedDigit TextRenderer::RenderNumber(uint16_t number, Vec2& firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits, int font)
+	GAME_NAME::Objects::GUI::Text::TextRenderer::RenderedDigit TextRenderer::RenderNumber(uint16_t number, Vec2 firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits, int font)
 	{
 		RenderedDigit finalDigit;
 		finalDigit.reserve(num_digitsi(number));
@@ -60,14 +60,15 @@ namespace GAME_NAME::Objects::GUI::Text
 	}
 
 
-	constexpr std::tuple<char, int> SPECIAL_CHARACTERS[7] = {
+	constexpr std::tuple<char, int> SPECIAL_CHARACTERS[8] = {
 		std::tuple<char, int>('.', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 26),
 		std::tuple<char, int>(',', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 27),
 		std::tuple<char, int>('!', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 28),
 		std::tuple<char, int>('?', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 29),
 		std::tuple<char, int>('[', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 30),
 		std::tuple<char, int>(']', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 31),
-		std::tuple<char, int>('-', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 32)
+		std::tuple<char, int>('-', DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID + 32),
+		std::tuple<char, int>(':', SpriteBase(270))
 	};
 
 

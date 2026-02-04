@@ -67,6 +67,8 @@
 
 #include "./Objects/Environment/Effects/ElectricalZap.h"
 
+#include "./Cutscenes/Character/AnimatingCharacter.h"
+
 #define SKIP_MAIN_MENU
 #define STANDARD_LOAD
 #define SKIP_INTRODUCTION
@@ -311,6 +313,8 @@ namespace GAME_NAME
 		RenderFront = true;
 		*/
 
+		//TODO: Testing, should be called when a new level is joined!
+		GlobalLevelData::SetLevelStartTime(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()));
 
 		Input::DisplayIconManager::CreateKeyDisplayObjects();
 
@@ -331,6 +335,10 @@ namespace GAME_NAME
 		Debug::LevelBuilder::LevelBuilder::InitLevelBuilderAssets(this);
 		DebugCommands::RunRecieverThread();
 #endif
+
+		//Ensure new glitched sprites are loaded.
+		GlitchedRegion::ResetSpriteCount();
+		GlitchedRegion::LoadGlitchedAreas();
 
 		//If the LEVEL_NO_PLAYER_FLAG is set, the player will not be created.
 		if (!level.Flags.contains(LEVEL_NO_PLAYER_FLAG))
@@ -517,6 +525,11 @@ namespace GAME_NAME
 		//Test Chest
 		//Renderer::LoadObject(new GAME_NAME::Items::Inventories::InventoryContainer("Test Chest", 10, { 100, 21 }, { 12, 8 }, Renderer::GetSprite(19), 0), 2);
 
+
+		//Test Character
+		Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{ 50.f, 30.f }, Vec2{ 16.f, 26.f }, true, 50.f);
+		testCharacter->SetTarget(ThePlayer.get());
+		Renderer::LoadActiveObject(testCharacter);
 
 		//Finish load after any and all objects have been created.
 		//This function will only work if a StartState is getting loaded, so it won't affect anything when using doors or changing levels.

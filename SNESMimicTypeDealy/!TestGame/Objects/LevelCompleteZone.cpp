@@ -3,6 +3,7 @@
 #include "../TestGame.h"
 #include "../../Utils/CollisionDetection.h"
 #include "../../Utils/Time/GameTime.h"
+#include "../Level/LevelCompleteMenu.h"
 
 #define LEVEL_COMPLETE_ZONE_BALLOON_SPRITE SpriteBase(258)
 #define LEVEL_COMPLETE_ZONE_BALLOON_SCALE Vec2{ 11.f, 29.f }
@@ -21,6 +22,11 @@ namespace GAME_NAME::Objects
 
 	void LevelCompleteZone::Update(GLFWwindow* window)
 	{
+		if (LevelCompleteMenu::IsDisplayed()) {
+			LevelCompleteMenu::Update();
+			return;
+		}
+
 		if (m_currentScene != nullptr)
 		{
 			m_currentScene->Update();
@@ -35,8 +41,7 @@ namespace GAME_NAME::Objects
 
 				m_currentScene.release();
 
-				TestGame::SetLoadLevelWithSavedPlayer(false);
-				TestGame::INSTANCE->LoadLevelAndAllData(m_levelDestination.c_str());
+				LevelCompleteMenu::DisplayMenu(m_levelDestination);
 
 				m_currentScene = nullptr;
 			}
@@ -46,7 +51,13 @@ namespace GAME_NAME::Objects
 
 		if (CollisionDetection::BoxWithinBox(TestGame::ThePlayer->GetPosition(), TestGame::ThePlayer->GetScale(), m_position, m_scale))
 		{			
-			m_currentScene.reset(new ConfettiLevelCompleteScene());
+			if (std::rand() < RAND_MAX / 2)
+			{
+				m_currentScene.reset(new ConfettiLevelCompleteScene());
+			}
+			else {
+				m_currentScene.reset(new BalloonLevelCompleteScene());
+			}
 		}
 	}
 

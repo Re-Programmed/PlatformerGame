@@ -143,7 +143,7 @@ namespace  GAME_NAME
 			//TODO: Pixel Birb sitting animation is glitched because of weird offset issues from climbing sprites :(
 			const Player::PlayerTextureData Player::TextureData[2] = {
 				Player::PlayerTextureData(), //Default Sprites (0)
-				Player::PlayerTextureData(SpriteBase(191), SpriteBase(217), SpriteBase(204), SpriteBase(212), SpriteBase(219), SpriteBase(225), new Player::PlayerAnimationData(	//Pixel Birb (1)
+				Player::PlayerTextureData(SpriteBase(191), SpriteBase(217), SpriteBase(204), SpriteBase(212), SpriteBase(219), SpriteBase(225), 0 /*Missing Dead*/, 0 /*Missing Victory Balloon*/, 0 /*Missing Riding Bike*/, new Player::PlayerAnimationData(	//Pixel Birb (1)
 					Player::AnimationOverride(new int[4] { 1, 2, 1, 3 }, 4, ANIM_6_SPF * 1.33f),		//Walking 
 					Player::AnimationOverride(new int[4] { 4, 5, 6, 7 }, 4, ANIM_6_SPF),				//Running
 					Player::AnimationOverride(new int[2] { 8, 9 }, 2, ANIM_6_SPF),						//Jumping
@@ -1696,7 +1696,7 @@ namespace  GAME_NAME
 
 					m_timeSpentNotMoving += Time::GameTime::DeltaTime::GetDeltaTime();
 
-					//Reset sprite to default sprite if it needs to be changed.
+					//Reset sprite to default sprite if it needs to be changed. (After idle animations).
 					if (m_begunMotion || (m_playingIdleAnimation < 0 && m_animator->GetCurrentAnimationIndex() > 9))
 					{
 						//if (m_sprite != nullptr) { delete m_sprite; } //TODO: Maybe.

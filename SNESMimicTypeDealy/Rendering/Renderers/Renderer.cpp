@@ -97,6 +97,7 @@ namespace GAME_NAME
 			unsigned char* imageData = static_cast<unsigned char*>(malloc(w * h * 4 * sizeof(unsigned char)));
 			glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 			
+
 			return { imageData, w, h };
 		}
 

@@ -20,6 +20,12 @@ namespace GAME_NAME
 
 			{
 			public:
+				GUIButton(Vec2 position, Vec2 scale, Sprite* sprite, std::function<void(int)>* onClick, Vec4 baseColor = { 1.f, 1.f, 1.f, 1.f }, Vec4 hoverColor = { 0.5f, 0.5f, 0.f, 1.f })
+					:StaticGUIElement(position, scale, sprite), OnClick(onClick), m_buttonId(-1), m_baseColor(baseColor), m_hoverColor(hoverColor), OnRightClick(nullptr)
+				{
+
+				}
+
 				GUIButton(Vec2 position, Vec2 scale, GLuint texture, std::function<void(int)>* onClick, Vec4 baseColor = { 1.f, 1.f, 1.f, 1.f }, Vec4 hoverColor = { 0.5f, 0.5f, 0.f, 1.f })
 					:StaticGUIElement(position, scale, texture), OnClick(onClick), m_buttonId(-1), m_baseColor(baseColor), m_hoverColor(hoverColor), OnRightClick(nullptr)
 				{

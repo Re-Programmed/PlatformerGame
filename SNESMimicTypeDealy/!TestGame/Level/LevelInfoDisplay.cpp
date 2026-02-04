@@ -8,7 +8,7 @@ namespace GAME_NAME::Level
 
 	void LevelInfoDisplay::UpdateDSP(uint16_t points)
 	{
-		for (int i = 0; i < 6; i++)
+		/*for (int i = 0; i < 6; i++)
 		{
 			if (m_pointsObjects[i] != nullptr)
 			{
@@ -18,6 +18,7 @@ namespace GAME_NAME::Level
 
 		Vec2 dPos = Vec2(10, 167.5f);
 		Text::TextRenderer::RenderedDigit rd = Text::TextRenderer::RenderNumber(points, dPos, 0.35f, -11.5f, 6);
+		*/
 
 	}
 }

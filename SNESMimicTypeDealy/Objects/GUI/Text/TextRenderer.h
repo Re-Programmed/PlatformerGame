@@ -57,7 +57,7 @@ namespace GAME_NAME::Objects::GUI::Text
 		/// <returns></returns>
 		static StaticGUIElement* RenderDigit(digit digit, Vec2& position, const float scale, int font = TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID);
 
-		static RenderedDigit RenderNumber(uint16_t number, Vec2& firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits = 0, int font = TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID);
+		static RenderedDigit RenderNumber(uint16_t number, Vec2 firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits = 0, int font = TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID);
 
 		/// <summary>
 		/// Renders the given char as a texture offset from the "DEFAULT_FONT_RENDER_A_SPRITE_ID."

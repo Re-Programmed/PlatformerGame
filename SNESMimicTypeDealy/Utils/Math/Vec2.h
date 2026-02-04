@@ -145,6 +145,8 @@ namespace GAME_NAME
 			{
 				return std::atan2f(first.Y - second.Y, first.X - second.X);
 			}
+
+			static Vec2 Lerp(const Vec2& original, const Vec2& target, double amount);
 		private:
 
 		};

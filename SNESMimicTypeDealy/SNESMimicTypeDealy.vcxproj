@@ -165,6 +165,7 @@
     <ClCompile Include="!TestGame\Level\Hub\HouseManager.cpp" />
     <ClCompile Include="!TestGame\Level\Hub\HubLevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\Introduction\IntroductionLevelManager.cpp" />
+    <ClCompile Include="!TestGame\Level\LevelCompleteMenu.cpp" />
     <ClCompile Include="!TestGame\Level\LevelInfoDisplay.cpp" />
     <ClCompile Include="!TestGame\Level\LevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\MainMenu\MainMenuManager.cpp" />
@@ -209,6 +210,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Water.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Waterfall.cpp" />
     <ClCompile Include="!TestGame\Objects\Furniture.cpp" />
+    <ClCompile Include="!TestGame\Objects\GUI\AnimatingGUIElement.cpp" />
     <ClCompile Include="!TestGame\Objects\GUI\GUIItemSelectionBox.cpp" />
     <ClCompile Include="!TestGame\Objects\LayerFlip.cpp" />
     <ClCompile Include="!TestGame\Objects\LayerFlipObject.cpp" />
@@ -325,6 +327,7 @@
     <ClInclude Include="!TestGame\Level\Hub\HouseManager.h" />
     <ClInclude Include="!TestGame\Level\Hub\HubLevelManager.h" />
     <ClInclude Include="!TestGame\Level\Introduction\IntroductionLevelManager.h" />
+    <ClInclude Include="!TestGame\Level\LevelCompleteMenu.h" />
     <ClInclude Include="!TestGame\Level\LevelInfoDisplay.h" />
     <ClInclude Include="!TestGame\Level\LevelManager.h" />
     <ClInclude Include="!TestGame\Level\LevelSystem.h" />
@@ -371,6 +374,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Water.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Waterfall.h" />
     <ClInclude Include="!TestGame\Objects\Furniture.h" />
+    <ClInclude Include="!TestGame\Objects\GUI\AnimatingGUIElement.h" />
     <ClInclude Include="!TestGame\Objects\GUI\GUIItemSelectionBox.h" />
     <ClInclude Include="!TestGame\Objects\LayerFlip.h" />
     <ClInclude Include="!TestGame\Objects\LayerFlipObject.h" />

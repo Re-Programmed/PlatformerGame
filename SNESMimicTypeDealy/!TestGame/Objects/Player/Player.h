@@ -188,7 +188,7 @@ namespace  GAME_NAME
 						climbing_behind_anim(climbing_behind_anim), player_sitting_puff_anim(player_sitting_puff_anim), player_idle_tap_toe_anim(player_idle_tap_toe_anim), player_idle_stomp_anim(player_idle_stomp_anim), player_biking_anim(biking_anim)
 						//		:(
 					{
-						
+
 					}
 				};
 
@@ -206,15 +206,40 @@ namespace  GAME_NAME
 
 					PlayerAnimationData* AnimationOverride = nullptr;
 
-					PlayerTextureData() {};
+					PlayerTextureData() 
+					{
+						//Load default animation data.
+						if (AnimationOverride == nullptr)
+						{
+							AnimationOverride = new PlayerAnimationData(
+								Player::AnimationOverride(new int[8] { 1, 2, 3, 2, 1, 4, 5, 4 }, 8, ANIM_12_SPF),		//Default walking.
+								Player::AnimationOverride(new int[8] { 6, 7, 8, 9, 10, 11, 12, 13 }, 8, ANIM_16_SPF),	//Default running.
+								Player::AnimationOverride(new int[4] { 18, 19, 20, 21 }, 4, ANIM_12_SPF),				//Default falling.
+								Player::AnimationOverride(new int[4] { 14, 15, 16, 17 }, 4, ANIM_12_SPF),				//Default jumping.
+								Player::AnimationOverride(new int[4] { 22, 23, 24, 25 }, 4, ANIM_12_SPF),				//Default skdding.
+								Player::AnimationOverride(new int[4] { 1, 2, 3, 0 }, 4, ANIM_6_SPF),					//Default fall over.
+								Player::AnimationOverride(new int[4] { 4, 5, 6, 7 }, 4, ANIM_6_SPF),					//Default get up.
+								Player::AnimationOverride(new int[9] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, 9, ANIM_16_SPF),	//Default basic attack.
+								Player::AnimationOverride(new int[8] { 0, 1, 2, 3, 4, 5, 6, 7 }, 8, ANIM_12_SPF),		//Default climbing behind.
+								Player::AnimationOverride(new int[5] { 9, 10, 11, 12, 13 }, 5, ANIM_6_SPF),				//Default sitting puff.
+								Player::AnimationOverride(new int[4] { 0, 1, 2, 1 }, 4, ANIM_6_SPF),					//Default idle toe tap.
+								Player::AnimationOverride(new int[8] { 3, 4, 5, 6, 7, 8, 8 }, 8, ANIM_6_SPF),			//Default idle stomp.
+								Player::AnimationOverride(new int[2] { 0, 1 }, 2, ANIM_6_SPF)							//Default biking.
+							);
+						}
+					};
 
 					~PlayerTextureData()
 					{
-						delete AnimationOverride;
+						if (AnimationOverride != nullptr)
+						{
+							//delete AnimationOverride;
+						}
 					}
 
-					PlayerTextureData(int defaultSprite, int bagTurnaround, int fall, int basicAttack, int climbing, int idleAnimation, PlayerAnimationData* animationOverride = nullptr)
-						: DefaultSprites(defaultSprite), BagTurnaround(bagTurnaround), Fall(fall), BasicAttack(basicAttack), Climbing(climbing), IdleAnimations(idleAnimation), AnimationOverride(animationOverride)
+					PlayerTextureData(int defaultSprite, int bagTurnaround, int fall, int basicAttack, int climbing, int idleAnimation, int dead, int victoryBalloon, int ridingBike, PlayerAnimationData* animationOverride = nullptr)
+						: DefaultSprites(defaultSprite), BagTurnaround(bagTurnaround), Fall(fall), BasicAttack(basicAttack), Climbing(climbing), AnimationOverride(animationOverride),
+						IdleAnimations(idleAnimation), Dead(dead), VictoryBalloon(victoryBalloon), RidingBike(ridingBike)
 					{
 
 					}
@@ -227,6 +252,9 @@ namespace  GAME_NAME
 						BasicAttack = other.BasicAttack;
 						Climbing = other.Climbing;
 						IdleAnimations = other.IdleAnimations;
+						Dead = other.Dead;
+						VictoryBalloon = other.VictoryBalloon;
+						RidingBike = other.RidingBike;
 						AnimationOverride = other.AnimationOverride;
 
 						return *this;
