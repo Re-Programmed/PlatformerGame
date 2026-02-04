@@ -392,6 +392,9 @@ namespace GAME_NAME
 		delete m_globalLevelData;
 		m_globalLevelData = new GlobalLevelData(level.Path);
 
+		//Update the objective stats.
+		GlobalLevelData::ReadDesiredLevelStats();
+
 		//Generate clouds if there are any to be generated.
 		Environment::CloudGenerator::GenerateClouds();
 		

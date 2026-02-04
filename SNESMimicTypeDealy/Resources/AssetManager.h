@@ -21,6 +21,7 @@ constexpr const char* DialogueFile = "/dialogue.pk";	//Path to the file containi
 
 constexpr const char* ChunkFileName = "/chunk.pk";		//Path within a level to its chunk.pk file.
 constexpr const char* LevelFileName = "/level.dat";		//Path within a level to its level.dat file.
+constexpr const char* LevelGoalsName = "/goals.dat";		//Path within a level to its level.dat file.
 constexpr const char* ObjectFileName = "/object.pk";	//Path within a level to its object.pk file.
 
 constexpr const char* MenuFileExtension = ".pk";		//Extension for menu files.
@@ -70,6 +71,13 @@ namespace GAME_NAME
 			/// <param name="data">Output file.</param>
 			static void GetLevelData(const char* subfolder, std::string data[Objects::Levels::LevelDataSize]);
 
+			/// <summary>
+			/// Reads a specified line from the level goals data. Returns an empty string if no goal is found.
+			/// </summary>
+			/// <param name="subfolder"></param>
+			/// <param name="line"></param>
+			/// <returns></returns>
+			static std::string ReadLevelGoal(const char* subfolder, int line);
 
 			/// <summary>
 			/// Gets the dialogue data for the given level and returns it as a map of each sequence to its informational string.

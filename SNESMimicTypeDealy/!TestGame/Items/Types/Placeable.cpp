@@ -67,7 +67,7 @@ namespace GAME_NAME::Items
 		Vec2 placeScale = GetPlaceScale();
 
 		//Save the state of the placed object.
-		m_placedObjects->AddState(new PlacedPlaceable(placePosition, this->m_itemType));
+		m_placedObjects->AddState(new PlacedPlaceable(placePosition, this->m_itemType, TestGame::INSTANCE->GetCurrentLevelPath()));
 		
 		Collision::StaticBoxCollisionObject* placedObject = new Collision::StaticBoxCollisionObject(placePosition, placeScale, sprite);
 		Renderer::InstantiateObject(Renderer::InstantiateGameObject(placedObject, false, 2, false));
@@ -79,7 +79,7 @@ namespace GAME_NAME::Items
 		Vec2 placeScale = GetPlaceScale();
 
 		//Save the state of the placed object.
-		m_placedObjects->AddState(new PlacedPlaceable(position, this->m_itemType));
+		m_placedObjects->AddState(new PlacedPlaceable(position, this->m_itemType, TestGame::INSTANCE->GetCurrentLevelPath()));
 
 		Collision::StaticBoxCollisionObject* placedObject = new Collision::StaticBoxCollisionObject(position, placeScale, sprite);
 		Renderer::InstantiateObject(Renderer::InstantiateGameObject(placedObject, false, 2, false));
@@ -123,12 +123,24 @@ namespace GAME_NAME::Items
 
 	void Placeable::PlacedPlaceable::Decode(const SaveParam params)
 	{
-		std::string positionStr = params.substr(0, params.find_first_of(":"));
-		std::string itemTypeStr = params.substr(params.find_first_of(":") + 1);
+		std::stringstream ss(params);
+		std::string line;
 
-		this->Position.X = std::stof(positionStr.substr(0, params.find_first_of(",")));
-		this->Position.Y = std::stof(positionStr.substr(params.find_first_of(",") + 1));
-		this->Type = static_cast<ITEM_TYPE>(std::stoi(itemTypeStr));
+		int i = 0;
+		while (std::getline(ss, line, ';'))
+		{
+			switch (i++)
+			{
+			case 0:
+				this->Position.X = std::stof(line); break;
+			case 1:
+				this->Position.Y = std::stof(line); break;
+			case 2:
+				this->Type = static_cast<ITEM_TYPE>(std::stoi(line)); break;
+			case 3:
+				this->Level = line;
+			}
+		}
 	}
 
 	GAME_NAME::MiscState::SaveParam Placeable::PlacedPlaceable::Encode()
@@ -136,16 +148,21 @@ namespace GAME_NAME::Items
 		SaveParam param;
 
 		param.append(std::to_string(this->Position.X))
-			.append(",")
+			.append(";")
 			.append(std::to_string(this->Position.Y))
-			.append(":")
-			.append(std::to_string(this->Type));
+			.append(";")
+			.append(std::to_string(this->Type))
+			.append(";")
+			.append(this->Level);
 
 		return param;
 	}
 
 	void Placeable::PlacedPlaceable::Place()
 	{
+		//This placeable is for another level, skip.
+		if (this->Level != TestGame::INSTANCE->GetCurrentLevelPath()) { return; }
+
 		Placeable(this->Type).PlaceExact(this->Position);
 	}
 

@@ -147,7 +147,7 @@ using namespace GUI;
 		int scoreSprite = m_scoreSprites.at(score);
 
 		m_levelCompleteMenuObjects.ScoreResult = new AnimatingGUIElement(Vec2{ 118.f, TargetResolutionY - 114.f },
-			Vec2{ (score == GlobalLevelData::Score::AP || score == GlobalLevelData::Score::FF) ? (-24.f * (57.f/32.f) /*A+ and F- are larger sprites.*/) : 24.f, 24.f}, 
+			Vec2{ (score == GlobalLevelData::Score::AP || score == GlobalLevelData::Score::FF) ? (-24.f * (57.f/32.f) /*A+ and F- are larger sprites.*/) : -24.f, 24.f}, 
 			Renderer::GetSprite(scoreSprite));
 
 		//Move to account for negative scale.

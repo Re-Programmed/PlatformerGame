@@ -207,6 +207,19 @@ void DebugCommands::HandleCommands()
 			continue;
 		}
 
+		if (input.starts_with("givescore"))
+		{
+			std::vector<std::string> params = getParams(input);
+
+			if (params.size() < 1) { DebugCommands_Log("Provide a score (score)."); continue; }
+
+			GAME_NAME::Level::GlobalLevelData::UpdatePoints(std::stoi(params[0]), GAME_NAME::TestGame::ThePlayer->GetPosition());
+
+			DebugCommands_Log("Gave " + params[0] + " points.");
+
+			continue;
+		}
+
 		if (input.starts_with("loadlevel"))
 		{
 			std::vector<std::string> params = getParams(input);

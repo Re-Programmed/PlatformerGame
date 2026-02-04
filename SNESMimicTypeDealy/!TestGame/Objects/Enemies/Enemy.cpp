@@ -9,8 +9,11 @@
 #include "../../../Rendering/Renderers/Renderer.h"
 
 #include "HealthBarRenderer.h"
+#include "../../Level/GlobalLevelData.h"
 
 #define ATTACK_ANIMATION_LENGTH 1.2f
+
+#define ENEMY_DEFAULT_POINT_KILL_VALUE 10
 
 namespace GAME_NAME::Objects::Enemies
 {
@@ -70,12 +73,10 @@ namespace GAME_NAME::Objects::Enemies
 
 			m_pathfindTimeout.Distance = distance;
 
-			std::cout << m_onGround << "\n";
-
 			//Move the enemy towards the pathfinding point if they are not already at it and ensure the enemy dosent exceed terminal velocity.
 			if (std::abs(m_physics->GetVelocity().X) < m_enemyAttributes->TerminalMovementSpeed && m_onGround)
 			{
-				m_physics->AddVelocity(Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0) * Utils::Time::GameTime::GetScaledDeltaTime());
+				m_physics->AddVelocity(Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0) * 0.013f /*Speed is still changing with framerate for some reason???*/);
 			}
 		}
 
@@ -143,6 +144,9 @@ finish_pathfind:
 		m_isDead = true;
 
 		destroyHealthBar();
+
+		//Grant points for killing an enemy.
+		Level::GlobalLevelData::UpdatePoints(ENEMY_DEFAULT_POINT_KILL_VALUE + (m_supercharge > 0 ? ENEMY_DEFAULT_POINT_KILL_VALUE : 0), m_position);
 	}
 
 	void Enemy::onCollision(Vec2 push, GameObject* cause)

@@ -45,11 +45,12 @@ namespace GAME_NAME::Items
 		public:
 			Vec2 Position = Vec2(0, 0);
 			ITEM_TYPE Type = ITEM_TYPE::NULL_ITEM;
-			
+			std::string Level = "";
+
 			PlacedPlaceable() {}
 			
-			PlacedPlaceable(Vec2 position, ITEM_TYPE item)
-				: Position(position), Type(item)
+			PlacedPlaceable(Vec2 position, ITEM_TYPE item, std::string level)
+				: Position(position), Type(item), Level(level)
 			{
 
 			}

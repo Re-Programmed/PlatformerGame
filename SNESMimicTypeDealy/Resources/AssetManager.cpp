@@ -204,6 +204,33 @@ namespace GAME_NAME
 
 		}
 
+		std::string AssetManager::ReadLevelGoal(const char* subfolder, int line)
+		{
+			std::string filePath = AssetPath;
+			filePath += subfolder;
+			filePath += LevelGoalsName;
+
+			if (!std::filesystem::exists(filePath))
+			{
+				return "";
+			}
+
+			std::ifstream GoalFile(filePath);
+
+			uint8_t i = 0;
+			std::string goal;
+
+			while (std::getline(GoalFile, goal, '\n'))
+			{
+				if ((i++) == line)
+				{
+					return goal;
+				}
+			}
+
+			return "";
+		}
+
 		std::unordered_map<std::string, std::string> AssetManager::GetDialogueData(const char* subfolder)
 		{
 			std::unordered_map<std::string, std::string> data;
