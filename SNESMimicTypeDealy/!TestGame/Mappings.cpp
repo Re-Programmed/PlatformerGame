@@ -1,5 +1,8 @@
 #include "Mappings.h"
 #include "ItemMapping.h"	
+
+#include "../Resources/Save/SaveManager.h"
+
 #include "../Components/Physics/GravityComponent.h"
 #include "../Components/Physics/Collision/StaticBoxCollider.h"
 #include "../Components/Physics/Collision/Helpers/ActiveBoxCollisionGravityObject.h"
@@ -45,6 +48,7 @@
 #include "./Objects/Environment/BreakableBlock.h"
 
 #include "./Objects/Collectables/ToastCollectable.h"
+#include "./Objects/Collectables/CrumbCollectable.h"
 
 #include "./Objects/Environment/ExplosiveObject.h"
 
@@ -578,7 +582,10 @@ using namespace Cutscenes;
 	},
 
 	/*
-		16: Collectable Object (map,type,positionX,positionY,scaleX,scaleY,sprite,layer)
+		16: Collectable Object (map,type,positionX,positionY,scaleX,scaleY)
+			Type:
+			0 - Toast (toastID, layer)
+			1 - Crumb (layer)
 	*/
 	[](std::vector<std::string> data, size_t n)
 	{
@@ -592,8 +599,15 @@ using namespace Cutscenes;
 		{
 			case 0:
 			{
-				Objects::Collectables::ToastCollectable* tc = new Objects::Collectables::ToastCollectable(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[5])), n);
+				Objects::Collectables::ToastCollectable* tc = new Objects::Collectables::ToastCollectable(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), std::stoi(data[5]), n);
 				Renderer::LoadObject(tc, std::stoi(data[6]));
+				break;
+			}
+
+			case 1:
+			{
+				Objects::Collectables::CrumbCollectable* cc = new Objects::Collectables::CrumbCollectable(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), n);
+				Renderer::LoadObject(cc, std::stoi(data[5]));
 				break;
 			}
 		}
@@ -648,6 +662,9 @@ void GAME_NAME::Mappings::LoadObjectsWithDefaultMapping(const char* levelPath)
 #if _DEBUG
 	DebugMapper("!=== LOADING OBJECT DATA ===!");
 #endif
+	//Needed for loading save data.
+	Resources::SaveManager::SetCurrentLevelFile(Resources::SaveManager::GetCurrentFile() + levelPath);
+
 	Resources::AssetManager::LoadObjectData(levelPath, m_mappings);
 
 	BUILDING_createdBuildingZones.clear();

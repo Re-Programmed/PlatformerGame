@@ -12,7 +12,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 16
+#define ITEM_COUNT 20
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -84,28 +84,35 @@ namespace GAME_NAME
 		};
 
 #define NO_HELD_TEXTURE GLOBAL_SPRITE_BASE
+#define FOLLOW_HAND_TEXTURE (GLOBAL_SPRITE_BASE - 1)
 
 		/// <summary>
 		/// A list of the item data for each item type.
 		/// </summary>
 		const ItemData ITEM_DATA[ITEM_COUNT]
 		{
-			{ "Log", SpriteBase(248), NO_HELD_TEXTURE, 0, {}, "Log of wood."},
-			{ "Leaves", SpriteBase(246), NO_HELD_TEXTURE, 0, {}, ""},
-			{ "Stone", 55, NO_HELD_TEXTURE, 0, {}, "" },
-			{ "(Temp) Axe", SpriteBase(65), SpriteBase(65), WEAPON | CHOP, {{TOOL_ACTION::CHOP , "1"}, {TOOL_ACTION::WEAPON, "10,0,0.9,20"}}, ""},
-			{ "Unknown", 0, NO_HELD_TEXTURE, 0, {}, "" },
-			{ "Wooden Shoes", 18, NO_HELD_TEXTURE, EQUIPMENT, { { TOOL_ACTION::EQUIPMENT, "Health:10" } }, "" },
-			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.2,26"}}, ""},
+			{ "Log", SpriteBase(248), NO_HELD_TEXTURE, 0, {}, "Log of wood."},	//0
+			{ "Leaves", SpriteBase(246), NO_HELD_TEXTURE, 0, {}, ""},		//1
+			{ "Stone", 55, NO_HELD_TEXTURE, 0, {}, "" },		//2
+			{ "(Temp) Axe", SpriteBase(65), SpriteBase(65), WEAPON | CHOP, {{TOOL_ACTION::CHOP , "1"}, {TOOL_ACTION::WEAPON, "4,0,0.9,20"}}, ""},	//3
+			{ "Unknown", 0, NO_HELD_TEXTURE, 0, {}, "" },																	//4
+			{ "Wooden Shoes", 18, NO_HELD_TEXTURE, EQUIPMENT, { { TOOL_ACTION::EQUIPMENT, "Health:10" } }, "" },			//5
+			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.2,26"}}, ""},			//6
 			{ "Toast", SpriteBase(132), SpriteBase(233), 0, {}, "Probably made in a toaster." },							//7
 			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "20" } }, "Apple."},					//8
 			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."},			//9
 			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."},					//10
 			{ "Blueprint", SpriteBase(263), NO_HELD_TEXTURE, 0, {}, "Unlocks a recipe."},					//11
+
 			{ "Small Wooden Chair", 2, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "15,22.5" }, { TOOL_ACTION::VALUE, "10" } }, "Might give splinters."},					//12
 			{ "Fridge", 14, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "19.5,33,6" }, { TOOL_ACTION::VALUE, "42" } }, "Holds six items."},					//13
-			{ "Wooden Crate", 19, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "17.25,16.5,10" }, { TOOL_ACTION::VALUE, "16" } }, "Holds tem items."},					//13
-			{ "Workbench", 22, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "26,29" }, { TOOL_ACTION::VALUE, "45" } }, "Make stuff with me!"},					//14
+			{ "Wooden Crate", 19, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "17.25,16.5,10" }, { TOOL_ACTION::VALUE, "16" } }, "Holds tem items."},					//14
+			{ "Workbench", 22, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "26,29" }, { TOOL_ACTION::VALUE, "45" } }, "Make stuff with me!"},					//15
+
+			{ "Butter Knife", SpriteBase(292), SpriteBase(292), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "4,0,0.3,17" }, { TOOL_ACTION::VALUE, "12" }}, "Still pretty sharp."},					//16
+			{ "Iron Sword", SpriteBase(287), SpriteBase(287), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "8,0,0.9,22" }, { TOOL_ACTION::VALUE, "60" }}, "8 Damage."},					//17
+			{ "Wooden Club", SpriteBase(297), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "6,0,1.66,26" }, { TOOL_ACTION::VALUE, "30" }}, "Slow but hurts."},					//18
+			{ "Spear", SpriteBase(298), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "5,0,1.2,45" }, { TOOL_ACTION::VALUE, "30" }}, "Reach really far."},					//19
 		};
 
 

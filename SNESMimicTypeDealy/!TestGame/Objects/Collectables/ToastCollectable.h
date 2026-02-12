@@ -9,8 +9,11 @@ namespace GAME_NAME::Objects::Collectables
 	{
 	public:
 
-		ToastCollectable(Vec2 position, Vec2 scale, Sprite* sprite, size_t saveID);
+		ToastCollectable(Vec2 position, Vec2 scale, uint8_t toastID, size_t saveID);
 	protected:
 		void onCollect() override;
+
+	private:
+		const uint8_t m_toastID;
 	};
 }

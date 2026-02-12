@@ -139,6 +139,8 @@ namespace GAME_NAME::Items
 				this->Type = static_cast<ITEM_TYPE>(std::stoi(line)); break;
 			case 3:
 				this->Level = line;
+				std::replace(this->Level.begin(), this->Level.end(), '!', '/');
+				break;
 			}
 		}
 	}
@@ -152,8 +154,12 @@ namespace GAME_NAME::Items
 			.append(std::to_string(this->Position.Y))
 			.append(";")
 			.append(std::to_string(this->Type))
-			.append(";")
-			.append(this->Level);
+			.append(";");
+
+		std::string savedLevel = this->Level;
+		std::replace(savedLevel.begin(), savedLevel.end(), '/', '!');
+
+		param.append(savedLevel);
 
 		return param;
 	}

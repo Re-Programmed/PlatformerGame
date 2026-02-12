@@ -106,6 +106,9 @@ namespace GAME_NAME::Objects::Player
 					for (uint8_t i = 0; i < m_generalSlots.size(); i++)
 					{
 						Vec4 baseColor = m_generalSlots[i]->GetBaseColor();
+
+						//TODO: Add MUTEX FOR SLOTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 						m_generalSlots[i]->SetBaseColor(Vec4::LerpBetween(baseColor, { 1.f, 1.f, 1.f, 1.f }, 0.05));
 						/*
 						Vec2 previousScale = m_generalSlots[i]->GetScale();

@@ -70,6 +70,25 @@ namespace GAME_NAME
 			float resX = HalfTResX * (1 / m_zoom);
 			float resY = HalfTResY * (1 / m_zoom);
 
+
+			if (m_screenShakeMaxTimer > 0.0)
+			{
+				m_screenShakeTimer += sdt;
+				m_screenShakeElapsed += sdt;
+
+				if (m_screenShakeTimer > 0.05)
+				{
+					m_screenShakeOffset = -m_screenShakeOffset;
+					m_screenShakeTimer = 0.0;
+				}
+
+				if (m_screenShakeElapsed >= m_screenShakeMaxTimer)
+				{
+					//Disable screen shaking.
+					ScreenShake(0.f, 0.0);
+				}
+			}
+
 			if (deadzoneRadius > 0.f)
 			{
 				//Deadzone
@@ -91,23 +110,6 @@ namespace GAME_NAME
 				
 			}
 
-			if (m_screenShakeMaxTimer > 0.0)
-			{
-				m_screenShakeTimer += sdt;
-				m_screenShakeElapsed += sdt;
-
-				if (m_screenShakeTimer > 0.05)
-				{
-					m_screenShakeOffset = -m_screenShakeOffset;
-					m_screenShakeTimer = 0.0;
-				}
-
-				if (m_screenShakeElapsed >= m_screenShakeMaxTimer)
-				{
-					//Disable screen shaking.
-					ScreenShake(0.f, 0.0);
-				}
-			}
 
 			float deadzoneXAdj = (playerPos.X > m_position.X + resX ? -deadzoneRadius : deadzoneRadius);
 			float deadzoneYAdj = (playerPos.Y > m_position.Y + resY ? -deadzoneRadius : deadzoneRadius);

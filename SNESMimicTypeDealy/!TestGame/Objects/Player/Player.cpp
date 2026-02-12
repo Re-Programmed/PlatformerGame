@@ -131,6 +131,8 @@ namespace  GAME_NAME
 
 			constexpr double PLAYER_CLIMBING_SPEED = 40;
 
+			double Player_AttackingTracker = 0.0;
+
 			typedef int8_t PlayerEmotion;
 			
 			enum PLAYER_EMOTIONS : PlayerEmotion
@@ -141,7 +143,7 @@ namespace  GAME_NAME
 			using namespace Utils;
 
 			//TODO: Pixel Birb sitting animation is glitched because of weird offset issues from climbing sprites :(
-			const Player::PlayerTextureData Player::TextureData[2] = {
+			const Player::PlayerTextureData Player::TextureData[3] = {
 				Player::PlayerTextureData(), //Default Sprites (0)
 				Player::PlayerTextureData(SpriteBase(191), SpriteBase(217), SpriteBase(204), SpriteBase(212), SpriteBase(219), SpriteBase(225), 0 /*Missing Dead*/, 0 /*Missing Victory Balloon*/, 0 /*Missing Riding Bike*/, new Player::PlayerAnimationData(	//Pixel Birb (1)
 					Player::AnimationOverride(new int[4] { 1, 2, 1, 3 }, 4, ANIM_6_SPF * 1.33f),		//Walking 
@@ -157,7 +159,8 @@ namespace  GAME_NAME
 					Player::AnimationOverride(new int[2] { 0, 1 }, 2, ANIM_12_SPF * 1.5f),				//Idle 1
 					Player::AnimationOverride(new int[2] { 2, 3 }, 2, ANIM_12_SPF * 1.5f),				//Idle 2
 					Player::AnimationOverride(0, 0)														//No Biking Animation
-				))
+				)),
+				Player::PlayerTextureData(SpriteBase(299), SpriteBase(326), SpriteBase(327), SpriteBase(335), SpriteBase(344), SpriteBase(357), SpriteBase(369), SpriteBase(368), SpriteBase(370))
 			};
 
 			Player::Player(Vec2 position, bool loadFromSavedPosition)
@@ -223,6 +226,11 @@ namespace  GAME_NAME
 
 				//Force held item display to show up.
 				SetHeldItem(this->m_screenInventory->GetHeldItem());
+
+
+				//TODO: TESTING
+				SetPlayerTextureData(DEFAULT_FOX);
+				m_scaleMultiplier = Vec2{ 1.625f, 1.f };
 			}
 
 			Player::~Player()
@@ -598,7 +606,11 @@ namespace  GAME_NAME
 
 					if (m_heldItemDisplay != nullptr && m_heldItemDisplay->GetScale().X > 8)
 					{
-						const int&& baseSpriteId = Items::ITEM_DATA[heldItemType].HeldTexture;
+						int&& baseSpriteId = Items::ITEM_DATA[heldItemType].HeldTexture;
+
+						//If true, don't update the texture of the held item.
+						const bool noAnimatingTexture = baseSpriteId == GLOBAL_SPRITE_BASE - 1;
+						if (noAnimatingTexture) { baseSpriteId = Items::ITEM_DATA[heldItemType].Texture; }
 
 						//If the player is currently attacking, the item will be rendered outward from their body.
 						if (m_animator->GetCurrentAnimationIndex() == 7 /*Basic Attack Anim*/)
@@ -660,7 +672,7 @@ namespace  GAME_NAME
 							m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(6.75f, -0.5f) : Vec2(0, -0.5f)));
 						}else if (playerYVel < -1.5f && !m_onGround)
 						{
-							const int frame = 2;
+							const int frame = noAnimatingTexture ? 0 : 2;
 							m_heldItemLastSprite.reset(Renderer::GetSprite(baseSpriteId + frame));
 							m_heldItemDisplayFrameOffset = frame;
 							m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
@@ -671,35 +683,38 @@ namespace  GAME_NAME
 						{
 							if (m_animator->GetCurrentAnimation() != nullptr)
 							{
-								int&& frame = m_animator->GetCurrentAnimation()->GetFrame();
+								int&& frame = noAnimatingTexture ? 0 : m_animator->GetCurrentAnimation()->GetFrame();
 
-								//Determine what frame of item animation to show.
-								switch (frame)
+								if (!noAnimatingTexture)
 								{
-								case 0:
-									frame = 0;
-									break;
-								case 1:
-									frame = 1;
-									break;
-								case 2:
-									frame = 2;
-									break;
-								case 3:
-									frame = 1;
-									break;
-								case 4:
-									frame = 0;
-									break;
-								case 5:
-									frame = 3;
-									break;
-								case 6:
-									frame = 4;
-									break;
-								case 7:
-									frame = 3;
-									break;
+									//Determine what frame of item animation to show.
+									switch (frame)
+									{
+									case 0:
+										frame = 0;
+										break;
+									case 1:
+										frame = 1;
+										break;
+									case 2:
+										frame = 2;
+										break;
+									case 3:
+										frame = 1;
+										break;
+									case 4:
+										frame = 0;
+										break;
+									case 5:
+										frame = 3;
+										break;
+									case 6:
+										frame = 4;
+										break;
+									case 7:
+										frame = 3;
+										break;
+									}
 								}
 
 								m_heldItemLastSprite = std::shared_ptr<Sprite>(Renderer::GetSprite(baseSpriteId + frame));
@@ -707,6 +722,36 @@ namespace  GAME_NAME
 								m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
 
 								m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(6.75f, -0.5f) : Vec2(0, -0.5f)));
+
+								//Apply a motion effect if no animation is used.
+								if (noAnimatingTexture)
+								{
+									switch (m_animator->GetCurrentAnimation()->GetFrame())
+									{
+									case 0:
+										break;
+									case 1:
+										m_heldItemDisplay->Translate(Vec2{ -0.5f, 0.5f });
+										break;
+									case 2:
+										m_heldItemDisplay->Translate(Vec2{ -1.f, 1.f });
+										break;
+									case 3:
+										m_heldItemDisplay->Translate(Vec2{ -0.5f, 0.5f });
+										break;
+									case 4:
+										break;
+									case 5:
+										m_heldItemDisplay->Translate(Vec2{ 0.5f, -0.5f });
+										break;
+									case 6:
+										m_heldItemDisplay->Translate(Vec2{ 1.f, -1.f });
+										break;
+									case 7:
+										m_heldItemDisplay->Translate(Vec2{ 0.5f, -0.5f });
+										break;
+									}
+								}
 							}
 						}
 						else {
@@ -892,7 +937,14 @@ namespace  GAME_NAME
 					m_heldItemDisplay->SetScale({ 16, 16 });
 					//delete m_heldItemDisplay->GetSprite();
 
-					m_heldItemDisplay->SetSprite(Renderer::GetSprite(customHeldTexture));
+					//Use one texture for all display.
+					if (customHeldTexture == GLOBAL_SPRITE_BASE - 1)
+					{
+						m_heldItemDisplay->SetSprite(Renderer::GetSprite(Items::ITEM_DATA[item->GetType()].Texture));
+					}
+					else {
+						m_heldItemDisplay->SetSprite(Renderer::GetSprite(customHeldTexture));
+					}
 					return;
 				}
 
@@ -1988,16 +2040,20 @@ using namespace Lighting;
 				}
 			}
 
+
 			void Player::handleAttack()
 			{
 
 				if (m_attackCooldown > 0)
 				{
 					m_attackCooldown -= Utils::Time::GameTime::GetScaledDeltaTime();
+					Player_AttackingTracker -= Utils::Time::GameTime::GetScaledDeltaTime();
 
-					if (m_attackCooldown <= 0)
+					if (Player_AttackingTracker < 0 && Player_AttackingTracker > -100)
 					{
-						//Completed attack.
+						Player_AttackingTracker = -100;
+
+						//Completed attack animation.
 
 						if (!m_textureFlipped)
 						{
@@ -2039,7 +2095,7 @@ using namespace Lighting;
 					m_scale = { 26.f, 26.f }; //Adjust scale to that of the animation sprites.
 					m_frozen = true;
 					m_attackCooldown = (8.0 * 0.5) * (double)ANIM_16_SPF; //(frames * 1/speed * seconds_per_frame)
-
+					Player_AttackingTracker = m_attackCooldown;	//Ignores the weapon speed.
 
 					const Vec2 damageOrigin = m_position + (Vec2{ m_scale.X / 2.f, 0.f }) + Vec2{ (m_textureFlipped ? 12.f : -12.f), 0.f };
 
@@ -2055,6 +2111,11 @@ using namespace Lighting;
 							const std::string& attribute = heldItemData.Attributes.at(TOOL_ACTION::WEAPON);
 							damage = std::stoi(attribute.substr(0, attribute.find_first_of(',')));
 							AOE = std::stoi(attribute.substr(attribute.find_last_of(',') + 1));
+
+							std::string inner = attribute.substr(attribute.find_first_of(',') + 1, attribute.find_last_of(','));
+							m_attackCooldown = std::stod(inner.substr(inner.find_first_of(',') + 1));
+
+							//m_animator->SetSpeedMult(((8.0 * 0.5) * (double)ANIM_16_SPF / m_attackCooldown) * 2.0);
 						}
 					}
 

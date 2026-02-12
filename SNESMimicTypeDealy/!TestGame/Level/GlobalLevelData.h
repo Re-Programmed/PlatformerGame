@@ -71,7 +71,7 @@ using namespace GAME_NAME::MathUtils;
 			m_concurrentLevelData.LevelStartTime = time;
 		}
 
-		static inline void CollectToast(uint8_t toastID)
+		static inline void CollectToast(uint8_t toastID /*0, 1, 2*/)
 		{
 			m_concurrentLevelData.ToastCollected[toastID] = true;
 		}

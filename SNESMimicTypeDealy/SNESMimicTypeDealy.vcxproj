@@ -174,6 +174,7 @@
     <ClCompile Include="!TestGame\Camera\GameCamera.cpp" />
     <ClCompile Include="!TestGame\Objects\Collectables\BasicCollectable.cpp" />
     <ClCompile Include="!TestGame\Objects\Collectables\CollectableTracker.cpp" />
+    <ClCompile Include="!TestGame\Objects\Collectables\CrumbCollectable.cpp" />
     <ClCompile Include="!TestGame\Objects\Collectables\ToastCollectable.cpp" />
     <ClCompile Include="!TestGame\Objects\Components\Climbable.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Enemy.cpp" />
@@ -337,6 +338,7 @@
     <ClInclude Include="!TestGame\Camera\GameCamera.h" />
     <ClInclude Include="!TestGame\Objects\Collectables\BasicCollectable.h" />
     <ClInclude Include="!TestGame\Objects\Collectables\CollectableTracker.h" />
+    <ClInclude Include="!TestGame\Objects\Collectables\CrumbCollectable.h" />
     <ClInclude Include="!TestGame\Objects\Collectables\ToastCollectable.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Enemy.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\HealthBarRenderer.h" />

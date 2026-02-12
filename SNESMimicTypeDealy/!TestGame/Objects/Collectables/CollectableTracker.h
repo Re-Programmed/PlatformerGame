@@ -14,7 +14,8 @@ namespace GAME_NAME::Objects::Collectables
 		/// </summary>
 		enum COLLECTABLE_TYPE
 		{
-			TOAST
+			TOAST,
+			CRUMB
 		};
 
 		/// <summary>

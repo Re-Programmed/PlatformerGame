@@ -146,7 +146,8 @@ namespace  GAME_NAME
 				enum TEXTURE_OFFSETS
 				{
 					DEFAULT_BIRB = 0,
-					PIXEL_BIRB = 1
+					PIXEL_BIRB = 1,
+					DEFAULT_FOX = 2
 				};
 
 				struct AnimationOverride
@@ -264,7 +265,7 @@ namespace  GAME_NAME
 				/// <summary>
 				/// A list of all possible texture palettes the player could have, indexed based on TEXTURE_OFFSETS.
 				/// </summary>
-				static const PlayerTextureData TextureData[2];
+				static const PlayerTextureData TextureData[3];
 
 				/// <summary>
 				/// Updates the player's texture to use these offsets.
@@ -429,7 +430,7 @@ namespace  GAME_NAME
 				/// <summary>
 				/// Multiplied by all scale variables to allow for relative scaling. m_scale is utilized to scale the player based on the current sprite, maintaining a similar size.
 				/// </summary>
-				float m_scaleMultiplier = 1.f;
+				Vec2 m_scaleMultiplier = 1.f;
 
 				/// <summary>
 				/// If the player is currently taking a dive.

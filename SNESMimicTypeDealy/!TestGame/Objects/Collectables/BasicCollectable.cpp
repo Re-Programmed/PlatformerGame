@@ -3,10 +3,16 @@
 #include "../../../Input/InputManager.h"
 #include "../../../Resources/Save/SaveManager.h"
 
+#include "../../../Utils/Time/GameTime.h"
+
+#include "../../../Objects/StateSaver.h"
+
+#define BASIC_COLLECTABLE_GLOW_SPRITE SpriteBase(131)
+
 namespace GAME_NAME::Objects::Collectables
 {
 	BasicCollectable::BasicCollectable(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveId)
-		: Interactable(PLAYER_INTERACT, InputManager::KEY_STATE_NONE, scale.X, position, scale, sprite), GameObjectState(saveId)
+		: Interactable(PLAYER_INTERACT, InputManager::KEY_STATE_NONE, scale.X + 8.f, position, scale, sprite), GameObjectState(saveId)
 	{
 		LoadState();
 	}
@@ -18,6 +24,7 @@ namespace GAME_NAME::Objects::Collectables
 		Resources::SaveManager::GetLevelString(result, m_objectSaveID);
 
 		m_isCollected = result.starts_with(SAVE_MNG_TRUE_STATE);
+		if (m_isCollected) { m_active = false; }
 	}
 
 	void BasicCollectable::SaveState()
@@ -28,10 +35,36 @@ namespace GAME_NAME::Objects::Collectables
 		Resources::SaveManager::SaveLevelString(saveStr, m_objectSaveID);
 	}
 
+#define BASIC_COLLECTABLE_FLY_LERP_SPEED 4.6
+
+	void BasicCollectable::Update(GLFWwindow* window)
+	{
+		if (m_isCollected)
+		{
+			Vec2 center = m_position + m_scale / 2.f;
+			Vec2 playerCenter = TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale() / 2.f;
+
+			center = Vec2::Lerp(center, playerCenter, Utils::Time::GameTime::GetScaledDeltaTime() * BASIC_COLLECTABLE_FLY_LERP_SPEED);
+
+			this->SetPosition(center - m_scale / 2.f);
+
+			if (Vec2::Distance(center, playerCenter) < 6.5f)
+			{
+				m_active = false;
+			}
+		}
+
+		Interactable::Update(window);
+	}
+
 	void BasicCollectable::Render(const Vec2& cameraPosition)
 	{
-		//Don't render collected objects.
-		if (m_isCollected) { return; }
+		Sprite* glow = Renderer::GetSprite(BASIC_COLLECTABLE_GLOW_SPRITE);
+		Vec2 glowScale = m_scale * 1.25f;
+		glow->Render(cameraPosition, (m_position + m_scale/2.f) - (glowScale / 2.f), glowScale);
+		delete glow;
+
+		Interactable::Render(cameraPosition);
 	}
 
 	void BasicCollectable::onInteract(std::shared_ptr<Player::Player> player, InputManager::KEY_STATE state)
@@ -41,7 +74,8 @@ namespace GAME_NAME::Objects::Collectables
 		//The collectable was collected...
 
 		m_isCollected = true;		   //Set collected.
-		SetToBeSaved(true);			   //Prep to save the object.
+		m_scale = m_scale / 2.4f;
+		StateSaver::RegisterToBeSaved(this); //Prep to save the object.
 
 		onCollect();				   //Callback.
 	}
