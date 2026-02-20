@@ -40,6 +40,8 @@
 #include "../../Objects/Furniture.h"
 #include "../../Level/Hub/HouseManager.h"
 
+#include "../Projectile.h"
+
 #define PLAYER_ROOM_SPEED 40	//How fast the player moves vertically in room control mode.
 
 #define PLAYER_ANIMATION_RUN_WALK_SWITCH 142.f //When the player should switch from the walking to running animation.
@@ -178,7 +180,8 @@ namespace  GAME_NAME
 				m_backpack(new Backpack(18)),		//Create default backpack (load save in constructor).
 				m_skillHolder({ 62.f, 7.f }),		//Skill holder (manages update and display of current skill and equipment effects)
 				m_textureData(TextureData[0]),
-				IsAlive(true)
+				IsAlive(true),
+				m_heldItemDisplayOffset({ 0.f, 0.f }, { 0.f, 0.f })
 			{
 
 				//Change to load based on what sprite the player should be using from the selected kit.
@@ -229,8 +232,9 @@ namespace  GAME_NAME
 
 
 				//TODO: TESTING
-				SetPlayerTextureData(DEFAULT_FOX);
-				m_scaleMultiplier = Vec2{ 1.625f, 1.f };
+				//SetPlayerTextureData(DEFAULT_FOX);
+				//m_scaleMultiplier = Vec2{ 1.625f, 1.f };
+				//m_heldItemDisplayOffset = { Vec2{9.f, 0.f}, Vec2{ 0.f, 0.f } };
 			}
 
 			Player::~Player()
@@ -409,7 +413,7 @@ namespace  GAME_NAME
 					Placeable* p = dynamic_cast<Placeable*>(m_screenInventory->GetHeldItem());
 					if (p != nullptr)
 					{
-						if (InputManager::GetKeyUpDown(PLAYER_INTERACT) & InputManager::KEY_STATE_HELD)
+						if (InputManager::GetKeyUpDown(PLAYER_INTERACT) & InputManager::KEY_STATE_HELD && !m_feetOnlyCollision)
 						{
 							Placeable::InteractionTimer += Time::GameTime::DeltaTime::GetDeltaTime();
 
@@ -420,6 +424,7 @@ namespace  GAME_NAME
 								Placeable::InteractionTimer = 0.0;
 								
 								this->m_screenInventory->SetItem(this->m_screenInventory->GetSelectedSlot() - 1, nullptr);
+								return;
 							}
 						}
 						else {
@@ -602,6 +607,22 @@ namespace  GAME_NAME
 					{
 						Furniture::RenderPreview(cameraPosition, heldItemType, !m_textureFlipped ? (m_position - Vec2{ FURNITURE_PLACE_OFFSET, -m_scale.Y / 2.f }) : (m_position + Vec2{ FURNITURE_PLACE_OFFSET + m_scale.X, m_scale.Y / 2.f }), m_textureFlipped);
 					}
+					else if (ITEMTYPE_GetItemData(heldItemType).Actions & RANGED_WEAPON)
+					{
+						if (m_projectileCharge > 0.0)
+						{
+							if (m_projectileLaunchProgress == nullptr)
+							{
+								Sprite* sprite = Renderer::GetSprite(SpriteBase(42) /*Red texture.*/);
+								m_projectileLaunchProgress = new ProgressBar(Vec2{0.f}, Vec2{ m_scale.X, 5.f }, sprite->GetSpriteId());
+								delete sprite;
+							}
+
+							m_projectileLaunchProgress->SetPosition(TestGame::INSTANCE->GetCamera()->GlobalToUI(m_position + Vec2{ 0.f, m_scale.Y + 5.f }));
+							m_projectileLaunchProgress->SetPercentage(m_projectileCharge * 100, true);
+							m_projectileLaunchProgress->Render(TestGame::INSTANCE->GetCamera()->GetZoom());
+						}
+					}
 
 
 					if (m_heldItemDisplay != nullptr && m_heldItemDisplay->GetScale().X > 8)
@@ -653,10 +674,10 @@ namespace  GAME_NAME
 							if (m_textureFlipped)
 							{
 							
-								m_heldItemDisplay->GetSprite()->Render(cameraPosition, offsetPosition + m_position + Vec2{ 16.f + m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2 { -1, 1 }, 0.0F);
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, offsetPosition + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + m_position + Vec2{16.f + m_heldItemDisplay->GetScale().X - 7, 0}, m_heldItemDisplay->GetScale()* Vec2 { -1, 1 }, 0.0F);
 							}
 							else {
-								m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_position + Vec2{ 0.f, 0.f }, m_heldItemDisplay->GetScale(), 0.0F);
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_position + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + Vec2{ 0.f, 0.f }, m_heldItemDisplay->GetScale(), 0.0F);
 							}
 							return;
 						}
@@ -765,10 +786,10 @@ namespace  GAME_NAME
 
 						if (m_textureFlipped)
 						{
-							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + Vec2{ m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2{ -1, 1 }, 0.0F);
+							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + Vec2{ m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2{ -1, 1 }, 0.0F);
 						}
 						else {
-							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition(), m_heldItemDisplay->GetScale(), 0.0F);
+							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)), m_heldItemDisplay->GetScale(), 0.0F);
 						}
 					}
 
@@ -2104,8 +2125,14 @@ using namespace Lighting;
 					//Retrive Area of Effect and Damage stats of current weapon.
 					if (GetInventory()->GetHeldItem())
 					{
-
 						const ItemData& heldItemData = ITEMTYPE_GetItemData(this->GetInventory()->GetHeldItem()->GetType());
+
+						if (heldItemData.Actions & RANGED_WEAPON)
+						{
+							m_projectileCharge += 0.20;
+							return;
+						}
+
 						if (heldItemData.Actions & WEAPON)
 						{
 							const std::string& attribute = heldItemData.Attributes.at(TOOL_ACTION::WEAPON);
@@ -2128,6 +2155,59 @@ using namespace Lighting;
 						}
 					}
 				}
+				//Player has been holding projectile button, now it is released, throw.
+				else if (m_projectileCharge > 0.0)
+				{
+					if (m_screenInventory->GetHeldItem())
+					{
+						const ItemData& heldItemData = ITEMTYPE_GetItemData(this->GetInventory()->GetHeldItem()->GetType());
+						const std::string& attribute = heldItemData.Attributes.at(TOOL_ACTION::RANGED_WEAPON);
+						std::stringstream attributeStream(attribute);
+						std::string value; uint8_t i = 0;
+						//damage,powerconsume,reloadseconds,range,projectile_type
+
+						int damage = 0; float range = 0; uint8_t projectileType = 0;
+
+						while (std::getline(attributeStream, value, ','))
+						{
+							switch (i++)
+							{
+							case 0:
+								damage = std::stoi(value);
+								break;
+							case 1:
+								if (value == "0") { break; }
+								this->updateAbilityMeter(-std::stof(value));
+								break;
+							case 2:
+								m_attackCooldown = std::stod(value);
+								break;
+							case 3:
+								range = std::stof(value);
+								break;
+							case 4:
+								projectileType = std::stoi(value);
+								break;
+							}
+						}
+
+						Vec2 mousePos = InputManager::GetMouseWorldPosition(TestGame::INSTANCE->GetCamera());
+						Vec2 direction = mousePos - (m_position + m_scale / 2.f);
+
+						throwProjectile(damage, range * std::clamp(m_projectileCharge, 0.0, 1.0)/3.0, projectileType, direction.X < 0);
+						m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+
+						m_projectileCharge = 0.0;
+					}
+
+					
+				}
+			}
+
+			void Player::throwProjectile(int damage, float range, uint8_t projectileType, bool throwLeft)
+			{	
+				GAME_NAME::Objects::Projectile* projectile = new GAME_NAME::Objects::Projectile(throwLeft ? (m_position + Vec2{ -10.f, m_scale.Y / 2.f }) : (m_position + Vec2{ m_scale.X, m_scale.Y / 2.f }), damage, range, projectileType, throwLeft);
+				Renderer::InstantiateObject(Renderer::InstantiateGameObject(projectile, true, 1, false));
 			}
 
 

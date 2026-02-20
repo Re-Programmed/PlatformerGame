@@ -12,7 +12,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 20
+#define ITEM_COUNT 29
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -34,6 +34,18 @@ namespace GAME_NAME
 			FRIDGE = 13,
 			WOODEN_CRATE = 14,
 			WORKBENCH = 15,
+			BUTTER_KNIFE = 16,
+			IRON_SWORD = 17,
+			WOODEN_CLUB = 18,
+			SPEAR = 19,
+			WOODEN_PLATING = 20,
+			LEAF_HELMET = 21,
+			TWIG = 22,
+			CLOTH = 23,
+			WET_WASHCLOTH = 24,
+			SMALL_STONE = 25,
+			LEVEL_SAVE_POINT = 26,
+			SCREW = 27
 		};
 
 		/// <summary>
@@ -41,14 +53,15 @@ namespace GAME_NAME
 		/// </summary>
 		enum TOOL_ACTION
 		{
-			CHOP =		0b00000001, //Can cut down trees.
-			EQUIPMENT = 0b00000010, //Can be equipped to equipment slots.
-			MINE =		0b00000100, //Can break BreakableBlocks. (provide a strength attribute)
-			WEAPON =	0b00001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
-			FOOD =		0b00010000, //Can be eaten.
-			PLACEABLE = 0b00100000, //Can be placed.
-			FURNITURE = 0b01000000, //Furniture. (xScale, yScale, inventorySize[optional])
-			VALUE =		0b10000000	//Give an item a specific price value. (crumbValue)
+			CHOP =			0b000000001, //Can cut down trees.
+			EQUIPMENT =		0b000000010, //Can be equipped to equipment slots.
+			MINE =			0b000000100, //Can break BreakableBlocks. (provide a strength attribute)
+			WEAPON =		0b000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
+			FOOD =			0b000010000, //Can be eaten.
+			PLACEABLE =		0b000100000, //Can be placed.
+			FURNITURE =		0b001000000, //Furniture. (xScale, yScale, inventorySize[optional])
+			VALUE =			0b010000000, //Give an item a specific price value. (crumbValue)
+			RANGED_WEAPON = 0b100000000  //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
 		};
 
 		/// <summary>
@@ -113,6 +126,22 @@ namespace GAME_NAME
 			{ "Iron Sword", SpriteBase(287), SpriteBase(287), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "8,0,0.9,22" }, { TOOL_ACTION::VALUE, "60" }}, "8 Damage."},					//17
 			{ "Wooden Club", SpriteBase(297), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "6,0,1.66,26" }, { TOOL_ACTION::VALUE, "30" }}, "Slow but hurts."},					//18
 			{ "Spear", SpriteBase(298), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "5,0,1.2,45" }, { TOOL_ACTION::VALUE, "30" }}, "Reach really far."},					//19
+
+			{ "Wooden Plating", SpriteBase(374), NO_HELD_TEXTURE, EQUIPMENT | VALUE, { { TOOL_ACTION::EQUIPMENT, "Health:15" }, { TOOL_ACTION::VALUE, "20" }}, "15 health."},					//20
+			{ "Leaf Helmet", SpriteBase(375), NO_HELD_TEXTURE, EQUIPMENT | VALUE, { { TOOL_ACTION::EQUIPMENT, "Health:5" }, { TOOL_ACTION::VALUE, "5" }}, "5 health."},					//21
+
+			{ "Twig", SpriteBase(376), FOLLOW_HAND_TEXTURE,  VALUE, { { TOOL_ACTION::VALUE, "1" } }, "Snaps easily."},					//22
+			{ "Cloth", SpriteBase(377), FOLLOW_HAND_TEXTURE,  VALUE, { { TOOL_ACTION::VALUE, "3" } }, "Soft and stretchy."},			//23
+
+			{ "Wet Washcloth", SpriteBase(378), FOLLOW_HAND_TEXTURE, WEAPON, { { TOOL_ACTION::WEAPON, "4,0,0.2,20" } }, "Slaps really hard."},			//24
+
+			{ "Small Stone", SpriteBase(379), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "2" } }, "Made of rock."},			//25
+
+			{ "Save Point", SpriteBase(286), FOLLOW_HAND_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "21,32" } }, "Can be placed to save progress."},			//26
+
+			{ "Screw", SpriteBase(380), NO_HELD_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Holds stuff together."},			//27
+
+			{ "Bomb", SpriteBase(381), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "15,0,0.35,50,0" }, { TOOL_ACTION::VALUE, "5" } }, "Explode big."},			//28
 		};
 
 

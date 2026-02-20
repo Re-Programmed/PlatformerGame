@@ -49,6 +49,7 @@
 #include "./Level/MainMenu/MainMenuManager.h"
 #include "./Level/Introduction/IntroductionLevelManager.h"
 #include "./Level/Stages/GreenRegionLevelManager.h"
+#include "./Level/Stages/EmptyLevelSystem.h"
 #include "./Level/Hub/HubLevelManager.h"
 #include "./Level/Hub/DepartManager.h"
 
@@ -434,6 +435,10 @@ namespace GAME_NAME
 					m_currentLevelSystem = std::unique_ptr<LevelSystem>(new GreenRegionLevelManager());
 					break;
 
+				case 2:
+					//Green Region Area 2
+					m_currentLevelSystem = std::unique_ptr<LevelSystem>(new EmptyLevelSystem());
+					break;
 				}
 				break;
 			}
@@ -530,9 +535,9 @@ namespace GAME_NAME
 
 
 		//Test Character
-		Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{ 50.f, 30.f }, Vec2{ 16.f, 26.f }, true, 50.f);
+		/*Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{50.f, 30.f}, Vec2{16.f, 26.f}, true, 50.f);
 		testCharacter->SetTarget(ThePlayer.get());
-		Renderer::LoadActiveObject(testCharacter);
+		Renderer::LoadActiveObject(testCharacter);*/
 
 		//Finish load after any and all objects have been created.
 		//This function will only work if a StartState is getting loaded, so it won't affect anything when using doors or changing levels.

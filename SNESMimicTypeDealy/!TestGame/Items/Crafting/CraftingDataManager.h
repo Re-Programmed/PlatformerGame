@@ -8,7 +8,7 @@
 
 namespace GAME_NAME::Items::Crafting
 {
-#define CRAFTING_DATA_NUM_RECIPES 2
+#define CRAFTING_DATA_NUM_RECIPES 5
 
 	class Recipe
 		: public MiscState

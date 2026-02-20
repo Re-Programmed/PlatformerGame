@@ -224,6 +224,7 @@
     <ClCompile Include="!TestGame\Objects\Player\Player.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\ScreenInventory.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Skills\SkillHolder.cpp" />
+    <ClCompile Include="!TestGame\Objects\Projectile.cpp" />
     <ClCompile Include="!TestGame\Objects\StartState.cpp" />
     <ClCompile Include="!TestGame\Objects\Vehicles\BikeVehicle.cpp" />
     <ClCompile Include="!TestGame\Objects\Vehicles\Vehicle.cpp" />
@@ -333,6 +334,7 @@
     <ClInclude Include="!TestGame\Level\LevelManager.h" />
     <ClInclude Include="!TestGame\Level\LevelSystem.h" />
     <ClInclude Include="!TestGame\Level\MainMenu\MainMenuManager.h" />
+    <ClInclude Include="!TestGame\Level\Stages\EmptyLevelSystem.h" />
     <ClInclude Include="!TestGame\Level\Stages\GreenRegionLevelManager.h" />
     <ClInclude Include="!TestGame\Mappings.h" />
     <ClInclude Include="!TestGame\Camera\GameCamera.h" />
@@ -389,6 +391,7 @@
     <ClInclude Include="!TestGame\Objects\Components\Climbable.h" />
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillHolder.h" />
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillType.h" />
+    <ClInclude Include="!TestGame\Objects\Projectile.h" />
     <ClInclude Include="!TestGame\Objects\StartState.h" />
     <ClInclude Include="!TestGame\Objects\Vehicles\BikeVehicle.h" />
     <ClInclude Include="!TestGame\Objects\Vehicles\Vehicle.h" />

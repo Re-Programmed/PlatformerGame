@@ -27,7 +27,7 @@ namespace GAME_NAME::Level
 
 	DepartManager::LevelSelector DepartManager::m_levelSelections( 
 		std::array<LevelSelectionData, DEPART_MANAGER_LEVEL_COUNT> {
-			DepartManager::LevelSelectionData{ LevelID::GreenRegion, 21, "/green_region", "/green_region", "/green_region", "Area One", "Area Two", "Area Three", true }
+			DepartManager::LevelSelectionData{ LevelID::GreenRegion, 21, "/green_region", "/green_region_area_2", "/green_region", "Area One", "Area Two", "Area Three", true }
 		}
 	);
 
@@ -201,9 +201,9 @@ namespace GAME_NAME::Level
 				Renderer::LoadGUIElement(m_menu.LevelDisplay);
 				delete sp;
 
-				m_menu.Area1Title = Text::TextRenderer::RenderWordCaseSensitive(data.Area1, Vec2{ positionOffsetFactor + 27.f * spriteScalingFactor, 20.f * spriteScalingFactor }, 8.f, -2.f, 2, -191, -109, std::chrono::milliseconds(150));
-				m_menu.Area2Title = Text::TextRenderer::RenderWordCaseSensitive(data.Area2, Vec2{ positionOffsetFactor + 27.f * spriteScalingFactor, 14.f * spriteScalingFactor }, 8.f, -2.f, 2, -191, -109, std::chrono::milliseconds(150));
-				m_menu.Area3Title = Text::TextRenderer::RenderWordCaseSensitive(data.Area3, Vec2{ positionOffsetFactor + 27.f * spriteScalingFactor, 8.f * spriteScalingFactor }, 8.f, -2.f, 2, -191, -109, std::chrono::milliseconds(150));
+				m_menu.Area1Title = Text::TextRenderer::RenderWordCaseSensitive(data.Area1, Vec2{ positionOffsetFactor + 27.f * spriteScalingFactor, 20.f * spriteScalingFactor }, 8.f, -2.f, 2, DEFAULT_FONT_RENDER_A_SPRITE_ID, DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds(150));
+				m_menu.Area2Title = Text::TextRenderer::RenderWordCaseSensitive(data.Area2, Vec2{ positionOffsetFactor + 27.f * spriteScalingFactor, 14.f * spriteScalingFactor }, 8.f, -2.f, 2, DEFAULT_FONT_RENDER_A_SPRITE_ID, DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds(150));
+				m_menu.Area3Title = Text::TextRenderer::RenderWordCaseSensitive(data.Area3, Vec2{ positionOffsetFactor + 27.f * spriteScalingFactor, 8.f * spriteScalingFactor }, 8.f, -2.f, 2, DEFAULT_FONT_RENDER_A_SPRITE_ID, DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds(150));
 
 				return;
 			}

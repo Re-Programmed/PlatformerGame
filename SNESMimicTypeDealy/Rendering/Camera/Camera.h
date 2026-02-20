@@ -35,6 +35,7 @@ namespace GAME_NAME
 				/// <param name="pos"></param>
 				/// <returns></returns>
 				Vec2 UIToGlobal(Vec2 pos);
+				Vec2 GlobalToUI(Vec2 pos);
 			
 
 				float GetZoom();

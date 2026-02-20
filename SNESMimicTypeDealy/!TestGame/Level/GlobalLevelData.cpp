@@ -59,6 +59,7 @@ namespace GAME_NAME::Level
 			//Get 1 less point for every half time you went over.
 			int pointsLost = (elapsedSeconds / (LevelGoals.SecondsElapsed / 2)) - 2;
 			if (pointsLost < 0) { pointsLost = 0; }
+			if (pointsLost > 0) { pointsLost = 10; }
 
 			pointCalculation += (10 - pointsLost);	
 		}
@@ -71,6 +72,7 @@ namespace GAME_NAME::Level
 			//Gain one point for every 1/10 of the max reasonable points (minus 1).
 			int pointsGained = ((10 * m_concurrentLevelData.Points) / LevelGoals.MaxReasonablePoints) - 1;
 			if (pointsGained < 0) { pointsGained = 0; }
+			if (pointsGained > 10) { pointsGained = 10; }
 
 			pointCalculation += pointsGained;
 		}

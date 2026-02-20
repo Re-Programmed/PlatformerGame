@@ -712,7 +712,8 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 	*/
 	case 22:
 	{
-		LevelCompleteZone* z = new LevelCompleteZone(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), data[5]);
+		int spriteIndex = data[4].ends_with("sb") ? SpriteBase(std::stoi(data[4].substr(0, data[4].size() - 2))) : std::stoi(data[4]);
+		LevelCompleteZone* z = new LevelCompleteZone(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(spriteIndex), data[5]);
 		Renderer::LoadObject(z, std::stoi(data[6]));
 		break;
 	}

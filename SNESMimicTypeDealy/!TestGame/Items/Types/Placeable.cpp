@@ -56,7 +56,7 @@ namespace GAME_NAME::Items
 		sprite->UpdateTextureColor(cols);
 
 		Vec2 placeScale = this->GetPlaceScale();
-		sprite->Render(cameraPosition, Vec2{ position.X + placeScale.X + 7.f /*IDK why 7 is here... might break stuff later...*/, position.Y}, Vec2{-placeScale.X, placeScale.Y}, 0.f);
+		sprite->Render(cameraPosition, Vec2{ position.X + placeScale.X + 7.f /*IDK why 7 is here... might break stuff later...*/, position.Y + placeScale.Y}, Vec2{-placeScale.X, -placeScale.Y}, 0.f);
 		delete sprite;
 	}
 

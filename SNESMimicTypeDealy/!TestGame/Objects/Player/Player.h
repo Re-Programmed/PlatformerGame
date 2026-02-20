@@ -549,6 +549,7 @@ namespace  GAME_NAME
 				float m_frozenTimer = -1.f;
 
 				GameObject* m_heldItemDisplay;				//Follows the player to display the current held item.
+				std::tuple<Vec2, Vec2> m_heldItemDisplayOffset;	//Can be updated when the player changes sprites to fix issues with where the held item is placed. (Left facing offset, then right facing offset)
 				int m_heldItemDisplayFrameOffset = 0;		//How many sprite difference from the default held item sprite to its current animation frame.
 				std::shared_ptr<Sprite> m_heldItemLastSprite;
 
@@ -626,6 +627,16 @@ namespace  GAME_NAME
 				/// </summary>
 				double m_attackCooldown;
 				void handleAttack();
+
+				double m_projectileCharge = 0.0;
+				ProgressBar* m_projectileLaunchProgress = nullptr;
+				/// <summary>
+				/// Makes the player launch a projectile in their current facing direction with given range and damage.
+				/// </summary>
+				/// <param name="damage">[int] - How much damage the projectile will cause.</param>
+				/// <param name="range">[float] - How far the projectile will go.</param>
+				/// <param name="projectileType">[int] - 0: explosive, 1: arrow, 2: fast bullet</param>
+				void throwProjectile(int damage, float range, uint8_t projectileType, bool throwLeft = false);
 			};
 
 		};

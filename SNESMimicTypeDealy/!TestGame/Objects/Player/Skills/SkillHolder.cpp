@@ -181,7 +181,6 @@ namespace GAME_NAME::Objects::Player
 					if (attribute.starts_with(effect))
 					{
 						std::string found = attribute.substr(effect.length());
-						std::cout << "ATTRIB FOUND: " << found << std::endl;
 
 						total += std::stof(found);
 					}
