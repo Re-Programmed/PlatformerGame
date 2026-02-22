@@ -141,7 +141,7 @@ namespace GAME_NAME
 
 			{ "Screw", SpriteBase(380), NO_HELD_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Holds stuff together."},			//27
 
-			{ "Bomb", SpriteBase(381), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "15,0,0.35,50,0" }, { TOOL_ACTION::VALUE, "5" } }, "Explode big."},			//28
+			{ "Bomb", SpriteBase(381), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "15,0,0.35,80,0" }, { TOOL_ACTION::VALUE, "5" } }, "Explode big."},			//28
 		};
 
 

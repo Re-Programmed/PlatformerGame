@@ -85,7 +85,7 @@ namespace GAME_NAME
 		}
 
 		int count;
-		GLFWmonitor* primaryMonitor = glfwGetMonitors(&count)[count - 1]; //Change later to choose a monitor. [FIX]
+		GLFWmonitor* primaryMonitor = glfwGetMonitors(&count)[0]; //Change later to choose a monitor. [FIX]
 		
 		int width, height;
 		const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
@@ -218,7 +218,7 @@ namespace GAME_NAME
 		{
 			Renderer::Render(m_game->GetCamera(), lastWindowSize, RENDER_LAYER_GUI, m_glWindow);
 			
-			if (InputManager::GetMouseButton(0) || InputManager::GetMouseButton(1))
+			if (InputManager::GetMouseButton(0) || InputManager::GetMouseButton(1) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZL) || InputManager::GetControllerButton(0, controllerRef::BUTTON_L) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZR) || InputManager::GetControllerButton(0, controllerRef::BUTTON_R))
 			{
 				GUI::GUIManager::ButtonClickEvent(InputManager::GetMouseScreenPosition(), InputManager::GetMouseButton(1));
 			}
@@ -237,12 +237,12 @@ namespace GAME_NAME
 		this->m_fullscreen = fullscreen;
 
 		int count;
-		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetMonitors(&count)[count - 1] /*Change later to choose a monitor.*/);
+		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetMonitors(&count)[0] /*Change later to choose a monitor.*/);
 		int mWidth, mHeight, mPosX, mPosY;
 		int wWidth = mode->width - INITIAL_WINDOW_FULLSCREEN_OFF_PADDING_X;
 		int wHeight = mode->height - INITIAL_WINDOW_FULLSCREEN_OFF_PADDING_Y;
-		glfwGetMonitorWorkarea(glfwGetMonitors(&count)[count - 1] /*Change later to choose a monitor.*/, &mPosX, &mPosY, &mWidth, &mHeight);
-		glfwSetWindowMonitor(m_glWindow, fullscreen ? glfwGetMonitors(&count)[count - 1] : NULL, mWidth/2 - wWidth/2 + mPosX, mHeight/2 - wHeight/2 + mPosY + INITIAL_WINDOW_FULLSCREEN_OFF_OFFSET_Y, wWidth, wHeight, mode->refreshRate);
+		glfwGetMonitorWorkarea(glfwGetMonitors(&count)[0] /*Change later to choose a monitor.*/, &mPosX, &mPosY, &mWidth, &mHeight);
+		glfwSetWindowMonitor(m_glWindow, fullscreen ? glfwGetMonitors(&count)[0] : NULL, mWidth/2 - wWidth/2 + mPosX, mHeight/2 - wHeight/2 + mPosY + INITIAL_WINDOW_FULLSCREEN_OFF_OFFSET_Y, wWidth, wHeight, mode->refreshRate);
 
 		windowSizeCallback(m_glWindow, mode->width, mode->height);
 

@@ -180,7 +180,7 @@ namespace GAME_NAME::Objects::Player
 					const std::string& attribute = data.Attributes.at(TOOL_ACTION::EQUIPMENT);
 					if (attribute.starts_with(effect))
 					{
-						std::string found = attribute.substr(effect.length());
+						std::string found = attribute.substr(effect.length() + 1);
 
 						total += std::stof(found);
 					}

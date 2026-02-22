@@ -22,6 +22,8 @@ namespace GAME_NAME::Objects
 	private:
 		const int m_damage; const float m_range; const uint8_t m_projectileType;
 
+		double m_fuse = 0.0;
+
 #define PROJECTILE_TYPE_COUNT 1
 		struct ProjectileType
 		{

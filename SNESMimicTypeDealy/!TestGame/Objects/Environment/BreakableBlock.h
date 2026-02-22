@@ -3,8 +3,11 @@
 #include "../../../Components/Physics/Collision/Helpers/StaticBoxCollisionObject.h"
 
 #include "../../Items/ItemType.h"
+#include "../../Items/InventoryItem.h"
 
 #include "../../../Objects/GameObjectState.h"
+
+#include "./Effects/ExplosionEffectedObject.h"
 
 namespace GAME_NAME::Objects
 {
@@ -12,15 +15,17 @@ namespace GAME_NAME::Objects
 
 
 	class BreakableBlock
-		: public StaticBoxCollisionObject, GameObjectState
+		: public StaticBoxCollisionObject, public GameObjectState, public Environment::Effects::ExplosionEffectedObject
 	{
 	public:
-		BreakableBlock(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, double mineTime = 1.0, int mineResistance = 0, Items::TOOL_ACTION requiredActionFlag = Items::TOOL_ACTION::MINE);
+		BreakableBlock(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, double mineTime = 1.0, int mineResistance = 0, Items::TOOL_ACTION requiredActionFlag = Items::TOOL_ACTION::MINE, Items::InventoryItem* drops = nullptr);
 
 		void Render(const Vec2& cameraPosition) override;
 
 		void Update(GLFWwindow* window) override;
 
+		void Exploded(Vec2 origin, float power) override;
+		
 		/* Save data stuff. */
 		void SaveState() override;
 		void LoadState() override;
@@ -34,6 +39,8 @@ namespace GAME_NAME::Objects
 		bool m_isBroken;
 
 	private:
+		Items::InventoryItem* m_drops = nullptr;
+
 		Vec2 m_shakeOffset; 
 		double m_shakeTimer = 0.0;
 

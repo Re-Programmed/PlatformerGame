@@ -48,6 +48,8 @@
 
 #define PLAYER_DAMAGE_ANIMATION_LENGTH 0.75f //How long the damage timer ticks for after the player is attacked.
 
+#define PLAYER_ARMOR_REPLENISH_RATE 1.5f
+
 namespace  GAME_NAME
 {
 	namespace  Objects
@@ -70,6 +72,8 @@ namespace  GAME_NAME
 #define PLAYER_HOLD_CONFETTI_GUN_SPRITE TextureDataBase(VictoryBalloon) + 1
 
 #define PLAYER_DEAD_SPRITE TextureDataBase(Dead)
+
+#define PLAYER_UNINTENTIONAL_DIVE_SPRITE TextureDataBase(UnintentionalFlying)
 
 #define DefaultPlayerSprite TextureDataBase(DefaultSprites)		//The default sprite to use for the player.
 
@@ -147,7 +151,7 @@ namespace  GAME_NAME
 			//TODO: Pixel Birb sitting animation is glitched because of weird offset issues from climbing sprites :(
 			const Player::PlayerTextureData Player::TextureData[3] = {
 				Player::PlayerTextureData(), //Default Sprites (0)
-				Player::PlayerTextureData(SpriteBase(191), SpriteBase(217), SpriteBase(204), SpriteBase(212), SpriteBase(219), SpriteBase(225), 0 /*Missing Dead*/, 0 /*Missing Victory Balloon*/, 0 /*Missing Riding Bike*/, new Player::PlayerAnimationData(	//Pixel Birb (1)
+				Player::PlayerTextureData(SpriteBase(191), SpriteBase(217), SpriteBase(204), SpriteBase(212), SpriteBase(219), SpriteBase(225), 0 /*Missing Dead*/, 0 /*Missing Victory Balloon*/, 0 /*Missing Riding Bike*/, 0 /*Missing unintentional flying*/, new Player::PlayerAnimationData(	//Pixel Birb (1)
 					Player::AnimationOverride(new int[4] { 1, 2, 1, 3 }, 4, ANIM_6_SPF * 1.33f),		//Walking 
 					Player::AnimationOverride(new int[4] { 4, 5, 6, 7 }, 4, ANIM_6_SPF),				//Running
 					Player::AnimationOverride(new int[2] { 8, 9 }, 2, ANIM_6_SPF),						//Jumping
@@ -162,7 +166,7 @@ namespace  GAME_NAME
 					Player::AnimationOverride(new int[2] { 2, 3 }, 2, ANIM_12_SPF * 1.5f),				//Idle 2
 					Player::AnimationOverride(0, 0)														//No Biking Animation
 				)),
-				Player::PlayerTextureData(SpriteBase(299), SpriteBase(326), SpriteBase(327), SpriteBase(335), SpriteBase(344), SpriteBase(357), SpriteBase(369), SpriteBase(368), SpriteBase(370))
+				Player::PlayerTextureData(SpriteBase(299), SpriteBase(326), SpriteBase(327), SpriteBase(335), SpriteBase(344), SpriteBase(357), SpriteBase(369), SpriteBase(368), SpriteBase(370), SpriteBase(367))
 			};
 
 			Player::Player(Vec2 position, bool loadFromSavedPosition)
@@ -171,6 +175,9 @@ namespace  GAME_NAME
 				m_playerLight(nullptr),
 				m_healthProgressBar(new ProgressBar(
 					Vec2(30, 18), Vec2(32, -3), Renderer::GetSprite(SpriteBase(72))->GetSpriteId()
+				)),
+				m_armorProgressBar(new StaticGUIElement(
+					Vec2(30, 18), Vec2(32, -3), Renderer::GetSprite(SpriteBase(382))->GetSpriteId()
 				)),
 				m_abilityMeterProgressBar(new ProgressBar(
 					Vec2(20, 12), Vec2(46, -3), Renderer::GetSprite(SpriteBase(71))->GetSpriteId()
@@ -198,6 +205,7 @@ namespace  GAME_NAME
 				GUI::Menus::GUIMenu::LoadMenu("/stat_overlay", nullptr);
 				Renderer::LoadGUIElement(m_healthProgressBar, 0);
 				Renderer::LoadGUIElement(m_abilityMeterProgressBar, 0);
+				Renderer::LoadGUIElement(m_armorProgressBar, 0);
 
 				//Register animations
 				registerAnimations();
@@ -269,6 +277,18 @@ namespace  GAME_NAME
 
 				std::thread animationUpdate([this, window] { m_animator->Update(window, this); });
 
+				float totalArmorEffect = m_skillHolder.GetEquipmentBoostEffect(HEALTH_EQUIPMENT_BOOST_EFFECT, m_backpack);
+
+				//If the armor stat is too high, replenish it until it reaches the desired value over time.
+				if (m_stats.Armor < totalArmorEffect)
+				{
+					setArmor(m_stats.Armor + static_cast<float>(Utils::Time::GameTime::DeltaTime::GetDeltaTime()) * PLAYER_ARMOR_REPLENISH_RATE);
+				}
+				else if (m_stats.Armor > totalArmorEffect)
+				{
+					setArmor(totalArmorEffect);
+				}
+
 				float yOffset = 0;
 				//Increment timers for all attributes.
 				for (auto playerAttrib : m_currentAttribModifiers)
@@ -295,7 +315,7 @@ namespace  GAME_NAME
 				}
 
 				//Check if the player is trying to use an item and use it if so.
-				if (m_screenInventory->GetHeldItem() != nullptr && InputManager::GetMouseButton(0) && !(m_frozen > 0) && !this->GetBackpack()->GetIsOpen())
+				if (m_screenInventory->GetHeldItem() != nullptr && InputManager::GetKey(keyRef::PLAYER_USE_ITEM) && !(m_frozen > 0) && !this->GetBackpack()->GetIsOpen())
 				{
 					//??? What is this doing? Attacking is handled on right click... 
 					if (ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].Actions & WEAPON)
@@ -365,6 +385,11 @@ namespace  GAME_NAME
 
 				//Update the health bar display.
 				m_healthProgressBar->SetPercentage(static_cast<char>(std::clamp(m_stats.Health, 0.f, 100.f)));
+
+				//Update the position of the armor bar.
+				Vec2 armorProgressPosition = m_healthProgressBar->GetPosition();
+				armorProgressPosition.X += m_healthProgressBar->GetScale().X * (m_healthProgressBar->GetDisplayPercentage() / 100.f);
+				m_armorProgressBar->SetPosition(Vec2{ armorProgressPosition.X - m_armorProgressBar->GetScale().X, armorProgressPosition.Y });
 
 				if (m_playerLight != nullptr)
 				{
@@ -784,6 +809,9 @@ namespace  GAME_NAME
 							m_heldItemDisplay->SetPosition(m_position + Vec2(3.5, 0.95f));
 						}
 
+						//Account for scale changes.
+						m_heldItemDisplay->Translate(Vec2{ 0.f, 16.f - m_heldItemDisplay->GetScale().Y });
+
 						if (m_textureFlipped)
 						{
 							m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + Vec2{ m_heldItemDisplay->GetScale().X - 7, 0 }, m_heldItemDisplay->GetScale() * Vec2{ -1, 1 }, 0.0F);
@@ -853,8 +881,7 @@ namespace  GAME_NAME
 
 			void Player::Damage(float damage, GameObject* cause, bool causeFainting)
 			{
-
-				float maxHealth = 100.f + m_skillHolder.GetEquipmentBoostEffect("Health", m_backpack);
+				constexpr float maxHealth = 100.f;
 
 				//Damage knockback.
 				if (cause != nullptr)
@@ -864,8 +891,19 @@ namespace  GAME_NAME
 
 				if(damage > 0.f){ CreateBloodParticle(cause, causeFainting); }
 
-				m_stats.Health -= damage;
-				m_healthProgressBar->SetPercentage(static_cast<char>(std::clamp(100.f * m_stats.Health / maxHealth, 0.f, maxHealth)));
+				//Damage with the applied damage minus the armor effect.
+				float finalDamage = damage - m_stats.Armor;
+				if (finalDamage < 0.f) { finalDamage = 0.f; }
+				m_stats.Health -= (finalDamage);
+
+				{
+					//Remove from the armor applied based on how much damage was taken.
+					float newArmor = m_stats.Armor - damage;
+					if (newArmor < 0.f) { newArmor = 0.f; }
+					setArmor(newArmor);
+				}
+
+				//m_healthProgressBar->SetPercentage(static_cast<char>(std::clamp(m_stats.Health, 0.f, 100.f))); This will happen in update.
 
 				m_damageAnimationTimer = PLAYER_DAMAGE_ANIMATION_LENGTH;
 
@@ -877,7 +915,7 @@ namespace  GAME_NAME
 
 			void Player::Heal(float amount)
 			{
-				float maxHealth = 100.f + m_skillHolder.GetEquipmentBoostEffect("Health", m_backpack);
+				constexpr float maxHealth = 100.f;
 
 				m_stats.Health += maxHealth;
 
@@ -886,7 +924,7 @@ namespace  GAME_NAME
 					m_stats.Health = maxHealth;
 				}
 
-				m_healthProgressBar->SetPercentage(static_cast<char>(std::clamp(100.f * m_stats.Health / maxHealth, 0.f, maxHealth)));
+				//m_healthProgressBar->SetPercentage(static_cast<char>(std::clamp(m_stats.Health, 0.f, 100.f))); This will happen in update.
 
 			}
 
@@ -955,15 +993,16 @@ namespace  GAME_NAME
 
 				if (customHeldTexture != GLOBAL_SPRITE_BASE)
 				{
-					m_heldItemDisplay->SetScale({ 16, 16 });
 					//delete m_heldItemDisplay->GetSprite();
 
 					//Use one texture for all display.
 					if (customHeldTexture == GLOBAL_SPRITE_BASE - 1)
 					{
 						m_heldItemDisplay->SetSprite(Renderer::GetSprite(Items::ITEM_DATA[item->GetType()].Texture));
+						m_heldItemDisplay->SetScale({ 10.f, 10.f });
 					}
 					else {
+						m_heldItemDisplay->SetScale({ 16, 16 });
 						m_heldItemDisplay->SetSprite(Renderer::GetSprite(customHeldTexture));
 					}
 					return;
@@ -997,6 +1036,8 @@ namespace  GAME_NAME
 				m_position += Vec2(0, 2.f);
 				AddVelocity(direction);
 				m_diving = damage;
+
+				SetFrozen(true, DIVING);
 			}
 
 			Inventory::ReturnItem Player::GetItemByType(const ITEM_TYPE& type, int& foundSlot, bool& wasBackpack)
@@ -1030,6 +1071,7 @@ namespace  GAME_NAME
 				m_screenInventory->HidePlayerSlots();
 				Renderer::UnloadGUIElement(m_abilityMeterProgressBar, 0);
 				Renderer::UnloadGUIElement(m_healthProgressBar, 0);
+				Renderer::UnloadGUIElement(m_armorProgressBar, 0);
 
 				GUI::Menus::GUIMenu::RemoveLastMenu();
 			}
@@ -1071,6 +1113,11 @@ namespace  GAME_NAME
 				{
 					if (m_diving > 0.f)
 					{
+						if (m_currentPlayerLookDirection == DIVING)
+						{
+							SetFrozen(false); SetFrozen(false); SetFrozen(false);
+						}
+
 						Damage(m_diving, collided);
 						m_airTime = 0.f;
 						m_diving = 0.f;
@@ -1168,6 +1215,15 @@ namespace  GAME_NAME
 			{
 				//		xPos+yPos
 				return std::to_string(std::round(m_position.X)).append("+").append(std::to_string(std::round(m_position.Y)));
+			}
+
+			void Player::setArmor(float armor)
+			{
+				m_stats.Armor = armor;
+
+				float xScale = (armor / 100.f) * m_healthProgressBar->GetScale().X;
+
+				m_armorProgressBar->SetScale(Vec2{ xScale, m_armorProgressBar->GetScale().Y });
 			}
 
 			bool Player::dropHeldItem()
@@ -2029,6 +2085,13 @@ namespace  GAME_NAME
 						break;
 					}
 
+					case DIVING:
+					{
+						m_scale = Vec2(45.f / 2.f, 41.f / 2.f);
+						m_sprite.reset(Renderer::GetSprite(PLAYER_UNINTENTIONAL_DIVE_SPRITE));
+						break;
+					}
+
 					default:
 					{
 						//Reset animation if currently playing.
@@ -2091,22 +2154,31 @@ using namespace Lighting;
 				}
 
 				//Player is trying to attack.
-				if (InputManager::GetMouseButton(1))
+				if (InputManager::GetKey(keyRef::PLAYER_ATTACK))
 				{
 					if (m_frozen) { return; }
-					Vec2 mousePos = InputManager::GetMouseWorldPosition(TestGame::INSTANCE->GetCamera());
+					
+					//If the player is using the mouse to attack and not the controller.
+					if (InputManager::GetUsingMouse())
+					{
+						Vec2 mousePos = InputManager::GetMouseWorldPosition(TestGame::INSTANCE->GetCamera());
 
-					if (mousePos.X < m_position.X + m_scale.X / 2.f)
+						if (mousePos.X < m_position.X + m_scale.X / 2.f)
+						{
+							m_textureFlipped = false;
+						}
+						else
+						{
+							m_textureFlipped = true;
+						}
+					}
+
+					if (!m_textureFlipped)
 					{
 						//Offset position to adjust for offset visual position in attack animation.
 						m_position -= Vec2(13.f, 0) * m_scaleMultiplier;
-						m_textureFlipped = false;
-						
-						m_physics->AddVelocity({6.5f, 0.f});
-					}
-					else
-					{
-						m_textureFlipped = true;
+
+						m_physics->AddVelocity({ 6.5f, 0.f });
 					}
 
 					//Play attacking animation.

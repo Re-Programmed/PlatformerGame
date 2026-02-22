@@ -9,15 +9,19 @@
 #include "../../../Resources/Save/SaveManager.h"
 #include "../../../Objects/StateSaver.h"
 
+#include "../../Items/FloorItem.h"
 
 #define BREAKABLE_BLOCK_FADE_SPEED_MULTIPLIER 5.f
+
+#define BREAKABLE_BLOCK_EXPLOSION_RESISTANCE 5
 
 namespace GAME_NAME::Objects
 {
 	double BreakableBlock::m_currentMiningTime = 0.0;
 
-	BreakableBlock::BreakableBlock(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, double mineTime, int mineResistance, TOOL_ACTION requiredActionFlag)
-		: StaticBoxCollisionObject(position, scale, sprite), GameObjectState(saveID), m_mineTime(mineTime), m_mineResistance(mineResistance), m_requiredActionFlag(requiredActionFlag), m_isBroken(false), m_shakeOffset(Vec2{0.f})
+	BreakableBlock::BreakableBlock(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, double mineTime, int mineResistance, TOOL_ACTION requiredActionFlag, InventoryItem* drops)
+		: StaticBoxCollisionObject(position, scale, sprite), GameObjectState(saveID), m_mineTime(mineTime), m_mineResistance(mineResistance), m_requiredActionFlag(requiredActionFlag), m_isBroken(false), m_shakeOffset(Vec2{0.f}),
+		m_drops(drops)
 	{
 		this->LoadState();
 	}
@@ -61,10 +65,15 @@ namespace GAME_NAME::Objects
 		//If its broken, no need to do anything.
 		if (m_isBroken) { return; }
 
+		if (InputManager::GetMouseHidden())
+		{
+			return;
+		}
+
 		Vec2 mouseWorldPosition = InputManager::GetMouseWorldPosition(TestGame::INSTANCE->GetCamera());
 		m_isHovered = Utils::CollisionDetection::PointWithinBoxBL(mouseWorldPosition, m_position, m_scale);
 
-		if (InputManager::GetMouseButton(0))
+		if (InputManager::GetKey(PLAYER_USE_ITEM))
 		{
 			//The player is trying to mine this object.
 			if (m_isHovered)
@@ -132,6 +141,14 @@ namespace GAME_NAME::Objects
 		StaticBoxCollisionObject::Update(window);
 	}
 
+	void BreakableBlock::Exploded(Vec2 origin, float power)
+	{
+		if (m_mineResistance < BREAKABLE_BLOCK_EXPLOSION_RESISTANCE)
+		{
+			breakBlock();
+		}
+	}
+
 	void BreakableBlock::SaveState()
 	{
 		std::string saveStr("");
@@ -165,6 +182,12 @@ namespace GAME_NAME::Objects
 
 			pe->RegisterParticle(particle);
 			pe->SpawnParticles(std::rand() * 10 / RAND_MAX + 10, { 0.45f, 1.f }, 0.0225f, 0.f);
+
+			if (m_drops != nullptr)
+			{
+				FloorItem* item = new FloorItem(m_position + m_scale / 2.f, m_drops, 1.f);
+				Renderer::InstantiateObject(Renderer::InstantiateGameObject(item, true, 1, false));
+			}
 
 			//BreakableBlock* removeAfterTime = this;
 			//Create thread that sleeps until it can delete the particle emitter.

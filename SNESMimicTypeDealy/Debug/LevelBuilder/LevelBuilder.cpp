@@ -209,7 +209,7 @@ using namespace GUI;
 			refreshingLevel = false;
 		}
 
-		if (InputManager::GetMouseButton(0) || InputManager::GetMouseButton(1))
+		if (InputManager::GetMouseButton(0) || InputManager::GetMouseButton(1) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZL) || InputManager::GetControllerButton(0, controllerRef::BUTTON_L) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZR) || InputManager::GetControllerButton(0, controllerRef::BUTTON_R))
 		{
 			if (PerformedButtonClickEvent == false)
 			{

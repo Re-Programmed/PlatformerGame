@@ -59,6 +59,11 @@ namespace GAME_NAME
 				static void ButtonClickEvent(Vec2 position, bool wasRightClick);
 
 				/// <summary>
+				/// Allows the use of the controller to select buttons.
+				/// </summary>
+				static void UpdateControllerInput();
+
+				/// <summary>
 				/// Register a button so it can get clicked.
 				/// Setting configureButtonId to false will cause the button to retain whatever buttonId it was initilized with. When this variable 
 				/// is true, the button id is set according to how many buttons exist, ensuring that configured buttons have unique ids.
@@ -106,6 +111,9 @@ namespace GAME_NAME
 				/// All buttons on screen.
 				/// </summary>
 				static std::unordered_map<uint32_t, GUIButton*> m_buttons;
+
+				static int32_t m_controllerSelectedButton;
+				static bool m_joyHeld;
 			};
 		}
 	}

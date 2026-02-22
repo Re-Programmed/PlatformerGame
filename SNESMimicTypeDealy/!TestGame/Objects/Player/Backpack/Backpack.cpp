@@ -479,8 +479,7 @@ namespace GAME_NAME::Objects::Player
 
 		m_clickDelay = 0.25f;
 
-		std::cout << "CLICKED EQUIPMENT SLOT: " << id << std::endl;
-
+		if (CurrentOpenBackpack == nullptr) { return; }
 		updateSlotItem(id - (CurrentOpenBackpack->m_size - BACKPACK_NUM_EQUIPMENT_SLOTS), TOOL_ACTION::EQUIPMENT /*Item must have the equipment attribute to enter this slot.*/);
 	}
 

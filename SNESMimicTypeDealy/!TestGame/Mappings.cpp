@@ -565,7 +565,7 @@ using namespace Cutscenes;
 	},
 
 	/*
-		15: Breakable Object (map,positionX,positionY,scaleX,scaleY,sprite,layer,breakSeconds[double],breakResistance,toolActionFlags=MINE)
+		15: Breakable Object (map,positionX,positionY,scaleX,scaleY,sprite,layer,breakSeconds[double],breakResistance,toolActionFlags=MINE,drops=null)
 	*/
 
 	[](std::vector<std::string> data, size_t n)
@@ -574,7 +574,13 @@ using namespace Cutscenes;
 		DebugMapper("Loading Breakable Object");
 #endif
 
-		BreakableBlock* bb = new BreakableBlock(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), n, std::stod(data[6]), std::stoi(data[7]), data.size() > 8 ? (Items::TOOL_ACTION)std::stoi(data[8], nullptr, 2) : Items::TOOL_ACTION::MINE);
+		InventoryItem* drops = nullptr;
+		if (data.size() > 9)
+		{
+			drops = InventoryItem::DecodeItemString(data[9]);
+		}
+
+		BreakableBlock* bb = new BreakableBlock(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), n, std::stod(data[6]), std::stoi(data[7]), data.size() > 8 ? (Items::TOOL_ACTION)std::stoi(data[8], nullptr, 2) : Items::TOOL_ACTION::MINE, drops);
 		
 		//ACTIVE?
 		//TODO: NOT ACTIVE WOULD BE BETTER BUT DOES IT SCREW UP THE SAVE DATA.

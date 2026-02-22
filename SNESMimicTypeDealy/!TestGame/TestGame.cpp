@@ -185,7 +185,9 @@ namespace GAME_NAME
 
 		//Update input manager stuff.
 		InputManager::UpdateKeyStates();
-		InputManager::GetJoystick();
+
+		//Used for selecting buttons on menus.
+		GUIManager::UpdateControllerInput();
 
 
 		//Update all cutscenes detection.

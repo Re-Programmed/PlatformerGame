@@ -693,6 +693,8 @@ namespace GAME_NAME
 			iVec2 chunkPos = AsChunkPosition(bottomLeft);
 			iVec2 chunkScale = AsChunkPosition(scale) + 1;
 
+			if (chunkPos.GetX() < 0 || chunkPos.GetY() < 0) { return ret; }
+
 			const int16_t start = chunkPos.GetX() * levelSizeY + chunkPos.GetY();
 			const int16_t endX = chunkScale.GetX();
 			const int16_t endY = chunkScale.GetY();

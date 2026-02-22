@@ -31,6 +31,7 @@ namespace GAME_NAME::Objects::Collectables
 		/// True if this collectable has been collected.
 		/// </summary>
 		bool m_isCollected = false;
+		bool m_wasPreviouslyCollected = false;
 
 
 		void onInteract(std::shared_ptr<Player::Player> player, InputManager::KEY_STATE state) override;

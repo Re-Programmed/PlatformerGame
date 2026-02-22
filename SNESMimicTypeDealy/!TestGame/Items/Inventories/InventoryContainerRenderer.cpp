@@ -105,7 +105,7 @@ namespace GAME_NAME::Items::Inventories
 			if (CollisionDetection::PointWithinBoxBL(InputManager::GetMouseScreenPosition(), m_renderedSlots[i]->GetPosition(), m_renderedSlots[i]->GetScale()))
 			{
 				//Check if the user is clicking on a slot and call the respective clickSlot method.
-				if (InputManager::GetMouseButton(0))
+				if (InputManager::GetMouseButton(0) || InputManager::GetControllerButton(0, controllerRef::BUTTON_L) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZL) || InputManager::GetControllerButton(0, controllerRef::BUTTON_R) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZR))
 				{
 					clickSlot(i);
 				}

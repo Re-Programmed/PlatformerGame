@@ -365,6 +365,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Effects\BloodMark.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\ElectricalZap.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\Explosion.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Effects\ExplosionEffectedObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\FlashEffect.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchableObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchedRegion.h" />

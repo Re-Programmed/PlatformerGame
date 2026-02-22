@@ -24,7 +24,10 @@ namespace GAME_NAME::Objects::Collectables
 		Resources::SaveManager::GetLevelString(result, m_objectSaveID);
 
 		m_isCollected = result.starts_with(SAVE_MNG_TRUE_STATE);
-		if (m_isCollected) { m_active = false; }
+		if (m_isCollected) 
+		{
+			m_wasPreviouslyCollected = true;
+		}
 	}
 
 	void BasicCollectable::SaveState()
@@ -39,6 +42,8 @@ namespace GAME_NAME::Objects::Collectables
 
 	void BasicCollectable::Update(GLFWwindow* window)
 	{
+		if (m_wasPreviouslyCollected) { return; }
+
 		if (m_isCollected)
 		{
 			Vec2 center = m_position + m_scale / 2.f;
@@ -57,8 +62,24 @@ namespace GAME_NAME::Objects::Collectables
 		Interactable::Update(window);
 	}
 
+	Vec4 BasicCollectable_PreviouslyCollectedColors[4] = {
+		{ 0.6f, 0.6f, 1.f, 0.5f },
+		{ 0.6f, 0.6f, 1.f, 0.5f },
+		{ 0.6f, 0.6f, 1.f, 0.5f },
+		{ 0.6f, 0.6f, 1.f, 0.5f }
+	};
+	
 	void BasicCollectable::Render(const Vec2& cameraPosition)
 	{
+		if (m_wasPreviouslyCollected)
+		{	
+			DynamicSprite sprite(m_sprite->GetSpriteId());
+			sprite.UpdateTextureColor(BasicCollectable_PreviouslyCollectedColors);
+			sprite.Render(cameraPosition, m_position, m_scale * Vec2{ -1.f });
+			return;
+		}
+
+
 		Sprite* glow = Renderer::GetSprite(BASIC_COLLECTABLE_GLOW_SPRITE);
 		Vec2 glowScale = m_scale * 1.25f;
 		glow->Render(cameraPosition, (m_position + m_scale/2.f) - (glowScale / 2.f), glowScale);

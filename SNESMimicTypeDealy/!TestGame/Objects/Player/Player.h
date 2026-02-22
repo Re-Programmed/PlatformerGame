@@ -132,7 +132,6 @@ namespace  GAME_NAME
 				void Heal(float health);
 				void Kill();
 
-
 				/// <summary>
 				/// Uses the specified damage and range to play an attacking animation and create a damage hitbox.
 				/// </summary>
@@ -204,6 +203,7 @@ namespace  GAME_NAME
 					int Dead = SpriteBase(250);
 					int VictoryBalloon = SpriteBase(259);	//The player holding a balloon for the level exit.
 					int RidingBike = SpriteBase(265);		//The first sprite of the bike riding animation (2 sprites).
+					int UnintentionalFlying = SpriteBase(231);
 
 					PlayerAnimationData* AnimationOverride = nullptr;
 
@@ -238,9 +238,9 @@ namespace  GAME_NAME
 						}
 					}
 
-					PlayerTextureData(int defaultSprite, int bagTurnaround, int fall, int basicAttack, int climbing, int idleAnimation, int dead, int victoryBalloon, int ridingBike, PlayerAnimationData* animationOverride = nullptr)
+					PlayerTextureData(int defaultSprite, int bagTurnaround, int fall, int basicAttack, int climbing, int idleAnimation, int dead, int victoryBalloon, int ridingBike, int unintentionalFlying, PlayerAnimationData* animationOverride = nullptr)
 						: DefaultSprites(defaultSprite), BagTurnaround(bagTurnaround), Fall(fall), BasicAttack(basicAttack), Climbing(climbing), AnimationOverride(animationOverride),
-						IdleAnimations(idleAnimation), Dead(dead), VictoryBalloon(victoryBalloon), RidingBike(ridingBike)
+						IdleAnimations(idleAnimation), Dead(dead), VictoryBalloon(victoryBalloon), RidingBike(ridingBike), UnintentionalFlying(unintentionalFlying)
 					{
 
 					}
@@ -257,6 +257,7 @@ namespace  GAME_NAME
 						VictoryBalloon = other.VictoryBalloon;
 						RidingBike = other.RidingBike;
 						AnimationOverride = other.AnimationOverride;
+						UnintentionalFlying = other.UnintentionalFlying;
 
 						return *this;
 					}
@@ -310,7 +311,8 @@ namespace  GAME_NAME
 					DEAD,
 					VICTORY_BALLOON,
 					VICTORY_CONFETTI,
-					BIKING
+					BIKING,
+					DIVING
 				};
 
 				/// <summary>
@@ -485,6 +487,11 @@ namespace  GAME_NAME
 				/// <returns></returns>
 				std::string encodeSave();
 
+				/// <summary>
+				/// Update the player's armor amount.
+				/// </summary>
+				/// <param name="armor"></param>
+				void setArmor(float armor);
 
 				/// <summary>
 				/// Misc state for player save data.
@@ -561,9 +568,11 @@ namespace  GAME_NAME
 				struct {
 					float Health = 100.f;
 					float AbilityMeter = 100.f;
+					float Armor = 0.f;
 				} m_stats;
 
 				ProgressBar* m_healthProgressBar;		//Progress bar for displaying health.
+				StaticGUIElement* m_armorProgressBar;	//Progress bar for displaying armor. (Works by appending itself to the health progress bar and does not have a maximum.)
 				ProgressBar* m_abilityMeterProgressBar;	//Progress bar for ability meter.
 
 				Particles::ParticleEmitter* const m_particleEmitter;

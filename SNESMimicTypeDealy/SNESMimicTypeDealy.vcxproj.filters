@@ -1013,6 +1013,9 @@
     <ClInclude Include="!TestGame\Objects\Projectile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Environment\Effects\ExplosionEffectedObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\testing\sprite\1_player.png">

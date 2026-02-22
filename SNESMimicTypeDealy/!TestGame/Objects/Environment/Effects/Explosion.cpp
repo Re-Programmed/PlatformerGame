@@ -4,6 +4,8 @@
 #include "../../../Objects/Enemies/Enemy.h"
 #include "../../../TestGame.h"
 
+#include "./ExplosionEffectedObject.h"
+
 #define EXPLOSION_VELOCITY_CONSTANT 250.f
 #define PARTICLE_VELOCITY_DAMP 0.002f
 #define MAX_PARTICLE_VELOCITY 100.f
@@ -73,6 +75,21 @@ namespace GAME_NAME::Objects::Environment::Effects
 				enemy->AddVelocity(calculateExplosionVelocity(enemy->GetPosition() + enemy->GetScale()/2.f));
 
 				enemy->AddRotationalVelocity((std::rand() * 2) / RAND_MAX < 1 ? power : -power);
+			}
+
+			ExplosionEffectedObject* eeo = dynamic_cast<ExplosionEffectedObject*>(activeObject);
+			if (eeo)
+			{
+				eeo->Exploded(m_position, m_power);
+			}
+		}
+
+		for (GameObject* staticObject : Renderer::GetAllChunkObjectsInArea(this->m_position - Vec2{ radius }, radius * 2.f))
+		{
+			ExplosionEffectedObject* eeo = dynamic_cast<ExplosionEffectedObject*>(staticObject);
+			if (eeo)
+			{
+				eeo->Exploded(m_position, m_power);
 			}
 		}
 	}

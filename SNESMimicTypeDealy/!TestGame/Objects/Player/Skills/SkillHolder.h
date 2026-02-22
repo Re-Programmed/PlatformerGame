@@ -7,6 +7,8 @@
 
 namespace GAME_NAME::Objects::Player
 {
+#define HEALTH_EQUIPMENT_BOOST_EFFECT "Health"
+
 using namespace MathUtils;
 using namespace GUI;
 

@@ -26,7 +26,7 @@
 	   [GUI LAYER 2]	|
 	*/
 
-	#define GLOBAL_SPRITE_BASE -381								//Represents the negative number of sprites in the global_sprites directory.
+	#define GLOBAL_SPRITE_BASE -382								//Represents the negative number of sprites in the global_sprites directory.
 
 	#define DEFAULT_LEVEL_SIZE_X 240							//The default size of a level in chunks.
 	#define DEFAULT_LEVEL_SIZE_Y 5								//The default size of a level in chunks.

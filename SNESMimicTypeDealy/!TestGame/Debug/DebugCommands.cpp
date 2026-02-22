@@ -114,6 +114,13 @@ void DebugCommands::HandleCommands()
 			continue;
 		}
 
+		if (input == "dive")
+		{
+			DebugCommands_Log("Diving.");
+			GAME_NAME::TestGame::ThePlayer->Dive(Vec2{ 100.f, 80.f }, 15.f);
+			continue;
+		}
+
 		if (input.starts_with("explosion"))
 		{
 			std::vector<std::string> params = getParams(input);

@@ -1,6 +1,9 @@
 #include "GUIManager.h"
 #include "../../Utils/CollisionDetection.h"
-#pragma once
+
+#include "../../Input/InputManager.h"
+
+#include "../../!TestGame/TestGame.h"
 
 namespace GAME_NAME
 {
@@ -9,6 +12,8 @@ namespace GAME_NAME
 		namespace GUI
 		{
 			std::unordered_map<uint32_t, GUIButton*> GUIManager::m_buttons;
+			int32_t GUIManager::m_controllerSelectedButton = -1;
+			bool GUIManager::m_joyHeld = false;
 
 			GUIManager::GUI_ELEMENT_TYPE GUIManager::GetGUIComponentFromCode(std::string code)
 			{
@@ -43,6 +48,58 @@ namespace GAME_NAME
 						return;
 					}
 				}
+			}
+
+			void GUIManager::UpdateControllerInput()
+			{
+				//Using controller.
+				if (!InputManager::GetUsingMouse() && MenuIsOpen)
+				{
+					Vec2 joy1 = InputManager::GetJoystick(0, 0);
+					if (joy1.X > JOYSTICK_DEADZONE || joy1.X < -JOYSTICK_DEADZONE)
+					{
+						//If the player isn't in a menu, set mouse to the middle.
+						if (!TestGame::ThePlayer->GetFrozen()) { InputManager::SetMouseScreenPosition(Vec2{ TargetResolutionX / 2.f, TargetResolutionY / 2.f }); glfwSetInputMode(TestGame::INSTANCE->FirstWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN); return; }
+
+						if (!m_joyHeld)
+						{
+							m_controllerSelectedButton += (joy1.X > 0.f ? 1.f : -1.f);
+							if (m_controllerSelectedButton >= m_buttons.size())
+							{
+								m_controllerSelectedButton = 0;
+							}
+							else if (m_controllerSelectedButton < 0)
+							{
+								m_controllerSelectedButton = m_buttons.size() - 1;
+							}
+
+							int i = 0;
+							for (auto& [buttonID, button] : m_buttons)
+							{
+								if (i == m_controllerSelectedButton)
+								{
+									if (button != nullptr)
+									{
+										//Move the mouse to be selecting the next button.
+										InputManager::SetMouseScreenPosition(button->GetPosition() + button->GetScale() / 2.f);
+
+									}
+								}
+
+								i++;
+							}
+
+							m_joyHeld = true;
+						}
+
+						return;
+					}
+				}
+				else {
+					m_controllerSelectedButton = -1;
+				}
+
+				m_joyHeld = false;
 			}
 		}
 	}

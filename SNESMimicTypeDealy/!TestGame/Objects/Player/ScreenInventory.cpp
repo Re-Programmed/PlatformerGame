@@ -45,6 +45,14 @@ namespace GAME_NAME
 	void ScreenInventory::Update()
 	{
 		{
+			if (InputManager::GetKeyUpDown(PLAYER_SCREEN_INVENTORY_SCROLL_THROUGH) & InputManager::KEY_STATE_PRESSED)
+			{
+				int slot = m_saveMetadata.SelectedSlot + 1;
+				if (slot > 3) { slot = 1; }
+
+				SelectSlot(slot);
+			}
+
 			if (InputManager::GetKeyUpDown(PLAYER_SCREEN_INVENTORY_SLOT_1) & InputManager::KEY_STATE_PRESSED)
 			{
 				SelectSlot(1);

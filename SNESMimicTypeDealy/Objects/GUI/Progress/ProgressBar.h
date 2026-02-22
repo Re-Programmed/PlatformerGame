@@ -38,6 +38,15 @@ namespace GAME_NAME::Objects::GUI
 			return m_percentage;
 		}
 
+		/// <summary>
+		/// When the bar is animating to a new position, the display percentage will be changing differently than the actual value of the percentage.
+		/// </summary>
+		/// <returns></returns>
+		inline float GetDisplayPercentage()
+		{
+			return m_displayPercentage;
+		}
+
 		void Render(float zoom) override;
 
 	private:

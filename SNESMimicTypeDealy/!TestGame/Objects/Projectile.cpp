@@ -2,7 +2,11 @@
 
 #include "../../Rendering/Renderers/Renderer.h"
 
+#include "../../Utils/Time/GameTime.h"
+
 #include "./Environment/Effects/Explosion.h"
+
+#define EXPLOSIVE_PROJECTILE_FUSE_MAX 0.33
 
 namespace GAME_NAME::Objects
 {
@@ -21,11 +25,16 @@ namespace GAME_NAME::Objects
 
 		this->m_physics->SetVelocity({ range * (directionLeft ? -1.f : 1.f), range / 1.5f});
 		this->m_physics->SetFrictionDrag(0.f);
-		this->m_physics->SetRotationalVelocity(1.f);
+		this->m_physics->SetRotationalVelocity(2.f);
 	}
 
 	void Projectile::Update(GLFWwindow* window)
 	{
+		if (m_fuse > 0.0)
+		{
+			m_fuse += Utils::Time::GameTime::GetScaledDeltaTime();
+		}
+
 		ActiveBoxCollisionGravityObject::Update(window);
 	}
 
@@ -36,10 +45,16 @@ using namespace Environment::Effects;
 		//Explosive
 		if (m_projectileType == 0)
 		{
-			Explosion* explosion = new Explosion(m_position, m_damage, m_damage);
-			Renderer::InstantiateObject(Renderer::InstantiateGameObject(explosion, true, 1, 1));
+			m_fuse += 0.01;
+			this->m_physics->SetVelocity(this->m_physics->GetVelocity() / 2.f);
 
-			Renderer::DestroyActiveObject(this);
+			if (m_fuse > EXPLOSIVE_PROJECTILE_FUSE_MAX)
+			{
+				Explosion* explosion = new Explosion(m_position, m_damage, m_damage);
+				Renderer::InstantiateObject(Renderer::InstantiateGameObject(explosion, true, 1, 1));
+
+				Renderer::DestroyActiveObject(this);
+			}
 		}
 	}
 }

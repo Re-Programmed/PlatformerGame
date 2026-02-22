@@ -9,10 +9,12 @@
 
 ///How many inputs to check for
 #if _DEBUG
-#define KEY_ARRAY_SIZE 22
+#define KEY_ARRAY_SIZE 25
 #else
-#define KEY_ARRAY_SIZE 14
+#define KEY_ARRAY_SIZE 17
 #endif
+
+#define JOYSTICK_DEADZONE 0.175f //TODO: Make this a setting.
 
 const std::string_view KeybindNames[KEY_ARRAY_SIZE] {
 	"PLAYER_MOVE_UP",
@@ -25,9 +27,12 @@ const std::string_view KeybindNames[KEY_ARRAY_SIZE] {
 	"PLAYER_SCREEN_INVENTORY_SLOT_1",
 	"PLAYER_SCREEN_INVENTORY_SLOT_2",
 	"PLAYER_SCREEN_INVENTORY_SLOT_3",
+	"PLAYER_SCREEN_INVENTORY_SCROLL_THROUGH",
 	"PLAYER_DROP_HELD_ITEM",
 	"PLAYER_OPEN_BACKPACK",
 	"PLAYER_TOGGLE_FLASHLIGHT",
+	"PLAYER_ATTACK",
+	"PLAYER_USE_ITEM",
 	"DEFAULT_PAUSE_GAME",
 #if _DEBUG
 	"PLAYER_DEBUG",
@@ -55,11 +60,14 @@ namespace GAME_NAME
 		PLAYER_FORCE_WALK,			//Player Walk [Shift]
 		PLAYER_INTERACT,			//Player Interact [E]
 		PLAYER_SCREEN_INVENTORY_SLOT_1, //Player Select Slot 1 [1]
-		PLAYER_SCREEN_INVENTORY_SLOT_2, //Player Select Slot 1 [2]
-		PLAYER_SCREEN_INVENTORY_SLOT_3, //Player Select Slot 1 [3]
+		PLAYER_SCREEN_INVENTORY_SLOT_2, //Player Select Slot 2 [2]
+		PLAYER_SCREEN_INVENTORY_SLOT_3, //Player Select Slot 3 [3]
+		PLAYER_SCREEN_INVENTORY_SCROLL_THROUGH, //Player Scroll Through Slots [Tab]
 		PLAYER_DROP_HELD_ITEM,		//Player Drop Held Item [Q]
 		PLAYER_OPEN_BACKPACK,		//Player Open Backpack [I]
 		PLAYER_TOGGLE_FLASHLIGHT,	//Player Toggle Flashlight [F]
+		PLAYER_ATTACK,				//Player Attack [Right Mouse Button]
+		PLAYER_USE_ITEM,			//Player Use Item [Left Mouse Button]
 
 		DEFAULT_PAUSE_GAME,			//Pause Game {DEFAULT} [ESC]
 
@@ -75,10 +83,38 @@ namespace GAME_NAME
 #endif
 	};
 
-	enum joyAxis
+	enum controllerRef
 	{
-		JOY_AXIS_X,
-		JOY_AXIS_Y
+		JOY_1_AXIS_X_POSITIVE,
+		JOY_1_AXIS_X_NEGATIVE,
+		JOY_1_AXIS_Y_POSITIVE,
+		JOY_1_AXIS_Y_NEGATIVE,
+
+		JOY_2_AXIS_X_POSITIVE,
+		JOY_2_AXIS_X_NEGATIVE,
+		JOY_2_AXIS_Y_POSITIVE,
+		JOY_2_AXIS_Y_NEGATIVE,
+
+		BUTTON_B,			//Button 0
+		BUTTON_A,			//Button 1
+		BUTTON_Y,			//Button 2
+		BUTTON_X,			//Button 3
+		BUTTON_L,			//Button 4
+		BUTTON_R,			//Button 5
+		BUTTON_ZL,			//Button 6
+		BUTTON_ZR,			//Button 7
+		BUTTON_MINUS,		//Button 8
+		BUTTON_PLUS, 		//Button 9
+		JOY_1_PRESSED, 		//Button 10
+		JOY_2_PRESSED, 		//Button 11
+		BUTTON_HOME, 		//Button 12
+		BUTTON_SCREENSHOT, 	//Button 13
+		BUTTON_UNKNOWN_1, 	//Button 14
+		BUTTON_UNKNOWN_2, 	//Button 15
+		DPAD_UP, 			//Button 16
+		DPAD_RIGHT, 		//Button 17
+		DPAD_DOWN, 			//Button 18
+		DPAD_LEFT 			//Button 19
 	};
 
 
@@ -107,7 +143,15 @@ namespace GAME_NAME
 		/// <returns></returns>
 		static const void UpdateKeyStates();
 
-		static const float GetJoystick();
+		static bool ControllerAvailable(int controllerIndex)
+		{
+			return glfwJoystickPresent(controllerIndex);
+		}
+
+		static const std::string GetControllerName(int controllerIndex);
+		static const MathUtils::Vec2 GetJoystick(int controllerIndex, int joystickIndex);
+
+		static const bool GetControllerButton(int controllerIndex, controllerRef button);
 
 		//Gets the current state of a mouse button.
 		static inline const int GetMouseButton(int button)
@@ -120,6 +164,8 @@ namespace GAME_NAME
 
 		//Gets the mouse position in world coordinates.
 		static MathUtils::Vec2 GetMouseScreenPosition();
+		//Sets the mouse position in world coordinates.
+		static void SetMouseScreenPosition(MathUtils::Vec2 mousePosition);
 
 		//Gets the mouse position in world coordinates with respect to the given camera.
 		static MathUtils::Vec2 GetMouseWorldPosition(Rendering::Camera::Camera* camera);
@@ -160,7 +206,18 @@ namespace GAME_NAME
 			m_scrollCallbacks.erase(m_scrollCallbacks.begin() + index);
 		}
 
+		inline static bool GetMouseHidden()
+		{
+			return glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_HIDDEN;
+		}
+
+		inline static bool GetUsingMouse()
+		{
+			return m_usingMouse;
+		}
+
 	private:
+		static bool m_usingMouse; static MathUtils::Vec2 m_lastMousePos;
 
 		static void scrollCallback(GLFWwindow* window, double xScroll, double yScroll);
 
@@ -171,6 +228,17 @@ namespace GAME_NAME
 		static GLFWwindow* m_window;					//Window pointer. :)
 
 		static KEY_STATE m_keysDown[KEY_ARRAY_SIZE];	//Stores which keys are held.
+
+		/// <summary>
+		/// Stores which controller (if multiple are in use) and what input should be activiated.
+		/// </summary>
+		struct ControllerInput
+		{
+			int ControllerId;
+			controllerRef Ref;
+		};
+
+		static std::unordered_map<keyRef, std::vector<ControllerInput>> m_mappedControllerInputs; //Stores which keys are related to which controller inputs.
 
 		static std::vector<std::function<void(GLFWwindow*, double, double)>> m_scrollCallbacks;	//Things to call when scrolling.
 	};

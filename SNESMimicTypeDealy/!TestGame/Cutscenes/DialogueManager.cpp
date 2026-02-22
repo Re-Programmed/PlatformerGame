@@ -73,7 +73,7 @@ namespace GAME_NAME::Cutscenes
 		//Maybe too many ifs...
 		if (m_playingDialogueSequence)
 		{
-			if (InputManager::GetMouseButton(0))
+			if (InputManager::GetMouseButton(0) || InputManager::GetControllerButton(0, controllerRef::BUTTON_A) || InputManager::GetControllerButton(0, controllerRef::BUTTON_B) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZL) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZR) || InputManager::GetControllerButton(0, controllerRef::BUTTON_L) || InputManager::GetControllerButton(0, controllerRef::BUTTON_R))
 			{
 				if (!advancingDialogue)
 				{
