@@ -40,6 +40,9 @@
 #include "../../Objects/Furniture.h"
 #include "../../Level/Hub/HouseManager.h"
 
+#include "../../../Audio/SoundEvents.h"
+#include "../SoundMaterial.h"
+
 #include "../Projectile.h"
 
 #define PLAYER_ROOM_SPEED 40	//How fast the player moves vertically in room control mode.
@@ -146,7 +149,8 @@ namespace  GAME_NAME
 				ANGRY = SpriteBase(26)
 			};
 
-			using namespace Utils;
+using namespace Utils;
+using namespace Audio;
 
 			//TODO: Pixel Birb sitting animation is glitched because of weird offset issues from climbing sprites :(
 			const Player::PlayerTextureData Player::TextureData[3] = {
@@ -1093,8 +1097,12 @@ namespace  GAME_NAME
 				}
 			}
 
+#define PLAYER_AIR_TIME_FALL_SOUND 0.32f	//How long you have to be in the air to play the fall sound when you land.
+#define PLAYER_AIR_TIME_FALL_DAMAGE 1.35f	//How long you have to be in the air to take damage from falling.
 
-			void Player::onCollision(Vec2 push, GameObject* collided)
+			bool Player_PlayedStepSoundThisFrame = false;
+
+			void Player::onCollision(Vec2 push, GameObject* self, GameObject* other)
 			{
 				if (m_swimming) { return; }
 				//if (m_foundCollisionInTick) { return; }
@@ -1104,7 +1112,7 @@ namespace  GAME_NAME
 					m_deadBloodTimer += Time::GameTime::GetScaledDeltaTime();
 					if (m_deadBloodTimer > 0.14 && m_deadBloodTimer < 999.0)
 					{
-						spawnBloodOnFloor(collided);
+						spawnBloodOnFloor(self);
 						m_deadBloodTimer = 1000.0;
 					}
 				}
@@ -1118,7 +1126,7 @@ namespace  GAME_NAME
 							SetFrozen(false); SetFrozen(false); SetFrozen(false);
 						}
 
-						Damage(m_diving, collided);
+						Damage(m_diving, self);
 						m_airTime = 0.f;
 						m_diving = 0.f;
 					}
@@ -1140,12 +1148,57 @@ namespace  GAME_NAME
 						m_scale = m_scale * Vec2{ 1.f, 3.f };
 					}
 
+					if (m_animator->GetCurrentAnimationIndex() == 1 || m_animator->GetCurrentAnimationIndex() == 0)
+					{
+						if (m_animator->GetCurrentAnimation()->GetFrame() == 0 || m_animator->GetCurrentAnimation()->GetNumberOfFrames() / 2 == m_animator->GetCurrentAnimation()->GetFrame())
+						{
+							if (!Player_PlayedStepSoundThisFrame)
+							{
+								Player_PlayedStepSoundThisFrame = true;
+								SoundMaterial::Material material = SoundMaterial::GetSoundMaterial(other);
+								switch (material)
+								{
+								case SoundMaterial::Material::Grass:
+									SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_WALK_GRASS, m_position, 0.3f);
+									break;
+								case SoundMaterial::Material::Wood:
+								default:
+									SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_WALK_WOOD, m_position, 0.3f);
+									break;
+								}
+							}
+						}
+						else {
+							Player_PlayedStepSoundThisFrame = false;
+						}
+					}
+					else {
+						Player_PlayedStepSoundThisFrame = false;
+					}
+
 					//Calculate fall damage.
-					if (m_airTime > 1.35f)
+					if (m_airTime > PLAYER_AIR_TIME_FALL_DAMAGE)
 					{
 						std::cout << m_airTime << std::endl;
 
-						Damage(((float)m_airTime - 1.35f) * 10.f, collided);
+						SoundEvents::PlaySoundAtPoint(SoundEvents::Event::PLAYER_BIG_FALL, m_position, 0.45f);
+
+						Damage(((float)m_airTime - PLAYER_AIR_TIME_FALL_DAMAGE) * 10.f, self);
+
+					//Play landing sound for the material that was landed on.
+					}else if (m_airTime > PLAYER_AIR_TIME_FALL_SOUND)
+					{
+						SoundMaterial::Material material = SoundMaterial::GetSoundMaterial(other);
+						switch (material)
+						{
+						case SoundMaterial::Material::Grass:
+							SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_LAND_GRASS, m_position, 0.5f);
+							break;
+						case SoundMaterial::Material::Wood:
+						default:
+							SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_LAND_WOOD, m_position, 0.5f);
+							break;
+						}
 					}
 
 					m_airTime = 0;
@@ -1622,6 +1675,7 @@ namespace  GAME_NAME
 							{
 								m_physics->SetFrictionDrag(3.f);
 								playerIsSkidding = true;
+
 							}
 						}
 					}
@@ -1789,6 +1843,11 @@ namespace  GAME_NAME
 
 					if (playerIsSkidding && anim_momentum > 60.f)
 					{
+						if (m_animator->GetCurrentAnimationIndex() != 4 /*Skidding*/)
+						{
+							Audio::SoundEvents::PlaySoundAtPoint(Audio::SoundEvents::Event::PLAYER_SKID, m_position, 0.66f);
+						}
+
 						m_timeSpentNotMoving = 0.0;
 						m_animator->SetCurrentAnimation(4); //Skidding Animation
 						return;
@@ -2183,6 +2242,9 @@ using namespace Lighting;
 
 					//Play attacking animation.
 					//m_physics->SetVelocityX(0.f);
+
+					SoundEvents::PlaySoundAtPoint(SoundEvents::Event::ATTACK_SWIPE, m_position, 0.66f);
+
 					m_animator->SetCurrentAnimation(7, this);
 					m_animator->SetSpeedMult(2.f);
 					m_scale = { 26.f, 26.f }; //Adjust scale to that of the animation sprites.
@@ -2193,6 +2255,7 @@ using namespace Lighting;
 					const Vec2 damageOrigin = m_position + (Vec2{ m_scale.X / 2.f, 0.f }) + Vec2{ (m_textureFlipped ? 12.f : -12.f), 0.f };
 
 					int AOE = 22, damage = 2;
+					SoundEvents::Event hitSound = SoundEvents::Event::HIT_PUNCHED;
 
 					//Retrive Area of Effect and Damage stats of current weapon.
 					if (GetInventory()->GetHeldItem())
@@ -2208,12 +2271,33 @@ using namespace Lighting;
 						if (heldItemData.Actions & WEAPON)
 						{
 							const std::string& attribute = heldItemData.Attributes.at(TOOL_ACTION::WEAPON);
-							damage = std::stoi(attribute.substr(0, attribute.find_first_of(',')));
-							AOE = std::stoi(attribute.substr(attribute.find_last_of(',') + 1));
+							std::stringstream ss(attribute);
+							std::string value;
+							int i = 0;
 
-							std::string inner = attribute.substr(attribute.find_first_of(',') + 1, attribute.find_last_of(','));
-							m_attackCooldown = std::stod(inner.substr(inner.find_first_of(',') + 1));
-
+							//damage,powerconsume,reloadseconds,AOE(integer),sound=Punch
+							while (std::getline(ss, value, ','))
+							{
+								switch (i++)
+								{
+								case 0:
+									damage = std::stoi(value);
+									break;
+								case 1:
+									if (value == "0") { break; }
+									this->updateAbilityMeter(-std::stof(value));
+								case 2:
+									m_attackCooldown = std::stod(value);
+									break;
+								case 3:
+									AOE = std::stoi(value);
+									break;
+								case 4:
+									hitSound = static_cast<SoundEvents::Event>(std::stoi(value));
+									break;
+								}
+							}
+							
 							//m_animator->SetSpeedMult(((8.0 * 0.5) * (double)ANIM_16_SPF / m_attackCooldown) * 2.0);
 						}
 					}
@@ -2224,6 +2308,8 @@ using namespace Lighting;
 						if (Vec2::Distance(enemy->GetPosition() + (enemy->GetScale()/2.f), damageOrigin) < AOE)
 						{
 							enemy->Damage(damage, m_position + (m_scale/2.f));
+
+							SoundEvents::PlaySoundAtPoint(hitSound, enemy->GetPosition(), 0.75f);
 						}
 					}
 				}

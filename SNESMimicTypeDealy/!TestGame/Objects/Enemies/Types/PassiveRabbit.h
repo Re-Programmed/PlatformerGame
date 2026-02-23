@@ -28,7 +28,7 @@ namespace GAME_NAME::Objects::Enemies
 		~PassiveRabbit();
 		void Update(GLFWwindow* window) override;
 
-		void onCollision(Vec2 push, GameObject* collided) override;
+		void onCollision(Vec2 push, GameObject* self, GameObject* other) override;
 
 	protected:
 		/// <summary>

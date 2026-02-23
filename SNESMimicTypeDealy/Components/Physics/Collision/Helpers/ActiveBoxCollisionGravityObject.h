@@ -95,10 +95,10 @@ namespace GAME_NAME
 					/// </summary>
 					bool m_didRender = false;
 
-					static void onCollisionS(Vec2 push, Objects::GameObject* obj)
+					static void onCollisionS(Vec2 push, Objects::GameObject* obj, Objects::GameObject* other)
 					{
 						ActiveBoxCollisionGravityObject* acgo = ((ActiveBoxCollisionGravityObject*)obj);
-						acgo->onCollision(push, obj);
+						acgo->onCollision(push, obj, other);
 
 						if (push.Y > 0) { acgo->SetGravity(0.f); }		//Resets the gravity to 0.
 						else if (push.X != 0) { acgo->m_physics->SetVelocityX(0.f); }	//If you hit the side of an object, set the X velocity to 0.
@@ -108,7 +108,7 @@ namespace GAME_NAME
 					/// Override to run code on collision.
 					/// </summary>
 					/// <param name="push">The direction the object is getting pushed to process the collision.</param>
-					virtual void onCollision(Vec2 push, Objects::GameObject* gameObject)
+					virtual void onCollision(Vec2 push, Objects::GameObject* gameObject, Objects::GameObject* other)
 					{
 
 					}

@@ -50,7 +50,7 @@ namespace GAME_NAME
 					virtual void CheckActiveCollisionShapes(ActiveCollider* collider) = 0;
 
 					//Set the callback for when this object collides with another.
-					inline void SetOnCollision(void(*onCollision)(GAME_NAME::MathUtils::Vec2 push, Objects::GameObject*))
+					inline void SetOnCollision(void(*onCollision)(GAME_NAME::MathUtils::Vec2 push, Objects::GameObject*, Objects::GameObject*))
 					{
 						m_onCollision = onCollision;
 					}
@@ -76,7 +76,7 @@ namespace GAME_NAME
 
 				protected:
 					Objects::GameObject* m_object;
-					void(*m_onCollision)(GAME_NAME::MathUtils::Vec2 push, Objects::GameObject*);
+					void(*m_onCollision)(GAME_NAME::MathUtils::Vec2 push, Objects::GameObject* self, Objects::GameObject* other);
 					void(*m_beforeUpdate)(Objects::GameObject*);
 				};
 			}

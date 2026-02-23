@@ -149,7 +149,7 @@ finish_pathfind:
 		Level::GlobalLevelData::UpdatePoints(ENEMY_DEFAULT_POINT_KILL_VALUE + (m_supercharge > 0 ? ENEMY_DEFAULT_POINT_KILL_VALUE : 0), m_position);
 	}
 
-	void Enemy::onCollision(Vec2 push, GameObject* cause)
+	void Enemy::onCollision(Vec2 push, GameObject* self, GameObject* other)
 	{
 		if (push.Y > 0)
 		{

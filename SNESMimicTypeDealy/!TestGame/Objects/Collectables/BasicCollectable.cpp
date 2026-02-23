@@ -75,7 +75,7 @@ namespace GAME_NAME::Objects::Collectables
 		{	
 			DynamicSprite sprite(m_sprite->GetSpriteId());
 			sprite.UpdateTextureColor(BasicCollectable_PreviouslyCollectedColors);
-			sprite.Render(cameraPosition, m_position, m_scale * Vec2{ -1.f });
+			sprite.Render(cameraPosition, m_position + m_scale, m_scale * Vec2{ -1.f });
 			return;
 		}
 

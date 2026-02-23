@@ -90,9 +90,9 @@ namespace GAME_NAME::Objects::Enemies
 	}
 
 
-	void PassiveRabbit::onCollision(Vec2 push, GameObject* cause)
+	void PassiveRabbit::onCollision(Vec2 push, GameObject* self, GameObject* other)
 	{
-		Enemy::onCollision(push, cause);
+		Enemy::onCollision(push, self, other);
 
 		m_physics->SetVelocity({ 0.f, 0.f });
 	}

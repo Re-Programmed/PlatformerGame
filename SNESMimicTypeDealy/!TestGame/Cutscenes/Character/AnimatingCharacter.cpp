@@ -70,7 +70,7 @@ namespace GAME_NAME::Cutscenes
 		}
 	}
 
-	void AnimatingCharacter::onCollision(Vec2 push, GameObject* self)
+	void AnimatingCharacter::onCollision(Vec2 push, GameObject* self, GameObject* other)
 	{
 		if (push.Y > 0)
 		{

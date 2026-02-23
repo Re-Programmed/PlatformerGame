@@ -18,7 +18,7 @@ namespace GAME_NAME::Objects
 
 		void Update(GLFWwindow* window) override;
 
-		void onCollision(Vec2 push, Objects::GameObject* gameObject) override;
+		void onCollision(Vec2 push, Objects::GameObject* gameObject, GameObject* other) override;
 	private:
 		const int m_damage; const float m_range; const uint8_t m_projectileType;
 

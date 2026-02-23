@@ -480,6 +480,12 @@
     <ClCompile Include="!TestGame\Objects\Projectile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\SoundEvents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="!TestGame\Objects\SoundMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -1014,6 +1020,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\Objects\Environment\Effects\ExplosionEffectedObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\SoundEvents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\SoundMaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

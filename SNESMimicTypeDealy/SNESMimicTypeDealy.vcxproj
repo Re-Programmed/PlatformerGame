@@ -225,12 +225,14 @@
     <ClCompile Include="!TestGame\Objects\Player\ScreenInventory.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Skills\SkillHolder.cpp" />
     <ClCompile Include="!TestGame\Objects\Projectile.cpp" />
+    <ClCompile Include="!TestGame\Objects\SoundMaterial.cpp" />
     <ClCompile Include="!TestGame\Objects\StartState.cpp" />
     <ClCompile Include="!TestGame\Objects\Vehicles\BikeVehicle.cpp" />
     <ClCompile Include="!TestGame\Objects\Vehicles\Vehicle.cpp" />
     <ClCompile Include="!TestGame\SettingsManager.cpp" />
     <ClCompile Include="!TestGame\TestGame.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Audio\SoundEvents.cpp" />
     <ClCompile Include="Audio\SoundManager.cpp" />
     <ClCompile Include="Audio\SoundTypes\Sound.cpp" />
     <ClCompile Include="Components\Animation\AnimatorComponent.cpp" />
@@ -393,6 +395,7 @@
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillHolder.h" />
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillType.h" />
     <ClInclude Include="!TestGame\Objects\Projectile.h" />
+    <ClInclude Include="!TestGame\Objects\SoundMaterial.h" />
     <ClInclude Include="!TestGame\Objects\StartState.h" />
     <ClInclude Include="!TestGame\Objects\Vehicles\BikeVehicle.h" />
     <ClInclude Include="!TestGame\Objects\Vehicles\Vehicle.h" />
@@ -400,6 +403,7 @@
     <ClInclude Include="!TestGame\TestGame.h" />
     <ClInclude Include="Audio\SoundManager.h" />
     <ClInclude Include="Audio\SoundTypes\Sound.h" />
+    <ClInclude Include="Audio\SoundEvents.h" />
     <ClInclude Include="CustomCompileOptions.h" />
     <ClInclude Include="EngineCompileOptions.h" />
     <ClInclude Include="Components\Animation\Animation.h" />

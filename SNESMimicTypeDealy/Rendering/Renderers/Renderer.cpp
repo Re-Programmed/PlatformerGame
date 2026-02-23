@@ -115,12 +115,12 @@ namespace GAME_NAME
 
 		Sprite* const Renderer::GetSprite(const int spriteTexture)
 		{
-			return new Sprite(spriteTexture + bgCount + lastFileOff);
+			return new Sprite(GetSpriteIdFromTextureId(spriteTexture));
 		}
 
 		DynamicSprite* const Renderer::GetDynamicSprite(const int spriteTexture)
 		{
-			return new DynamicSprite(spriteTexture + bgCount + lastFileOff);
+			return new DynamicSprite(GetSpriteIdFromTextureId(spriteTexture));
 		}
 
 		Sprite* const Renderer::getBackground(const unsigned int bgTexture)

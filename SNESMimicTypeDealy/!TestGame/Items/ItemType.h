@@ -4,6 +4,8 @@
 
 #include <unordered_map>
 
+#include "../../Audio/SoundEvents.h"
+
 #define ITEM_PREFIX_ITEM 'i'
 #define ITEM_PREFIX_TOOL 't'
 #define ITEM_PREFIX_WEAPON 'w'
@@ -53,15 +55,16 @@ namespace GAME_NAME
 		/// </summary>
 		enum TOOL_ACTION
 		{
-			CHOP =			0b000000001, //Can cut down trees.
-			EQUIPMENT =		0b000000010, //Can be equipped to equipment slots.
-			MINE =			0b000000100, //Can break BreakableBlocks. (provide a strength attribute)
-			WEAPON =		0b000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, and area of effect [damage,powerconsume,reloadseconds,AOE(integer)])
-			FOOD =			0b000010000, //Can be eaten.
-			PLACEABLE =		0b000100000, //Can be placed.
-			FURNITURE =		0b001000000, //Furniture. (xScale, yScale, inventorySize[optional])
-			VALUE =			0b010000000, //Give an item a specific price value. (crumbValue)
-			RANGED_WEAPON = 0b100000000  //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
+			CHOP =			0b0000000001, //Can cut down trees.
+			EQUIPMENT =		0b0000000010, //Can be equipped to equipment slots.
+			MINE =			0b0000000100, //Can break BreakableBlocks. (provide a strength attribute)
+			WEAPON =		0b0000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
+			FOOD =			0b0000010000, //Can be eaten.
+			PLACEABLE =		0b0000100000, //Can be placed.
+			FURNITURE =		0b0001000000, //Furniture. (xScale, yScale, inventorySize[optional])
+			VALUE =			0b0010000000, //Give an item a specific price value. (crumbValue)
+			RANGED_WEAPON = 0b0100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
+			USE_SOUND =		0b1000000000, //Plays a different sound when used. [soundEventNumber]
 		};
 
 		/// <summary>
@@ -122,10 +125,10 @@ namespace GAME_NAME
 			{ "Wooden Crate", 19, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "17.25,16.5,10" }, { TOOL_ACTION::VALUE, "16" } }, "Holds tem items."},					//14
 			{ "Workbench", 22, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "26,29" }, { TOOL_ACTION::VALUE, "45" } }, "Make stuff with me!"},					//15
 
-			{ "Butter Knife", SpriteBase(292), SpriteBase(292), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "4,0,0.3,17" }, { TOOL_ACTION::VALUE, "12" }}, "Still pretty sharp."},					//16
-			{ "Iron Sword", SpriteBase(287), SpriteBase(287), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "8,0,0.9,22" }, { TOOL_ACTION::VALUE, "60" }}, "8 Damage."},					//17
+			{ "Butter Knife", SpriteBase(292), SpriteBase(292), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("4,0,0.3,17,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, {TOOL_ACTION::VALUE, "12"}}, "Still pretty sharp."},					//16
+			{ "Iron Sword", SpriteBase(287), SpriteBase(287), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("8,0,0.9,22,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "60" }}, "8 Damage."},					//17
 			{ "Wooden Club", SpriteBase(297), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "6,0,1.66,26" }, { TOOL_ACTION::VALUE, "30" }}, "Slow but hurts."},					//18
-			{ "Spear", SpriteBase(298), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "5,0,1.2,45" }, { TOOL_ACTION::VALUE, "30" }}, "Reach really far."},					//19
+			{ "Spear", SpriteBase(298), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("5,0,1.2,45,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "30" }}, "Reach really far."},					//19
 
 			{ "Wooden Plating", SpriteBase(374), NO_HELD_TEXTURE, EQUIPMENT | VALUE, { { TOOL_ACTION::EQUIPMENT, "Health:15" }, { TOOL_ACTION::VALUE, "20" }}, "15 health."},					//20
 			{ "Leaf Helmet", SpriteBase(375), NO_HELD_TEXTURE, EQUIPMENT | VALUE, { { TOOL_ACTION::EQUIPMENT, "Health:5" }, { TOOL_ACTION::VALUE, "5" }}, "5 health."},					//21

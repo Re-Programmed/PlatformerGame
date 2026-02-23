@@ -116,7 +116,7 @@ namespace GAME_NAME
 							//Check if the active collider has anything that needs to happen when it collides.
 							if (m_onCollision != nullptr)
 							{
-								(m_onCollision)(push, m_object);
+								(m_onCollision)(push, m_object, collider->GetObject());
 							}
 
 #if _DEBUG_DISPLAY_COLLISION_BOUNDS

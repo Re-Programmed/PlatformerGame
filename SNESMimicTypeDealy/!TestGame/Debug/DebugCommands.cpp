@@ -37,6 +37,8 @@
 
 #include "../Objects/Player/Currency.h"
 
+#include "../../Audio/SoundManager.h"
+
 #include "../Cutscenes/DialogueManager.h"
 
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
@@ -95,6 +97,45 @@ void DebugCommands::HandleCommands()
 
 			GAME_NAME::TestGame::INSTANCE->SetCamera(lbc);
 
+			continue;
+		}
+
+		if (input.starts_with("playsound"))
+		{
+			std::vector<std::string> params = getParams(input);
+
+			if (params.size() < 1)
+			{
+				DebugCommands_Log("Provide a sound. (sound_key,audio_group=SFX,volume=-1.f,panning=0.f)");
+				continue;
+			}
+
+			GAME_NAME::Audio::AudioGroup group = GAME_NAME::Audio::SoundManager::SFXGroup;
+			GAME_NAME::Audio::AudioBus bus = GAME_NAME::Audio::SoundManager::SFXBus;
+			float volume = -1.f, panning = 0.f;
+
+			if (params.size() > 1)
+			{
+				if (params[1] == "Music")
+				{
+					group = GAME_NAME::Audio::SoundManager::MusicGroup;
+					bus = GAME_NAME::Audio::SoundManager::MusicBus;
+				}
+			}
+
+			if (params.size() > 2)
+			{
+				volume = std::stof(params[2]);
+			}
+
+
+			if (params.size() > 3)
+			{
+				panning = std::stof(params[3]);
+			}
+
+			GAME_NAME::Audio::SoundManager::Play(params[0], group, volume, panning, false, bus.mChannelHandle);
+			DebugCommands_Log("Played sound: " + params[0] + ".");
 			continue;
 		}
 

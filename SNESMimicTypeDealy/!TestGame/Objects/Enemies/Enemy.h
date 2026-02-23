@@ -113,7 +113,7 @@ namespace GAME_NAME::Objects::Enemies
 			m_supercharge = 0;
 		}
 
-		void onCollision(Vec2 push, GameObject* cause) override;
+		void onCollision(Vec2 push, GameObject* self, GameObject* other) override;
 	protected:
 		/// <summary>
 		/// Occurs when an enemy is zapped by electricity.

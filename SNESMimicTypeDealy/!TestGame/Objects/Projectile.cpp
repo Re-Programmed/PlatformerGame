@@ -38,7 +38,7 @@ namespace GAME_NAME::Objects
 		ActiveBoxCollisionGravityObject::Update(window);
 	}
 
-	void Projectile::onCollision(Vec2 push, Objects::GameObject* gameObject)
+	void Projectile::onCollision(Vec2 push, Objects::GameObject* gameObject, GameObject* other)
 	{
 using namespace Environment::Effects;
 

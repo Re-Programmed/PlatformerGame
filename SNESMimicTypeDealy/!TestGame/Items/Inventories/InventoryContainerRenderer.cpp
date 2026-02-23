@@ -5,6 +5,8 @@
 #include "../../../Objects/GUI/Text/TextRenderer.h"
 #include "InventoryTooltip.h"
 
+#include "../../../Audio/SoundEvents.h"
+
 namespace GAME_NAME::Items::Inventories
 {
 
@@ -171,6 +173,8 @@ namespace GAME_NAME::Items::Inventories
 				std::cout << "ADDED ITEM\n";
 				//If success, remove the item from the players inventory.
 				TestGame::ThePlayer->GetInventory()->SetItem(index - m_currentContainer->GetSize(), nullptr);
+
+				Audio::SoundEvents::PlaySoundGlobal(Audio::SoundEvents::Event::GUI_ITEM, 0.66f);
 			}
 		}
 		else 
@@ -181,6 +185,8 @@ namespace GAME_NAME::Items::Inventories
 			if (TestGame::ThePlayer->GetInventory()->AddItem(retItem.ri_Item) != -1)
 			{
 				m_currentContainer->SetItem(index, nullptr);
+
+				Audio::SoundEvents::PlaySoundGlobal(Audio::SoundEvents::Event::GUI_ITEM, 0.66f);
 			}
 		}
 

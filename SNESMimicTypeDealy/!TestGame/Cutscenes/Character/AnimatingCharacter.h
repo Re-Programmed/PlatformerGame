@@ -37,7 +37,7 @@ namespace GAME_NAME::Cutscenes
 		void Jump();
 
 		void beforeCollision() override;
-		void onCollision(Vec2 push, GameObject* self) override;
+		void onCollision(Vec2 push, GameObject* self, GameObject* other) override;
 
 		typedef struct TargetPoint
 		{

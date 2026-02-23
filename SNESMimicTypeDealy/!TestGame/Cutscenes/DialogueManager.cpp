@@ -8,6 +8,7 @@
 
 #include "../../Objects/GUI/GUIManager.h"
 
+#include "../../Audio/SoundEvents.h"
 
 #include <thread>
 
@@ -65,6 +66,8 @@ namespace GAME_NAME::Cutscenes
 	//Used to track if the mouse is pressed to prevent dialogue from skipping.
 	bool advancingDialogue = false;
 
+	unsigned int numLettersShown = 0;
+
 	void DialogueManager::Update(GLFWwindow* window)
 	{
 		//Currently selecting a button, do not allow advancing.
@@ -73,6 +76,29 @@ namespace GAME_NAME::Cutscenes
 		//Maybe too many ifs...
 		if (m_playingDialogueSequence)
 		{
+			{
+				unsigned int numLetters = 0;
+				//Check if the number of letters shown is increasing.
+				for (Text::TextRenderer::ExpectedLetter* letter : std::get<1>(m_guiDisplay))
+				{
+					if (letter->letterLock.try_lock())
+					{
+						numLetters++;
+						letter->letterLock.unlock();
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				if (numLetters != numLettersShown)
+				{
+					Audio::SoundEvents::PlaySoundGlobal(Audio::SoundEvents::Event::DIALOGUE_SPEAKING_LOW, 0.32f);
+					numLettersShown = numLetters;
+				}
+			}
+
 			if (InputManager::GetMouseButton(0) || InputManager::GetControllerButton(0, controllerRef::BUTTON_A) || InputManager::GetControllerButton(0, controllerRef::BUTTON_B) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZL) || InputManager::GetControllerButton(0, controllerRef::BUTTON_ZR) || InputManager::GetControllerButton(0, controllerRef::BUTTON_L) || InputManager::GetControllerButton(0, controllerRef::BUTTON_R))
 			{
 				if (!advancingDialogue)

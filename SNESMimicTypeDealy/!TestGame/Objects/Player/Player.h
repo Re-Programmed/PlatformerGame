@@ -411,7 +411,7 @@ namespace  GAME_NAME
 				}
 
 			protected:
-				void onCollision (Vec2 push, GameObject* gameObject) override;	//Called when a collision occurs.
+				void onCollision(Vec2 push, GameObject* gameObject, GameObject* other) override;	//Called when a collision occurs.
 				void beforeCollision() override;		//Called before any collisions are calculated to allow for resetting the jump conditions.
 
 			private:

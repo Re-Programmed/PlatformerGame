@@ -79,7 +79,6 @@ namespace GAME_NAME
 				std::wstring stemp = std::wstring(message.begin(), message.end());
 				MessageBox(nullptr, stemp.c_str(), TEXT("Resource Error"), MB_OK);
 #endif
-
 			}
 
 			return m_sources.at(key);

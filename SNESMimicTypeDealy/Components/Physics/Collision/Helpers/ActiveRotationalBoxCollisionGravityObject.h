@@ -35,7 +35,7 @@ namespace GAME_NAME
 					{
 						m_boxCollider->Init(this);
 						m_physics->Init(this);
-						m_boxCollider->SetOnCollision(onCollision);
+						m_boxCollider->SetOnCollision(onCollisionS);
 						m_boxCollider->SetBeforeUpdate(beforeUpdate);
 					}
 
@@ -44,7 +44,7 @@ namespace GAME_NAME
 					{
 						m_boxCollider->Init(this);
 						m_physics->Init(this);
-						m_boxCollider->SetOnCollision(onCollision);
+						m_boxCollider->SetOnCollision(onCollisionS);
 						m_boxCollider->SetBeforeUpdate(beforeUpdate);
 					}
 
@@ -78,10 +78,10 @@ namespace GAME_NAME
 					RotationalBoxCollider* const m_boxCollider;
 					GravityComponent* const m_physics;			//Used for gravity and velocity.
 
-					static void onCollision(Vec2 push, Objects::GameObject* obj)
+					static void onCollisionS(Vec2 push, Objects::GameObject* obj, Objects::GameObject* other)
 					{
 						ActiveRotationalBoxCollisionGravityObject* acgo = ((ActiveRotationalBoxCollisionGravityObject*)obj);
-						acgo->onCollision(push);
+						acgo->onCollision(push, obj, other);
 						acgo->m_physics->AddRotationalVelocity(-push.X * acgo->m_settings.RotationEffect * std::abs(acgo->m_physics->GetVelocity().X/90));
 						if (push.Y > 0)
 						{ 
@@ -105,7 +105,7 @@ namespace GAME_NAME
 					/// Override to run code on collision.
 					/// </summary>
 					/// <param name="push">The direction the object is getting pushed to process the collision.</param>
-					virtual void onCollision(Vec2 push)
+					virtual void onCollision(Vec2 push, GameObject* other, GameObject* self)
 					{
 					}
 

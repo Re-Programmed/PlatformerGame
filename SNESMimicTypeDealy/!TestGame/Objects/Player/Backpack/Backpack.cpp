@@ -14,6 +14,8 @@
 
 #include "../../../Items/Inventories/InventoryTooltip.h"
 
+#include "../../../../Audio/SoundEvents.h"
+
 using namespace GAME_NAME::Items::Inventories;
 
 #define BACKPACK_SLOT_ITEM_SCALEDOWN 3.0f
@@ -476,6 +478,7 @@ namespace GAME_NAME::Objects::Player
 			}
 		}
 
+		//TODO: gui_equipment sound.
 
 		m_clickDelay = 0.25f;
 
@@ -499,7 +502,7 @@ namespace GAME_NAME::Objects::Player
 
 		m_clickDelay = 0.25f;
 
-		std::cout << "CICKED GENERAL SLOT: " << id << std::endl;
+		Audio::SoundEvents::PlaySoundGlobal(Audio::SoundEvents::Event::GUI_ITEM, 0.66f);
 
 		const int& index = id + BACKPACK_NUM_EQUIPMENT_SLOTS;
 
@@ -551,6 +554,8 @@ namespace GAME_NAME::Objects::Player
 				cursorElement = setCursorItem(playerSlotItem.ri_Item);
 			}
 		}
+
+		Audio::SoundEvents::PlaySoundGlobal(Audio::SoundEvents::Event::GUI_ITEM, 0.66f);
 
 		UpdateBag();
 

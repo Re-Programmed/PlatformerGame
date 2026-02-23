@@ -82,6 +82,11 @@ namespace GAME_NAME
 			static Sprite* const GetSprite(const int spriteTexture);
 			static DynamicSprite* const GetDynamicSprite(const int spriteTexture);
 
+			static inline unsigned int GetSpriteIdFromTextureId(const int spriteTexture)
+			{
+				return spriteTexture + bgCount + lastFileOff;
+			}
+
 			static inline unsigned int GetSpriteCount()
 			{
 				return spriteCount;

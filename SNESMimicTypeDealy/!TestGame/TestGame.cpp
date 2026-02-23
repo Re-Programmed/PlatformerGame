@@ -155,7 +155,7 @@ namespace GAME_NAME
 				GAME_NAME::Renderer::ClearTextures();
 
 				LoadLevel(Game_nextLevelToLoad.c_str(), LEVEL_DATA_TEXTURES_BACKGROUND, true);
-				LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
+				LoadLevel("/global_assets", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_TEXTURES_SPRITES | LEVEL_DATA_AUDIO_SFX));
 				LoadLevel(Game_nextLevelToLoad.c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
 				Mappings::LoadObjectsWithDefaultMapping(Game_nextLevelToLoad.c_str());
 				LoadLevel(Game_nextLevelToLoad.c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
@@ -248,7 +248,7 @@ namespace GAME_NAME
 		level = "/" + level;
 
 		LoadLevel(level.c_str(), LEVEL_DATA_TEXTURES_BACKGROUND);
-		LoadLevel("/global_assets", LEVEL_DATA_TEXTURES_SPRITES);
+		LoadLevel("/global_assets", static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_TEXTURES_SPRITES xor LEVEL_DATA_AUDIO_SFX));
 		LoadLevel(level.c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_ALL xor LEVEL_DATA_TEXTURES_BACKGROUND xor LEVEL_DATA_DATA_LEVEL));
 		Mappings::LoadObjectsWithDefaultMapping(level.c_str());
 		LoadLevel(level.c_str(), static_cast<GAME_NAME::Game::Game::LEVEL_DATA>(LEVEL_DATA_DATA_LEVEL));
