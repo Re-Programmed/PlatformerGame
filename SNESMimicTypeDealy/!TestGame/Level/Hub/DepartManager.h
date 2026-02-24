@@ -54,7 +54,7 @@ namespace GAME_NAME::Level
 		protected:
 			void onInteract(std::shared_ptr<Objects::Player::Player> player, InputManager::KEY_STATE keyState) override
 			{
-				Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0);
+				Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0);
 
 				if (keyState & InputManager::KEY_STATE_PRESSED)
 				{

@@ -12,6 +12,9 @@
 #include "../../InputDisplay/DisplayIconManager.h"
 
 #include "../../Objects/Player/Currency.h"
+
+
+
 #include "HouseManager.h"
 
 #include "DepartManager.h"
@@ -48,7 +51,7 @@ namespace GAME_NAME::Level
 				Currency::RemoveCrumbs(1);
 			}
 
-			Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
+			Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + (TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 8 : 0, "Wish");
 		}
 	};
 
@@ -66,6 +69,13 @@ namespace GAME_NAME::Level
 
 		void onInteract(std::shared_ptr<Objects::Player::Player> player, InputManager::KEY_STATE state) override
 		{
+			//Don't show input options if the shop is open. Otherwise the text showing the input options is on top of the shop GUI.
+			if (!HubLevelManager::ShopIsOpen())
+			{
+				Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + (TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE::KEY_STATE_HELD ? 8 : 0, "Sell");
+				Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_DROP_HELD_ITEM, TestGame::ThePlayer->GetPosition() + (TestGame::ThePlayer->GetScale() + Vec2(3, -5)), InputManager::GetKeyUpDown(keyRef::PLAYER_DROP_HELD_ITEM) & InputManager::KEY_STATE::KEY_STATE_HELD ? 8 : 0, "Buy");
+			}
+
 			if (state & InputManager::KEY_STATE_PRESSED)
 			{
 				if (!HubLevelManager::OpenShopGUI())
@@ -74,7 +84,6 @@ namespace GAME_NAME::Level
 				}
 			}
 
-			Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
 		}
 	};
 

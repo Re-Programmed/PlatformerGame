@@ -19,7 +19,8 @@ namespace GAME_NAME::Audio
 		std::tuple("gui_write",  SoundEvents::SoundControlGroup::SFX),
 		std::tuple("gui_item",  SoundEvents::SoundControlGroup::SFX),
 		std::tuple("hit_punched",  SoundEvents::SoundControlGroup::SFX),
-		std::tuple("hit_sliced",  SoundEvents::SoundControlGroup::SFX)
+		std::tuple("hit_sliced",  SoundEvents::SoundControlGroup::SFX),
+		std::tuple("explode_medium",  SoundEvents::SoundControlGroup::SFX)
 	};
 
 	AudioVoice SoundEvents::PlaySoundAtPoint(Event soundEvent, Vec2 position, float volumeScale, bool paused)

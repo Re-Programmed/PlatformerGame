@@ -8,6 +8,10 @@ namespace GAME_NAME::Objects
         { "/green_region", { 
             { SoundMaterial::Material::Grass, { 6, 7, 8, 9, 102, 104, 105, 106, 107 } },
             { SoundMaterial::Material::Wood, { 85, 115, 27, 28, 29, 34, 35, 36, 39, 40, 45, 46, 47, 11 } }
+        } },
+        { "/green_region_area_2", {
+            { SoundMaterial::Material::Grass, { 6, 7, 8, 9, 102, 104, 105, 106, 107 } },
+            { SoundMaterial::Material::Wood, { 85, 115, 27, 28, 29, 34, 35, 36, 39, 40, 45, 46, 47, 11 } }
         } }
     };
 
@@ -31,5 +35,29 @@ namespace GAME_NAME::Objects
         }
 
         return SoundMaterial::Material::None;
+    }
+
+    Audio::SoundEvents::Event SoundMaterial::GetWalkEffectForMaterial(Material material)
+    {
+        switch (material)
+        {
+        case SoundMaterial::Material::Grass:
+            return Audio::SoundEvents::Event::OBJECT_WALK_GRASS;
+        case SoundMaterial::Material::Wood:
+        default:
+            return Audio::SoundEvents::Event::OBJECT_WALK_WOOD;
+        }
+    }
+
+    Audio::SoundEvents::Event SoundMaterial::GetHitEffectForMaterial(Material material)
+    {
+        switch (material)
+        {
+        case SoundMaterial::Material::Grass:
+            return Audio::SoundEvents::Event::OBJECT_LAND_GRASS;
+        case SoundMaterial::Material::Wood:
+        default:
+            return Audio::SoundEvents::Event::OBJECT_LAND_WOOD;
+        }
     }
 }

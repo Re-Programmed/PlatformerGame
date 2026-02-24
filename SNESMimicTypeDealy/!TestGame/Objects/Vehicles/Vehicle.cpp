@@ -42,7 +42,7 @@ namespace GAME_NAME::Objects::Vehicles
 	{
 		if (!m_inUse)
 		{
-			Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0);
+			Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0);
 		}
 
 		if (InputManager::GetKeyUpDown(keyRef::PLAYER_INTERACT) & InputManager::KEY_STATE_PRESSED)

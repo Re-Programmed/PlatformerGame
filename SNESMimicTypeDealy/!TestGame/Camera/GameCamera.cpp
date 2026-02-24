@@ -89,7 +89,7 @@ namespace GAME_NAME
 				}
 			}
 
-			if (deadzoneRadius > 0.f)
+			if (deadzoneRadius > 0.f && m_screenShakeElapsed <= 0.0)
 			{
 				//Deadzone
 				if (m_useStrictFollowing)
@@ -114,7 +114,7 @@ namespace GAME_NAME
 			float deadzoneXAdj = (playerPos.X > m_position.X + resX ? -deadzoneRadius : deadzoneRadius);
 			float deadzoneYAdj = (playerPos.Y > m_position.Y + resY ? -deadzoneRadius : deadzoneRadius);
 
-			Vec2 l = Vec2(std::lerp(m_position.X + resX, playerPos.X + m_offset.X + deadzoneXAdj, (float)(CameraSpeed * sdt)) - resX, std::lerp(m_position.Y + resY, playerPos.Y + m_offset.Y + deadzoneYAdj, (float)(CameraSpeed * sdt)) - resY);
+			Vec2 l = Vec2(std::lerp(m_position.X + resX, playerPos.X + m_offset.X + deadzoneXAdj, (float)(CameraSpeed * sdt)) - resX, std::lerp(m_position.Y + resY, playerPos.Y + m_offset.Y + deadzoneYAdj, m_screenShakeElapsed > 0.0 ? 1.0 : (float)(CameraSpeed * sdt)) - resY);
 
 			SetPosition(l + Vec2{ m_screenShakeOffset, (m_screenShakeOffset > 0.f ? ((float)std::rand() / (float)RAND_MAX) : 0.f) });
 		}

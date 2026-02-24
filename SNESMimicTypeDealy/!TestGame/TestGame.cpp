@@ -319,8 +319,6 @@ namespace GAME_NAME
 		//TODO: Testing, should be called when a new level is joined!
 		GlobalLevelData::SetLevelStartTime(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()));
 
-		Input::DisplayIconManager::CreateKeyDisplayObjects();
-
 		Crafting::CraftingDataManager::Initilize();
 	}
 

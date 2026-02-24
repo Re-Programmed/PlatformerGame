@@ -23,7 +23,7 @@ namespace GAME_NAME::Audio
 			SFX
 		};
 		
-#define SOUND_EVENT_COUNT 15
+#define SOUND_EVENT_COUNT 16
 		enum class Event
 		{
 			PLAYER_BIG_FALL,
@@ -40,7 +40,8 @@ namespace GAME_NAME::Audio
 			GUI_WRITE,
 			GUI_ITEM,
 			HIT_PUNCHED,
-			HIT_SLICED
+			HIT_SLICED,
+			EXPLODE_MEDIUM
 		};
 
 		/// <summary>

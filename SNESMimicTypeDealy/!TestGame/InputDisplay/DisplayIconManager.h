@@ -2,39 +2,46 @@
 #include "../../Objects/GameObject.h"
 #include "../../Rendering/Renderers/Renderer.h"
 
-#define DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT 1
+#include "../../Input/InputManager.h"
+#include "../../Objects/GUI/Text/TextRenderer.h"
+
+#include <unordered_map>
 
 namespace GAME_NAME::Input
 {
 	class DisplayIconManager
 	{
 	public:
-		enum KEY_DISPLAY
-		{
-			INPUT_DISPLAY_KEY_E	//Progress 0-9
-		};
-
 		/// <summary>
 		/// Render a key prompt with progress.
 		/// </summary>
 		/// <param name="keyDisplay"></param>
 		/// <param name="anchor"></param>
-		static void ShowKeyInputDisplay(KEY_DISPLAY keyDisplay, Vec2 anchor, char progress = 0);
+		static void ShowKeyInputDisplay(keyRef key, Vec2 anchor, char progress = 0, std::string optionDescription = "");
 		
 		/// <summary>
 		/// Called each frame to destroy any icons that are no longer in use.
 		/// </summary>
 		static void AttemptHideIcons();
-
-		/// <summary>
-		/// Called on game start.
-		/// </summary>
-		static void CreateKeyDisplayObjects();
 	private:
-		static Objects::GameObject* m_keyDisplayObjects[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];	//The game objects that are copied to represent each key icon.
-		static int m_keyDisplayBaseTextures[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];				//The texture ids for each key icon with 0 progress.
+		struct KeyDisplay
+		{
+			unsigned int Index;
 
-		static Objects::GameObject* m_activeDisplays[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];	//The current active displays, nullptr if not active.
-		static bool m_wasShown[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];							//If the key was displayed on this frame.
+			Objects::GameObject* BGDisplayObject;	//The game object that is copied to represent each key icon.
+			Objects::GameObject* TextDisplayObject;
+
+			GUI::Text::TextRenderer::ExpectedRenderedWord OptionEventDescription;
+			GUI::StaticGUIElement* OptionEventDescriptionBG;
+
+			bool WasDrawnOnLastFrame = true;
+		};
+
+		static std::unordered_map<keyRef, KeyDisplay> m_keyDisplays;
+
+		static const int m_keyDisplayBaseTexture;	//The texture id with 0 progress.		
+
+		static Rendering::Sprite* getTextureForControllerButton(controllerRef controllerButton);
+		static Rendering::Sprite* getTextureForKey(keyRef key);
 	};
 }

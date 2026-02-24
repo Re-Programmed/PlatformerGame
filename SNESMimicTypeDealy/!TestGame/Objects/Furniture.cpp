@@ -60,7 +60,7 @@ namespace GAME_NAME::Objects
 		{
 			if (Vec2::Distance(TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale() / 2.f, m_position + m_scale / 2.f) < 1.13f * ((m_scale.X > m_scale.Y) ? m_scale.X : m_scale.Y))
 			{
-				Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0);
+				Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0);
 
 				if (InputManager::GetKeyUpDown(keyRef::PLAYER_INTERACT) & InputManager::KEY_STATE_PRESSED)
 				{

@@ -21,7 +21,7 @@ namespace GAME_NAME::Objects::Environment::Buildings
 
 	void InteriorDoor::onInteract(std::shared_ptr<Player::Player> player, InputManager::KEY_STATE state)
 	{
-		Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE::KEY_STATE_HELD ? 8 : 0);
+		Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE::KEY_STATE_HELD ? 8 : 0);
 
 		if (state & InputManager::KEY_STATE::KEY_STATE_RELEASED)
 		{

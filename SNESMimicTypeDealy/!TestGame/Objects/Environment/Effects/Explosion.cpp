@@ -14,7 +14,7 @@
 
 #define EXPLOSION_DAMAGE_CONSTANT 10
 
-#define DEFAULT_EXPLOSION_SPRITES_COUNT 8
+#define DEFAULT_EXPLOSION_SPRITES_COUNT 12
 /// <summary>
 /// Sprites to be used for explosions if none are provided.
 /// </summary>
@@ -47,6 +47,13 @@ namespace GAME_NAME::Objects::Environment::Effects
 				this->RegisterParticle(p);
 			}
 		}
+
+		//Do screenshake.
+		GAME_NAME::Camera::GameCamera* gc = dynamic_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera());
+		gc->ScreenShake(2.6f * (power/15.f), std::clamp(static_cast<double>(power) / 25.0, 0.0, 2.0));
+
+		//Play explosion sound. (TODO: Make it so the power effects which explosion sound is played.)
+		Audio::SoundEvents::PlaySoundAtPoint(Audio::SoundEvents::Event::EXPLODE_MEDIUM, m_position);
 
 		//Adjust position so that particles spawn around the center of the emitter.
 		m_position -= radius * 0.5f;

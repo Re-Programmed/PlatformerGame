@@ -62,7 +62,7 @@ namespace GAME_NAME::Level
 	protected:
 		void onInteract(std::shared_ptr<Objects::Player::Player> player, InputManager::KEY_STATE state) override
 		{
-			GAME_NAME::Input::DisplayIconManager::ShowKeyInputDisplay(GAME_NAME::Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
+			GAME_NAME::Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
 
 			if (state & InputManager::KEY_STATE_RELEASED)
 			{
@@ -90,7 +90,7 @@ namespace GAME_NAME::Level
 	protected:
 		void onInteract(std::shared_ptr<Objects::Player::Player> player, InputManager::KEY_STATE state) override
 		{
-			GAME_NAME::Input::DisplayIconManager::ShowKeyInputDisplay(GAME_NAME::Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
+			GAME_NAME::Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 9 : 0);
 			
 			if (state & InputManager::KEY_STATE_RELEASED)
 			{

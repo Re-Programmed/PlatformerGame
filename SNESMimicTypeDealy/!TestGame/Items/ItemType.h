@@ -14,7 +14,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 29
+#define ITEM_COUNT 31
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -47,7 +47,10 @@ namespace GAME_NAME
 			WET_WASHCLOTH = 24,
 			SMALL_STONE = 25,
 			LEVEL_SAVE_POINT = 26,
-			SCREW = 27
+			SCREW = 27,
+			BOMB = 28,
+			GRENADE = 29,
+			C4 = 30
 		};
 
 		/// <summary>
@@ -144,7 +147,9 @@ namespace GAME_NAME
 
 			{ "Screw", SpriteBase(380), NO_HELD_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Holds stuff together."},			//27
 
-			{ "Bomb", SpriteBase(381), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "15,0,0.35,80,0" }, { TOOL_ACTION::VALUE, "5" } }, "Explode big."},			//28
+			{ "Bomb", SpriteBase(381), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "35,0,0.35,150,0" }, { TOOL_ACTION::VALUE, "20" } }, "Explode big."},					//28
+			{ "Grenade", SpriteBase(383), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "40,0,0.35,80,1" }, { TOOL_ACTION::VALUE, "20" } }, "Dont forget the pin."},		//29
+			{ "C4", SpriteBase(384), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "80,0,0.35,210,2" }, { TOOL_ACTION::VALUE, "35" } }, "Explode really big."},			//30
 		};
 
 

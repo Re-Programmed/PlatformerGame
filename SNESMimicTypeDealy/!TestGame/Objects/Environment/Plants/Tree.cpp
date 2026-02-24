@@ -186,7 +186,7 @@ using namespace Particles;
 
 		if (m_rustles > 2) { return; }
 
-		Input::DisplayIconManager::ShowKeyInputDisplay(Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), (char)(std::floor(m_rustleCounter * 10 / 1.85f)));
+		Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), (char)(std::floor(m_rustleCounter * 10 / 1.85f)));
 
 		if (state & InputManager::KEY_STATE_HELD)
 		{

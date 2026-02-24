@@ -24,7 +24,7 @@ namespace GAME_NAME::Objects::Environment
 			Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(Cutscenes::DialogueManager::INSTANCE->GetDialogueSequence(m_dialogueSource));
 		}
 
-		GAME_NAME::Input::DisplayIconManager::ShowKeyInputDisplay(GAME_NAME::Input::DisplayIconManager::INPUT_DISPLAY_KEY_E, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 8 : 0);
+		GAME_NAME::Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE_HELD ? 8 : 0);
 	}
 }
 

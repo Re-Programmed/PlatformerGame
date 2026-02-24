@@ -4,49 +4,166 @@
 
 namespace GAME_NAME::Input
 {
-	Objects::GameObject* DisplayIconManager::m_keyDisplayObjects[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];
-	int DisplayIconManager::m_keyDisplayBaseTextures[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];
-	Objects::GameObject* DisplayIconManager::m_activeDisplays[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];
-	bool DisplayIconManager::m_wasShown[DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT];
+	constexpr int ALetterTexture = SpriteBase(75);
 
-	void DisplayIconManager::ShowKeyInputDisplay(KEY_DISPLAY keyDisplay, Vec2 anchor, char progress)
+	std::unordered_map<keyRef, DisplayIconManager::KeyDisplay> DisplayIconManager::m_keyDisplays;
+	const int DisplayIconManager::m_keyDisplayBaseTexture = SpriteBase(44);
+
+	void DisplayIconManager::ShowKeyInputDisplay(keyRef key, Vec2 anchor, char progress, std::string optionDescription)
 	{
-		if (m_activeDisplays[keyDisplay] == nullptr)
+		Rendering::Sprite* texture = nullptr;
+
+		//Check if we are using a controller. If we are, the input for the controller should be shown rather than the keyboard.
+		if (!InputManager::GetUsingMouse())
 		{
-			std::cout << "SHOWING INPUT DISPLAY\n";
-			m_activeDisplays[keyDisplay] = new GameObject(*m_keyDisplayObjects[0]);
-			Renderer::InstantiateObject(Renderer::InstantiateGameObject(m_activeDisplays[keyDisplay], true, 2, true));
+			std::vector<InputManager::ControllerInput>* controllerInputs = InputManager::GetControllerInputForAction(key);
+			if (controllerInputs != nullptr)
+			{
+				texture = getTextureForControllerButton((*controllerInputs)[0].Ref);
+			}
+		}
+		else {
+			texture = getTextureForKey(key);
 		}
 
-		m_activeDisplays[keyDisplay]->SetSprite(Renderer::GetSprite(m_keyDisplayBaseTextures[keyDisplay] + progress));
-		m_activeDisplays[keyDisplay]->SetPosition(anchor);
+		if (m_keyDisplays.contains(key))
+		{
+			//-------Update the display-------
 
-		m_wasShown[keyDisplay] = true;
+			//Move each consecutive input display down below the other ones.
+			anchor += Vec2{ 2.f, -7.f } * (float)m_keyDisplays[key].Index;
+
+			//Used to track if the display object should be deleted or if it's still in use.
+			m_keyDisplays[key].WasDrawnOnLastFrame = true;
+
+			m_keyDisplays[key].BGDisplayObject->SetSprite(Renderer::GetSprite(m_keyDisplayBaseTexture + progress));
+
+			//Used to move all the letters in the descriptor text accordingly.
+			Vec2 initialBGPos = m_keyDisplays[key].BGDisplayObject->GetPosition();
+
+			m_keyDisplays[key].BGDisplayObject->SetPosition(anchor);
+			m_keyDisplays[key].TextDisplayObject->SetPosition(anchor + Vec2{ -1.f, 1.f });
+			int i = 0;
+			for (Text::TextRenderer::ExpectedLetter* letter : m_keyDisplays[key].OptionEventDescription)
+			{
+				letter->letterLock.lock();
+
+				letter->letter->SetPosition(TestGame::INSTANCE->GetCamera()->GlobalToUI(anchor + Vec2{ 10.f + (i++ * 3.f), 0.f}));
+				letter->letterLock.unlock();
+			}
+
+			if (m_keyDisplays[key].OptionEventDescriptionBG != nullptr)
+			{
+				m_keyDisplays[key].OptionEventDescriptionBG->SetPosition(m_keyDisplays[key].OptionEventDescription[0]->letter->GetPosition() - Vec2{ 5.5f, 0.5f });
+			}
+
+			return;
+		}
+
+		//-------Create the display-------
+		
+		GameObject* keyDisplayObject = new GameObject(anchor, Vec2(-6, 6), Renderer::GetSprite(m_keyDisplayBaseTexture + progress), 0.0f);
+		Renderer::LoadActiveObject(keyDisplayObject, 2);
+
+		GameObject* textDisplayObject = new GameObject(anchor + Vec2{ -1.f, 1.f }, Vec2(-4, 4), texture, 0.f);
+		Renderer::LoadActiveObject(textDisplayObject, 2);
+
+		Text::TextRenderer::ExpectedRenderedWord descriptorWord;
+		GUI::StaticGUIElement* descriptorWordBG = nullptr;
+
+		if (!optionDescription.empty())
+		{
+			descriptorWord = Text::TextRenderer::RenderWordCaseSensitive(optionDescription, TestGame::INSTANCE->GetCamera()->GlobalToUI(anchor + Vec2{ 10.f, 0.f }), 5.f, -1.f, 1);
+
+			//Correctly position the black square behind the text for what this button input will do.
+			float endWordPosition = descriptorWord[descriptorWord.size() - 1]->letter->GetPosition().X + 3.f;
+			descriptorWordBG = new StaticGUIElement(descriptorWord[0]->letter->GetPosition() - Vec2{ 5.5f, 0.5f }, Vec2{ endWordPosition - descriptorWord[0]->letter->GetPosition().X + 1.f, 6.f}, Renderer::GetSprite(SpriteBase(-1)));
+			Renderer::LoadGUIElement(descriptorWordBG, 0);
+		}
+
+		m_keyDisplays.emplace(key, KeyDisplay(m_keyDisplays.size(), keyDisplayObject, textDisplayObject, descriptorWord, descriptorWordBG));
 	}
 
 	void DisplayIconManager::AttemptHideIcons()
 	{
-		for (int i = 0; i < DISPLAY_ICON_MANGER_KEY_DISPLAY_COUNT; i++)
+		for (auto& [key, keyDisplay] : m_keyDisplays)
 		{
-			if (m_activeDisplays[i] != nullptr && !m_wasShown[i])
-			{
-				Renderer::DestroyActiveObject(m_activeDisplays[i]);
-				m_activeDisplays[i] = nullptr;
+			//If we are currently using it, don't delete it.
+			if(keyDisplay.WasDrawnOnLastFrame){
+				keyDisplay.WasDrawnOnLastFrame = false;
+				continue;
 			}
 
-			m_wasShown[i] = false;
+			Renderer::DestroyActiveObjectImmediate(keyDisplay.BGDisplayObject);
+			Renderer::DestroyActiveObjectImmediate(keyDisplay.TextDisplayObject);
+			if (keyDisplay.OptionEventDescriptionBG != nullptr)
+			{
+				Renderer::UnloadGUIElement(keyDisplay.OptionEventDescriptionBG, 0);
+			}
+
+			if (keyDisplay.OptionEventDescription.size() > 0)
+			{
+				for (Text::TextRenderer::ExpectedLetter* letter : keyDisplay.OptionEventDescription)
+				{
+					letter->letterLock.lock();
+					Renderer::UnloadGUIElement(letter->letter);
+					letter->letterLock.unlock();
+				}
+			}
+
+			m_keyDisplays.erase(key);
+			break;
 		}
 	}
 
-	void DisplayIconManager::CreateKeyDisplayObjects()
+
+	Rendering::Sprite* DisplayIconManager::getTextureForControllerButton(controllerRef controllerButton)
 	{
-		using namespace Objects;
+		int keyFound = 0;
+		switch (controllerButton)
+		{
+		case controllerRef::BUTTON_A:
+			keyFound = GLFW_KEY_A;
+			break;
+		case controllerRef::BUTTON_B:
+			keyFound = GLFW_KEY_B;
+			break;
+		case controllerRef::BUTTON_X:
+			keyFound = GLFW_KEY_X;
+			break;
+		case controllerRef::BUTTON_Y:
+			keyFound = GLFW_KEY_Y;
+			break;
+		case controllerRef::BUTTON_R:
+		case controllerRef::BUTTON_ZR:
+			keyFound = GLFW_KEY_R;
+			break;
+		case controllerRef::BUTTON_L:
+		case controllerRef::BUTTON_ZL:
+			keyFound = GLFW_KEY_L;
+			break;
+		case controllerRef::JOY_1_AXIS_X_NEGATIVE:
+		case controllerRef::JOY_1_AXIS_X_POSITIVE:
+		case controllerRef::JOY_1_AXIS_Y_POSITIVE:
+		case controllerRef::JOY_1_AXIS_Y_NEGATIVE:
+		case controllerRef::JOY_2_AXIS_X_NEGATIVE:
+		case controllerRef::JOY_2_AXIS_X_POSITIVE:
+		case controllerRef::JOY_2_AXIS_Y_POSITIVE:
+		case controllerRef::JOY_2_AXIS_Y_NEGATIVE:
+			keyFound = GLFW_KEY_O;
+			break;
+		}
 
-		GameObject* eIcon = new GameObject(Vec2(0, 0), Vec2(-6, 6), Renderer::GetSprite(SpriteBase(44)), 0.0f);
+		int offset = keyFound - GLFW_KEY_A;
+		return Renderer::GetSprite(ALetterTexture + offset);
+	}
 
-		m_keyDisplayObjects[0] = eIcon;
-		m_keyDisplayBaseTextures[0] = SpriteBase(44);
-		m_activeDisplays[0] = nullptr;
+	Rendering::Sprite* DisplayIconManager::getTextureForKey(keyRef key)
+	{
+		int keyID = InputManager::GetKeybindValue(static_cast<int>(key));
+		int offset = keyID - GLFW_KEY_A;
+
+		return Renderer::GetSprite(ALetterTexture + offset);
 	}
 }
 

@@ -34,6 +34,8 @@ namespace GAME_NAME::Level
 
 		static bool CloseShopGUI();
 
+		static inline bool ShopIsOpen() { return m_shopGUIOpen; }
+
 	private:
 
 

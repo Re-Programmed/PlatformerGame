@@ -384,6 +384,17 @@ namespace GAME_NAME
 
 	}
 
+	std::vector<InputManager::ControllerInput>* InputManager::GetControllerInputForAction(keyRef key)
+	{
+		if (m_mappedControllerInputs.contains(key))
+		{
+			auto& controllerInputs = m_mappedControllerInputs[key];
+			return &controllerInputs;
+		}
+
+		return nullptr;
+	}
+
 	void InputManager::scrollCallback(GLFWwindow* window, double xScroll, double yScroll)
 	{
 		for (auto func : m_scrollCallbacks)

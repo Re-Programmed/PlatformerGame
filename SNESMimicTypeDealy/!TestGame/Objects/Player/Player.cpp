@@ -258,6 +258,8 @@ using namespace Audio;
 			}
 
 			
+			bool Player_PlayedStepSoundThisFrame = false;
+
 			int renderCalls = 0;
 			float tAlloc = 0;
 			float m_curr = 0;
@@ -275,6 +277,28 @@ using namespace Audio;
 					SetAnimationState(DEAD);
 
 					IsAlive = false;
+				}
+
+				if (m_feetOnlyCollision && (m_physics->GetVelocity().X != 0 || m_physics->GetVelocity().Y != 0))
+				{
+					if (m_animator->GetCurrentAnimationIndex() == 1 || m_animator->GetCurrentAnimationIndex() == 0)
+					{
+						if (m_animator->GetCurrentAnimation()->GetFrame() == 0 || m_animator->GetCurrentAnimation()->GetNumberOfFrames() / 2 == m_animator->GetCurrentAnimation()->GetFrame())
+						{
+							if (!Player_PlayedStepSoundThisFrame)
+							{
+								Player_PlayedStepSoundThisFrame = true;
+								SoundMaterial::Material material = SoundMaterial::Material::Grass; /*TODO: MAYBE FIX TO WORK WITH OTHER MATERIALS>*/
+								SoundEvents::PlaySoundAtPoint(SoundMaterial::GetWalkEffectForMaterial(material), m_position, 0.3f);
+							}
+						}
+						else {
+							Player_PlayedStepSoundThisFrame = false;
+						}
+					}
+					else {
+						Player_PlayedStepSoundThisFrame = false;
+					}
 				}
 
 				std::thread playerInput([this] {  std::srand(time(0)) /*Must reseed because thread dosen't carry over.*/; readKeys(); });
@@ -638,7 +662,7 @@ using namespace Audio;
 					}
 					else if (ITEMTYPE_GetItemData(heldItemType).Actions & RANGED_WEAPON)
 					{
-						if (m_projectileCharge > 0.0)
+						if (m_projectileCharge > 0.0 && !m_feetOnlyCollision /*No throwing stuff in feet only mode.*/)
 						{
 							if (m_projectileLaunchProgress == nullptr)
 							{
@@ -1100,7 +1124,6 @@ using namespace Audio;
 #define PLAYER_AIR_TIME_FALL_SOUND 0.32f	//How long you have to be in the air to play the fall sound when you land.
 #define PLAYER_AIR_TIME_FALL_DAMAGE 1.35f	//How long you have to be in the air to take damage from falling.
 
-			bool Player_PlayedStepSoundThisFrame = false;
 
 			void Player::onCollision(Vec2 push, GameObject* self, GameObject* other)
 			{
@@ -1156,16 +1179,7 @@ using namespace Audio;
 							{
 								Player_PlayedStepSoundThisFrame = true;
 								SoundMaterial::Material material = SoundMaterial::GetSoundMaterial(other);
-								switch (material)
-								{
-								case SoundMaterial::Material::Grass:
-									SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_WALK_GRASS, m_position, 0.3f);
-									break;
-								case SoundMaterial::Material::Wood:
-								default:
-									SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_WALK_WOOD, m_position, 0.3f);
-									break;
-								}
+								SoundEvents::PlaySoundAtPoint(SoundMaterial::GetWalkEffectForMaterial(material), m_position, 0.3f);
 							}
 						}
 						else {
@@ -1189,16 +1203,7 @@ using namespace Audio;
 					}else if (m_airTime > PLAYER_AIR_TIME_FALL_SOUND)
 					{
 						SoundMaterial::Material material = SoundMaterial::GetSoundMaterial(other);
-						switch (material)
-						{
-						case SoundMaterial::Material::Grass:
-							SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_LAND_GRASS, m_position, 0.5f);
-							break;
-						case SoundMaterial::Material::Wood:
-						default:
-							SoundEvents::PlaySoundAtPoint(SoundEvents::Event::OBJECT_LAND_WOOD, m_position, 0.5f);
-							break;
-						}
+						SoundEvents::PlaySoundAtPoint(SoundMaterial::GetHitEffectForMaterial(material), m_position, 0.5f);
 					}
 
 					m_airTime = 0;

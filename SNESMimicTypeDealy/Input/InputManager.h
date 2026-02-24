@@ -216,6 +216,18 @@ namespace GAME_NAME
 			return m_usingMouse;
 		}
 
+
+		/// <summary>
+		/// Stores which controller (if multiple are in use) and what input should be activiated.
+		/// </summary>
+		struct ControllerInput
+		{
+			int ControllerId;
+			controllerRef Ref;
+		};
+
+		static std::vector<ControllerInput>* GetControllerInputForAction(keyRef key);
+
 	private:
 		static bool m_usingMouse; static MathUtils::Vec2 m_lastMousePos;
 
@@ -229,14 +241,6 @@ namespace GAME_NAME
 
 		static KEY_STATE m_keysDown[KEY_ARRAY_SIZE];	//Stores which keys are held.
 
-		/// <summary>
-		/// Stores which controller (if multiple are in use) and what input should be activiated.
-		/// </summary>
-		struct ControllerInput
-		{
-			int ControllerId;
-			controllerRef Ref;
-		};
 
 		static std::unordered_map<keyRef, std::vector<ControllerInput>> m_mappedControllerInputs; //Stores which keys are related to which controller inputs.
 
