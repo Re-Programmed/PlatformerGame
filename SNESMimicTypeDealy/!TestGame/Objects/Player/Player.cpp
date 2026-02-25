@@ -59,7 +59,8 @@ namespace  GAME_NAME
 	{
 		namespace Player
 		{
-
+			//How much your movement speed is multiplied by if you are currently blocking with a shield.
+			constexpr float BlockingMovementSlowdown = 0.25f;
 
 ///Used to define a texture variable in whatever the 
 #define TextureDataBase(base)\
@@ -142,6 +143,8 @@ namespace  GAME_NAME
 
 			double Player_AttackingTracker = 0.0;
 
+			bool Player_LoadingFromSavePosition = false;
+
 			typedef int8_t PlayerEmotion;
 			
 			enum PLAYER_EMOTIONS : PlayerEmotion
@@ -223,13 +226,12 @@ using namespace Audio;
 
 				std::shared_ptr<std::vector<std::string>> states = this->getStates();
 
-				if (loadFromSavedPosition)
+				if (states->size() > 0)
 				{
-					if (states->size() > 0)
-					{
-						decodeSave(states->at(0));
-					}
+					Player_LoadingFromSavePosition = loadFromSavedPosition;
+					decodeSave(states->at(0));
 				}
+				
 
 				assignState(m_saveState);
 				
@@ -726,11 +728,20 @@ using namespace Audio;
 
 							if (m_textureFlipped)
 							{
-							
-								m_heldItemDisplay->GetSprite()->Render(cameraPosition, offsetPosition + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + m_position + Vec2{16.f + m_heldItemDisplay->GetScale().X - 7, 0}, m_heldItemDisplay->GetScale()* Vec2 { -1, 1 }, 0.0F);
+								Vec2 heldItemDisplayPos = offsetPosition + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + m_position + Vec2{ 16.f + m_heldItemDisplay->GetScale().X - 7, 0 };
+
+								//Shielding makes the item go up a bit.
+								if (m_blocking) { heldItemDisplayPos += Vec2{ 0.f, 1.55f }; }
+
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, heldItemDisplayPos, m_heldItemDisplay->GetScale()* Vec2 { -1, 1 }, 0.0F);
 							}
 							else {
-								m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_position + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + Vec2{ 0.f, 0.f }, m_heldItemDisplay->GetScale(), 0.0F);
+								Vec2 heldItemDisplayPos = m_position + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset));
+
+								//Shielding makes the item go up a bit.
+								if (m_blocking) { heldItemDisplayPos += Vec2{ 0.f, 1.55f }; }
+
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, heldItemDisplayPos, m_heldItemDisplay->GetScale(), 0.0F);
 							}
 							return;
 						}
@@ -839,6 +850,9 @@ using namespace Audio;
 
 						//Account for scale changes.
 						m_heldItemDisplay->Translate(Vec2{ 0.f, 16.f - m_heldItemDisplay->GetScale().Y });
+
+						//Account for moving the item up when shielding.
+						if (m_blocking) { m_heldItemDisplay->Translate(Vec2{ 0.f, 1.55f }); }
 
 						if (m_textureFlipped)
 						{
@@ -1258,10 +1272,35 @@ using namespace Audio;
 					switch (i)
 					{
 					case 0:
-						m_position.X = std::stof(param);
+						if (Player_LoadingFromSavePosition)
+						{
+							m_position.X = std::stof(param);
+						}
 						break;
 					case 1:
-						m_position.Y = std::stof(param);
+						if (Player_LoadingFromSavePosition)
+						{
+							m_position.Y = std::stof(param);
+						}
+						break;
+					case 2:
+					{
+						float targetHealth = std::stof(param);
+						if (m_stats.Health > targetHealth)
+						{
+							this->Damage(m_stats.Health - targetHealth, nullptr, false);
+						}
+						else if (m_stats.Health < targetHealth)
+						{
+							this->Heal(targetHealth - m_stats.Health);
+						}
+						break;
+					}
+					case 3:
+						updateAbilityMeter(std::stof(param) - m_stats.AbilityMeter);
+						break;
+					case 4:
+						setArmor(std::stof(param));
 						break;
 					}
 
@@ -1272,7 +1311,11 @@ using namespace Audio;
 			std::string Player::encodeSave()
 			{
 				//		xPos+yPos
-				return std::to_string(std::round(m_position.X)).append("+").append(std::to_string(std::round(m_position.Y)));
+				return std::to_string(std::round(m_position.X)).append("+")
+					.append(std::to_string(std::round(m_position.Y))).append("+")
+					.append(std::to_string(m_stats.Health)).append("+")
+					.append(std::to_string(m_stats.AbilityMeter)).append("+")
+					.append(std::to_string(m_stats.Armor));
 			}
 
 			void Player::setArmor(float armor)
@@ -1658,7 +1701,6 @@ using namespace Audio;
 	
 					if (!animateMoveLeft && (animateMoveRight || InputManager::GetKey(PLAYER_MOVE_RIGHT)))
 					{
-
 #if _DEBUG
 						if (m_flight)
 						{
@@ -1666,7 +1708,7 @@ using namespace Audio;
 							return;
 						}
 #endif
-						if (m_physics->GetVelocity().X < PlayerSpeedCap + addSpeedCap)
+						if (m_physics->GetVelocity().X < (PlayerSpeedCap + addSpeedCap) * (m_blocking ? BlockingMovementSlowdown : 1.f))
 						{
 							m_physics->SetFrictionDrag(0.f);
 							m_physics->AddVelocity(Vec2(((float)Time::GameTime::GetScaledDeltaTime() / 0.017f) * (PlayerSpeedCap - m_physics->GetVelocity().X) * (PlayerSpeed), 0.f));
@@ -1694,7 +1736,7 @@ using namespace Audio;
 							return;
 						}
 #endif
-						if (m_physics->GetVelocity().X > -PlayerSpeedCap - addSpeedCap)
+						if (m_physics->GetVelocity().X > (-PlayerSpeedCap - addSpeedCap) * (m_blocking ? BlockingMovementSlowdown : 1.f))
 						{
 							m_physics->SetFrictionDrag(0);
 							m_physics->AddVelocity(Vec2(((float)Time::GameTime::GetScaledDeltaTime() / 0.017f) * (PlayerSpeedCap - m_physics->GetVelocity().X) * (-(PlayerSpeed - 0.0165F)), 0.f));
@@ -2217,6 +2259,9 @@ using namespace Lighting;
 					return;
 				}
 
+				//Will get set if it needs to be.
+				m_blocking = false;
+
 				//Player is trying to attack.
 				if (InputManager::GetKey(keyRef::PLAYER_ATTACK))
 				{
@@ -2236,6 +2281,19 @@ using namespace Lighting;
 							m_textureFlipped = true;
 						}
 					}
+
+					Items::InventoryItem* heldItem = m_screenInventory->GetHeldItem();
+					if (heldItem)
+					{
+						//Using a shield.
+						const ItemData& heldItemData = ITEMTYPE_GetItemData(heldItem->GetType());
+						if (heldItemData.Actions & Items::TOOL_ACTION::SHIELD)
+						{
+							m_blocking = true;
+							return;
+						}
+					}
+
 
 					if (!m_textureFlipped)
 					{
@@ -2263,9 +2321,30 @@ using namespace Lighting;
 					SoundEvents::Event hitSound = SoundEvents::Event::HIT_PUNCHED;
 
 					//Retrive Area of Effect and Damage stats of current weapon.
-					if (GetInventory()->GetHeldItem())
+					if (heldItem)
 					{
-						const ItemData& heldItemData = ITEMTYPE_GetItemData(this->GetInventory()->GetHeldItem()->GetType());
+						const ItemData& heldItemData = ITEMTYPE_GetItemData(heldItem->GetType());
+
+						//Reduce damage because of using a shield.
+						if (m_blocking && (heldItemData.Actions & SHIELD))
+						{
+							std::stringstream ss(heldItemData.Attributes.at(SHIELD));
+							std::string value; int i = 0;
+							while (std::getline(ss, value, ','))
+							{
+								switch (i++)
+								{
+								case 0:
+									damage -= std::stoi(value);
+									break;
+								case 1:
+									m_attackCooldown = std::stod(value);
+									break;
+								}
+							}
+
+							if (damage < 0) { damage = 0; }
+						}
 
 						if (heldItemData.Actions & RANGED_WEAPON)
 						{

@@ -57,6 +57,8 @@
 #include "./Objects/Environment/Buildings/Door.h"
 #include "./Objects/Environment/Buildings/FrontWall.h"
 
+#include "./Objects/Collectables/CollectableTracker.h"
+
 #include "../Objects/GUI/GUIManager.h"
 #include "../Rendering/Lighting/SimpleLightingManager.h"
 
@@ -320,6 +322,7 @@ namespace GAME_NAME
 		GlobalLevelData::SetLevelStartTime(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()));
 
 		Crafting::CraftingDataManager::Initilize();
+		Collectables::CollectableTracker::Init();
 	}
 
 	void TestGame::LateUpdate(GLFWwindow* window)

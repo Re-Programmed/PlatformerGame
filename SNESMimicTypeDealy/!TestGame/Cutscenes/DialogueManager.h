@@ -34,6 +34,8 @@ namespace GAME_NAME::Cutscenes
 			INSTANCE = d;
 		}
 
+		static std::vector<Text::TextRenderer::ExpectedLetter*> RenderCaseSensitiveTextWithItemTextures(std::string word, Vec2 position, const float scale, const float& letterPadding, int layer, int uppercaseFont, int lowercaseFont, std::chrono::milliseconds letterAppearanceSpeed);
+
 		// Begins a dialogue sequence and displays the first event.
 		inline bool PlayDialogueSequence(DialogueSequence sequence)
 		{

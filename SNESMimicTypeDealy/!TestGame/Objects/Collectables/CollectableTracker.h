@@ -9,6 +9,27 @@ namespace GAME_NAME::Objects::Collectables
 		: public MiscStateGroup
 	{
 	public:
+		static CollectableTracker* INSTANCE;
+
+		CollectableTracker()
+			: MiscStateGroup("collect")
+		{
+			if (INSTANCE != nullptr) {
+				return;
+			}
+
+			INSTANCE = this;
+
+			auto states = getStates();
+
+			if (states->size() > 0)
+			{
+				CurrentCollectableData->Decode((*states)[0]);
+			}
+
+			this->assignState(CurrentCollectableData);
+		}
+
 		/// <summary>
 		/// Types of collectables.
 		/// </summary>
@@ -17,6 +38,16 @@ namespace GAME_NAME::Objects::Collectables
 			TOAST,
 			CRUMB
 		};
+
+		~CollectableTracker()
+		{
+			delete CurrentCollectableData;
+		}
+
+		static void Init()
+		{
+			if (INSTANCE == nullptr) { INSTANCE = new CollectableTracker(); }
+		}
 
 		/// <summary>
 		/// Stores the save data for what collectables have been gotten.
@@ -35,6 +66,11 @@ namespace GAME_NAME::Objects::Collectables
 		/// Current save state for collected collectables.
 		/// </summary>
 		static CollectableData* const CurrentCollectableData;
+
+		/// <summary>
+		/// Should be called upon completing a level to update the player's currency stats.
+		/// </summary>
+		static void UpdateCurrencyAtEnd();
 
 		/// <summary>
 		/// Add value to some type of collectable.

@@ -10,10 +10,16 @@
 
 #include "../../Audio/SoundEvents.h"
 
+#include "../Items/ItemType.h"
+
 #include <thread>
 
 // The render text function used by text for dialogue events.
-#define DialogueManager_RenderDialogue(text) Text::TextRenderer::RenderWordCaseSensitive(text, { DIALOGUE_TEXT_BOX_SPACING_X + 12, DIALOGUE_TEXT_BOX_SPACING_Y + 14 }, 9, -3, 1, DEFAULT_FONT_RENDER_A_SPRITE_ID, DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds(62))
+#define DialogueManager_RenderDialogue(text) DialogueManager::RenderCaseSensitiveTextWithItemTextures(text, { DIALOGUE_TEXT_BOX_SPACING_X + 12, DIALOGUE_TEXT_BOX_SPACING_Y + 14 }, 9, -3, 1, DEFAULT_FONT_RENDER_A_SPRITE_ID, DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds(62))
+
+
+#define ITEM_TEXTURE_INDICATOR_PREFIX "%item_"
+#define ITEM_TEXTURE_INDICATOR_PREFIX_LEN 6
 
 namespace GAME_NAME::Cutscenes
 {
@@ -67,6 +73,52 @@ namespace GAME_NAME::Cutscenes
 	bool advancingDialogue = false;
 
 	unsigned int numLettersShown = 0;
+
+	/// <summary>
+	/// Find instances of ITEM_TEXTURE_INDICATOR_PREFIX and replace them with their corresponding item texture display. Then, render a text object with these replacements.
+	/// </summary>
+	/// <param name="word"></param>
+	/// <param name="position"></param>
+	/// <param name="scale"></param>
+	/// <param name="letterPadding"></param>
+	/// <param name="layer"></param>
+	/// <param name="uppercaseFont"></param>
+	/// <param name="lowercaseFont"></param>
+	/// <param name="letterAppearanceSpeed"></param>
+	/// <returns></returns>
+	std::vector<Text::TextRenderer::ExpectedLetter*> DialogueManager::RenderCaseSensitiveTextWithItemTextures(std::string word, Vec2 position, const float scale, const float& letterPadding, int layer, int uppercaseFont, int lowercaseFont, std::chrono::milliseconds letterAppearanceSpeed)
+	{
+		std::unordered_map<size_t, ITEM_TYPE> encodedItems;
+		std::string itemEncodedText = m_currentDialogueEvent.Text;
+
+		for (int i = 0; i < itemEncodedText.size(); i++)
+		{
+			//Find instances of "%item_"
+			std::string compString = itemEncodedText.substr(i, ITEM_TEXTURE_INDICATOR_PREFIX_LEN);
+			if (compString == ITEM_TEXTURE_INDICATOR_PREFIX)
+			{
+				//Find where the end of the item string is, which will be the next space.
+				size_t spaceAfter = i + itemEncodedText.substr(i).find_first_of(' ');
+
+				//We have to offset the index by how many spaces are before this character as the spaces are not included as objects in the final rendered word.
+				unsigned int numSpacesBefore = std::count(itemEncodedText.begin(), itemEncodedText.begin() + i, ' ');
+				//Append the proper index and corresponding item type.
+				encodedItems.emplace(i - numSpacesBefore, static_cast<ITEM_TYPE>(std::stoi(itemEncodedText.substr(i + ITEM_TEXTURE_INDICATOR_PREFIX_LEN, spaceAfter - i))));
+
+				//Update the text to be rendered so that the place where the item will go is just a single period.
+				itemEncodedText = itemEncodedText.substr(0, i).append(".").append(itemEncodedText.substr(spaceAfter));
+			}
+		}
+
+		Text::TextRenderer::ExpectedRenderedWord erw = Text::TextRenderer::RenderWordCaseSensitive(itemEncodedText, position, scale, letterPadding, layer, uppercaseFont, lowercaseFont, letterAppearanceSpeed);
+
+		for (auto& [index, itemType] : encodedItems)
+		{
+			erw[index]->letter->SetSprite(ITEMTYPE_GetItemTypeTexture(itemType));
+		}
+
+		return erw;
+	}
 
 	void DialogueManager::Update(GLFWwindow* window)
 	{

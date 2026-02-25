@@ -7,6 +7,8 @@
 
 #include "../../Utils/Time/GameTime.h"
 
+#include "../Objects/Collectables/CollectableTracker.h"
+
 #define LEVEL_COMPLETE_MENU_BG_SPRITE SpriteBase(268)
 #define LEVEL_COMPLETE_MENU_BUTTON_SPRITE SpriteBase(269)
 #define LEVEL_COMPLETE_MENU_DELIM_LINE_SPRITE SpriteBase(271)
@@ -235,6 +237,8 @@ using namespace GUI;
 
 		LevelCompleteMenu_RemoveGUIText(m_levelCompleteMenuObjects.ScoreText);
 		Renderer::UnloadGUIElement(m_levelCompleteMenuObjects.ScoreResult);
+
+		Collectables::CollectableTracker::UpdateCurrencyAtEnd();
 
 		TestGame::SetLoadLevelWithSavedPlayer(false);
 		TestGame::INSTANCE->LoadLevelAndAllData(m_levelDestination.c_str());

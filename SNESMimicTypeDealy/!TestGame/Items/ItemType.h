@@ -14,7 +14,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 31
+#define ITEM_COUNT 35
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -50,7 +50,11 @@ namespace GAME_NAME
 			SCREW = 27,
 			BOMB = 28,
 			GRENADE = 29,
-			C4 = 30
+			C4 = 30,
+			LOG_SHIELD = 31,
+			WHITE_BREAD = 32,
+			GLUTEN_FREE_BREAD = 33,
+			SOURDOUGH_BREAD = 34,
 		};
 
 		/// <summary>
@@ -58,16 +62,17 @@ namespace GAME_NAME
 		/// </summary>
 		enum TOOL_ACTION
 		{
-			CHOP =			0b0000000001, //Can cut down trees.
-			EQUIPMENT =		0b0000000010, //Can be equipped to equipment slots.
-			MINE =			0b0000000100, //Can break BreakableBlocks. (provide a strength attribute)
-			WEAPON =		0b0000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
-			FOOD =			0b0000010000, //Can be eaten.
-			PLACEABLE =		0b0000100000, //Can be placed.
-			FURNITURE =		0b0001000000, //Furniture. (xScale, yScale, inventorySize[optional])
-			VALUE =			0b0010000000, //Give an item a specific price value. (crumbValue)
-			RANGED_WEAPON = 0b0100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
-			USE_SOUND =		0b1000000000, //Plays a different sound when used. [soundEventNumber]
+			CHOP =			0b00000000001, //Can cut down trees.
+			EQUIPMENT =		0b00000000010, //Can be equipped to equipment slots.
+			MINE =			0b00000000100, //Can break BreakableBlocks. (provide a strength attribute)
+			WEAPON =		0b00000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
+			FOOD =			0b00000010000, //Can be eaten.
+			PLACEABLE =		0b00000100000, //Can be placed.
+			FURNITURE =		0b00001000000, //Furniture. (xScale, yScale, inventorySize[optional])
+			VALUE =			0b00010000000, //Give an item a specific price value. (crumbValue)
+			RANGED_WEAPON = 0b00100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
+			USE_SOUND =		0b01000000000, //Plays a different sound when used. [soundEventNumber]
+			SHIELD =		0b10000000000, //Blocks damage [resistance,recoveryTime]
 		};
 
 		/// <summary>
@@ -118,7 +123,7 @@ namespace GAME_NAME
 			{ "Wooden Shoes", 18, NO_HELD_TEXTURE, EQUIPMENT, { { TOOL_ACTION::EQUIPMENT, "Health:10" } }, "" },			//5
 			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.2,26"}}, ""},			//6
 			{ "Toast", SpriteBase(132), SpriteBase(233), 0, {}, "Probably made in a toaster." },							//7
-			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "20" } }, "Apple."},					//8
+			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "6" } }, "Apple."},					//8
 			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."},			//9
 			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."},					//10
 			{ "Blueprint", SpriteBase(263), NO_HELD_TEXTURE, 0, {}, "Unlocks a recipe."},					//11
@@ -147,9 +152,14 @@ namespace GAME_NAME
 
 			{ "Screw", SpriteBase(380), NO_HELD_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Holds stuff together."},			//27
 
-			{ "Bomb", SpriteBase(381), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "35,0,0.35,150,0" }, { TOOL_ACTION::VALUE, "20" } }, "Explode big."},					//28
+			{ "Bomb", SpriteBase(381), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "35,0,0.35,150,0" }, { TOOL_ACTION::VALUE, "20" } }, "Explode big."},				//28
 			{ "Grenade", SpriteBase(383), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "40,0,0.35,80,1" }, { TOOL_ACTION::VALUE, "20" } }, "Dont forget the pin."},		//29
 			{ "C4", SpriteBase(384), FOLLOW_HAND_TEXTURE, RANGED_WEAPON | VALUE, { { TOOL_ACTION::RANGED_WEAPON, "80,0,0.35,210,2" }, { TOOL_ACTION::VALUE, "35" } }, "Explode really big."},			//30
+			{ "Log Shield", SpriteBase(385), FOLLOW_HAND_TEXTURE, SHIELD | VALUE, { { TOOL_ACTION::SHIELD, "4,0.75" }, { TOOL_ACTION::VALUE, "7" } }, "Might block some weapons?"},						//31
+
+			{ "White Bread", SpriteBase(386), FOLLOW_HAND_TEXTURE, 0, { }, "Hyper gluten injected."},						//32
+			{ "Gluten Free Bread", SpriteBase(387), FOLLOW_HAND_TEXTURE, 0, { }, "Xanthan gum never tasted\nso good."},		//33
+			{ "Sourdough Bread", SpriteBase(388), FOLLOW_HAND_TEXTURE, 0, { }, "Flavorful."},								//34
 		};
 
 

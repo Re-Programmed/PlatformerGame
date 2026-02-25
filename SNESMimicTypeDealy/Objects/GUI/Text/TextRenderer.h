@@ -79,7 +79,7 @@ namespace GAME_NAME::Objects::GUI::Text
 		/// <returns>[RenderedWord] - The word that was rendered.</returns>
 		static RenderedWord RenderWord(std::string word, Vec2 position, const float scale, const float&& letterPadding, int layer = 1, int font = DEFAULT_FONT_RENDER_A_SPRITE_ID);
 
-		static ExpectedRenderedWord RenderWordCaseSensitive(std::string word, Vec2 position, const float scale, const float&& letterPadding, int layer = 1, int uppercaseFont = DEFAULT_FONT_RENDER_A_SPRITE_ID, int lowercaseFont = DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds letterAppearanceSpeed = std::chrono::milliseconds(0));
+		static ExpectedRenderedWord RenderWordCaseSensitive(std::string word, Vec2 position, const float scale, const float& letterPadding, int layer = 1, int uppercaseFont = DEFAULT_FONT_RENDER_A_SPRITE_ID, int lowercaseFont = DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds letterAppearanceSpeed = std::chrono::milliseconds(0));
 
 		/// <summary>
 		/// Unloads and deletes all letters of the provided word.

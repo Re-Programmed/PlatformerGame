@@ -45,6 +45,8 @@ namespace GAME_NAME::Objects::Environment::Buildings
 		
 		for (Enemies::Enemy* enemy : Enemies::Enemy::EnemyRegistry)
 		{
+			if (enemy == nullptr) { continue; }
+
 			if (Vec2::Distance(center, enemy->GetPosition() + enemy->GetScale() / 2.f) < m_zapRadius + 20.f /*TODO: Make changeable (enemyZapRadius)*/)
 			{
 				ElectricalZap::CreateZapBetweenPoints(center, enemy->GetPosition() + enemy->GetScale() / 2.f);

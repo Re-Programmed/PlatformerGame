@@ -637,6 +637,11 @@ namespace  GAME_NAME
 				double m_attackCooldown;
 				void handleAttack();
 
+				/// <summary>
+				/// True if the player is using a shield to block incoming damage.
+				/// </summary>
+				bool m_blocking = false;
+
 				double m_projectileCharge = 0.0;
 				ProgressBar* m_projectileLaunchProgress = nullptr;
 				/// <summary>

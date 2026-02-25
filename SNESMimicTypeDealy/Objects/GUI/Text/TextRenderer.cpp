@@ -9,6 +9,7 @@
 
 #include "../../../Input/InputManager.h"
 
+
 namespace GAME_NAME::Objects::GUI::Text
 {
 
@@ -189,7 +190,7 @@ namespace GAME_NAME::Objects::GUI::Text
 		0.f			//z
 	};
 
-	TextRenderer::ExpectedRenderedWord TextRenderer::RenderWordCaseSensitive(std::string word, Vec2 position, const float scale, const float&& letterPadding, int layer, int uppercaseFont, int lowercaseFont, std::chrono::milliseconds letterAppearanceSpeed)
+	TextRenderer::ExpectedRenderedWord TextRenderer::RenderWordCaseSensitive(std::string word, Vec2 position, const float scale, const float& letterPadding, int layer, int uppercaseFont, int lowercaseFont, std::chrono::milliseconds letterAppearanceSpeed)
 	{
 		ExpectedRenderedWord wordRet;
 		wordRet.reserve(word.size());
