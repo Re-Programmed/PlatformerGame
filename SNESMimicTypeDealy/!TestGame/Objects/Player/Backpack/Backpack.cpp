@@ -111,7 +111,9 @@ namespace GAME_NAME::Objects::Player
 
 						//TODO: Add MUTEX FOR SLOTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+						m_animatingMutex.lock();
 						m_generalSlots[i]->SetBaseColor(Vec4::LerpBetween(baseColor, { 1.f, 1.f, 1.f, 1.f }, 0.05));
+						m_animatingMutex.unlock();
 						/*
 						Vec2 previousScale = m_generalSlots[i]->GetScale();
 						m_generalSlots[i]->SetScale({ static_cast<float>(std::lerp(previousScale.X, 20.f, 0.15)), static_cast<float>(std::lerp(previousScale.Y, 20.f, 0.05)) });

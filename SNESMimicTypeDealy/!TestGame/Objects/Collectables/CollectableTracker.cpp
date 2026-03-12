@@ -47,8 +47,8 @@ namespace GAME_NAME::Objects::Collectables
 
 	void CollectableTracker::UpdateCurrencyAtEnd()
 	{
-		Player::Currency::AddCrumbs(CurrentCollectableData->CollectionData.at(COLLECTABLE_TYPE::CRUMB));
-		Player::Currency::AddToast(CurrentCollectableData->CollectionData.at(COLLECTABLE_TYPE::TOAST));
+		if (CurrentCollectableData->CollectionData.contains(COLLECTABLE_TYPE::CRUMB)) { Player::Currency::AddCrumbs(CurrentCollectableData->CollectionData.at(COLLECTABLE_TYPE::CRUMB)); }
+		if (CurrentCollectableData->CollectionData.contains(COLLECTABLE_TYPE::TOAST)) { Player::Currency::AddToast(CurrentCollectableData->CollectionData.at(COLLECTABLE_TYPE::TOAST)); }
 
 		CurrentCollectableData->CollectionData[COLLECTABLE_TYPE::CRUMB] = 0;
 		CurrentCollectableData->CollectionData[COLLECTABLE_TYPE::TOAST] = 0;

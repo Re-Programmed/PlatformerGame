@@ -4,7 +4,7 @@
 
 #include "../../Items/ItemType.h"
 
-#define CRUMB_COUNTER_POSITION Vec2{ 10.f, TargetResolutionY - 24.f }
+#define CRUMB_COUNTER_POSITION Vec2{ 10.f, TargetResolutionY - 11.f }
 #define CRUMB_COUNTER_SCALE 0.33f
 
 namespace GAME_NAME::Objects::Player
@@ -82,7 +82,7 @@ using namespace Resources;
 		return true;
 	}
 
-#define TOAST_COUNT_Y_OFFSET 5.f
+#define TOAST_COUNT_Y_OFFSET 10.f
 
 	void Currency::RenderCurrencyDisplay()
 	{

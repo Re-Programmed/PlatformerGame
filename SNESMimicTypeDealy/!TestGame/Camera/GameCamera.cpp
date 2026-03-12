@@ -91,22 +91,27 @@ namespace GAME_NAME
 
 			if (deadzoneRadius > 0.f && m_screenShakeElapsed <= 0.0)
 			{
-				//Deadzone
-				if (m_useStrictFollowing)
+				if (!(playerPos.Y < m_position.Y) && !(playerPos.Y > m_position.Y + TargetResolutionY))
 				{
 
-					if (Vec2::Distance(playerPos, m_position + Vec2{ HalfTResX, HalfTResY }) < 25.f)
+					//Deadzone
+					if (m_useStrictFollowing)
 					{
-						return;
-					}
-				}
-				else {
-					if (!(playerPos.X + m_offset.X > m_position.X + resX + deadzoneRadius || playerPos.X + m_offset.X < m_position.X + resX - deadzoneRadius))
-					{
-						return;
 
+						if (Vec2::Distance(playerPos, m_position + Vec2{ HalfTResX, HalfTResY }) < 25.f)
+						{
+							return;
+						}
+					}
+					else {
+						if (!(playerPos.X + m_offset.X > m_position.X + resX + deadzoneRadius || playerPos.X + m_offset.X < m_position.X + resX - deadzoneRadius))
+						{
+							return;
+
+						}
 					}
 				}
+
 				
 			}
 

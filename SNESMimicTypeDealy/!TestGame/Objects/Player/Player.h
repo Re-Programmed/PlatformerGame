@@ -118,7 +118,7 @@ namespace  GAME_NAME
 				/// </summary>
 				/// <param name="damage"></param>
 				/// <param name="cause"></param>
-				void Damage(float damage, GameObject* cause, bool causeFainting = true);
+				void Damage(float damage, GameObject* cause, bool causeFainting = true, bool createParticles = true);
 
 				/// <summary>
 				/// True if the player is alive.
@@ -146,7 +146,8 @@ namespace  GAME_NAME
 				{
 					DEFAULT_BIRB = 0,
 					PIXEL_BIRB = 1,
-					DEFAULT_FOX = 2
+					DEFAULT_FOXO = 2,
+					DEFAULT_WOOF = 3
 				};
 
 				struct AnimationOverride
@@ -266,7 +267,7 @@ namespace  GAME_NAME
 				/// <summary>
 				/// A list of all possible texture palettes the player could have, indexed based on TEXTURE_OFFSETS.
 				/// </summary>
-				static const PlayerTextureData TextureData[3];
+				static const PlayerTextureData TextureData[4];
 
 				/// <summary>
 				/// Updates the player's texture to use these offsets.
@@ -585,7 +586,7 @@ namespace  GAME_NAME
 				double m_playingIdleAnimation = 0;		//Set to a timer if the player is engaged in an idle activity (e.g. tapping toe).
 				double m_timeSpentNotMoving = 0;		//The amount of time the player has spent not moving.
 
-				double m_airTime = 0;					//Time the player has spent in the air. (Used to calculate fall damage)
+				double m_airTime = 0, m_fallTime = 0;	//Time the player has spent in the air. (Used to calculate fall damage)
 
 				bool m_isFlying = false;				//True if the player is currently flying.
 

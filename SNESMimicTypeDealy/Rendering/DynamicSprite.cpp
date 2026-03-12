@@ -81,7 +81,7 @@ namespace GAME_NAME
 
 			glScalef(scale.X * m_resolutionScale.X, scale.Y * m_resolutionScale.Y, 1.f);
 
-			glRotatef(rotation, 0, 0, 0);
+			glRotatef(rotation, 0, 0, 1);
 
 			glBegin(GL_QUADS);
 

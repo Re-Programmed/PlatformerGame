@@ -544,9 +544,10 @@ namespace GAME_NAME
 			}
 
 			iVec2 cameraChunkPosition = AsChunkPosition(cameraPosition);
+			cameraChunkPosition = iVec2(cameraChunkPosition.GetX(), cameraChunkPosition.GetY() - 2);
 			const Vec2 cameraPositionS = cameraPosition - cameraBoundsPadding;
 
-			int cameraTopEdge = cameraChunkPosition.GetY() + AsChunkPosition(cameraBoundingBox.GetY());
+			int cameraTopEdge = cameraChunkPosition.GetY() + AsChunkPosition(cameraBoundingBox.GetY()) + 4;
 			//if (AsChunkPosition(cameraBoundingBox.GetY()) >= LEVEL_SIZE_Y * 2) { return; }
 
 

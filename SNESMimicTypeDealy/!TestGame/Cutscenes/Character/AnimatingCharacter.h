@@ -51,6 +51,13 @@ namespace GAME_NAME::Cutscenes
 			delete m_textureData;
 		}
 
+		inline bool IsInMotion()
+		{
+			return m_timeSpentNotMoving < 0.2f;
+		}
+
+		inline bool IsOnGround() { return m_onGround; }
+
 	protected:
 		/// <summary>
 		/// All reference textures to use.
@@ -79,7 +86,6 @@ namespace GAME_NAME::Cutscenes
 
 		void registerAnimations();
 
-		inline bool isOnGround() { return m_onGround; }
 
 	private:
 		bool m_onGround = false;

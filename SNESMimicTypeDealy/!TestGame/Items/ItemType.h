@@ -14,7 +14,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 35
+#define ITEM_COUNT 38
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -55,6 +55,9 @@ namespace GAME_NAME
 			WHITE_BREAD = 32,
 			GLUTEN_FREE_BREAD = 33,
 			SOURDOUGH_BREAD = 34,
+			SCREWDRIVER = 35,
+			SMALL_WOODEN_COG = 36,
+			LARGE_WOODEN_COG = 37
 		};
 
 		/// <summary>
@@ -160,9 +163,13 @@ namespace GAME_NAME
 			{ "White Bread", SpriteBase(386), FOLLOW_HAND_TEXTURE, 0, { }, "Hyper gluten injected."},						//32
 			{ "Gluten Free Bread", SpriteBase(387), FOLLOW_HAND_TEXTURE, 0, { }, "Xanthan gum never tasted\nso good."},		//33
 			{ "Sourdough Bread", SpriteBase(388), FOLLOW_HAND_TEXTURE, 0, { }, "Flavorful."},								//34
+
+			{ "Screwdriver", SpriteBase(430), FOLLOW_HAND_TEXTURE, VALUE | WEAPON, { { TOOL_ACTION::WEAPON, "3,0,0.4,26" }, { TOOL_ACTION::VALUE, "3"  } }, "Flathead."},								//35
+
+			{ "Small Cog", SpriteBase(441), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "3"  } }, "RMB to remove, LMB to place next to cogs."},							//36
+			{ "Large Cog", SpriteBase(442), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5"  } }, "RMB to remove, LMB to place next to cogs."},							//37
 		};
-
-
+		
 		/// <summary>
 		/// Returns the corresponding texture for the given item type.
 		/// </summary>

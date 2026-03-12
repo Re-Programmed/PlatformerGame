@@ -169,6 +169,7 @@
     <ClCompile Include="!TestGame\Level\LevelInfoDisplay.cpp" />
     <ClCompile Include="!TestGame\Level\LevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\MainMenu\MainMenuManager.cpp" />
+    <ClCompile Include="!TestGame\Level\Stages\GreenRegion2LevelManager.cpp" />
     <ClCompile Include="!TestGame\Level\Stages\GreenRegionLevelManager.cpp" />
     <ClCompile Include="!TestGame\Mappings.cpp" />
     <ClCompile Include="!TestGame\Camera\GameCamera.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\Electrical\ElectricalTransformer.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\FrontDoor.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\FrontWall.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Buildings\GarageDoor.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\InnerUpperWall.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\InteriorDoor.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\SaggingObject.cpp" />
@@ -208,6 +210,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Levels\Town1Manager.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Movement\Trampoline.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Plants\Tree.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Spikes.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Water.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Waterfall.cpp" />
     <ClCompile Include="!TestGame\Objects\Furniture.cpp" />
@@ -216,6 +219,10 @@
     <ClCompile Include="!TestGame\Objects\LayerFlip.cpp" />
     <ClCompile Include="!TestGame\Objects\LayerFlipObject.cpp" />
     <ClCompile Include="!TestGame\Objects\LevelCompleteZone.cpp" />
+    <ClCompile Include="!TestGame\Objects\Mechanical\Belt.cpp" />
+    <ClCompile Include="!TestGame\Objects\Mechanical\Cog.cpp" />
+    <ClCompile Include="!TestGame\Objects\Mechanical\TriggerCog.cpp" />
+    <ClCompile Include="!TestGame\Objects\Platforms\JointSpinPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.h" />
     <ClCompile Include="!TestGame\Objects\Platforms\FallingPlatform.cpp" />
@@ -337,6 +344,7 @@
     <ClInclude Include="!TestGame\Level\LevelSystem.h" />
     <ClInclude Include="!TestGame\Level\MainMenu\MainMenuManager.h" />
     <ClInclude Include="!TestGame\Level\Stages\EmptyLevelSystem.h" />
+    <ClInclude Include="!TestGame\Level\Stages\GreenRegion2LevelManager.h" />
     <ClInclude Include="!TestGame\Level\Stages\GreenRegionLevelManager.h" />
     <ClInclude Include="!TestGame\Mappings.h" />
     <ClInclude Include="!TestGame\Camera\GameCamera.h" />
@@ -358,6 +366,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\Electrical\ElectricalTransformer.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\FrontDoor.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\FrontWall.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Buildings\GarageDoor.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\InnerUpperWall.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\InteriorDoor.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\SpinningObject.h" />
@@ -378,6 +387,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Movement\Trampoline.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Plants\Tree.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\SaggingObject.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Spikes.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Water.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Waterfall.h" />
     <ClInclude Include="!TestGame\Objects\Furniture.h" />
@@ -386,7 +396,11 @@
     <ClInclude Include="!TestGame\Objects\LayerFlip.h" />
     <ClInclude Include="!TestGame\Objects\LayerFlipObject.h" />
     <ClInclude Include="!TestGame\Objects\LevelCompleteZone.h" />
+    <ClInclude Include="!TestGame\Objects\Mechanical\Belt.h" />
+    <ClInclude Include="!TestGame\Objects\Mechanical\Cog.h" />
+    <ClInclude Include="!TestGame\Objects\Mechanical\TriggerCog.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
+    <ClInclude Include="!TestGame\Objects\Platforms\JointSpinPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />
     <ClInclude Include="!TestGame\Objects\Player\Currency.h" />
     <ClInclude Include="!TestGame\Objects\Player\Player.h" />
@@ -397,6 +411,7 @@
     <ClInclude Include="!TestGame\Objects\Projectile.h" />
     <ClInclude Include="!TestGame\Objects\SoundMaterial.h" />
     <ClInclude Include="!TestGame\Objects\StartState.h" />
+    <ClInclude Include="!TestGame\Objects\Triggerable.h" />
     <ClInclude Include="!TestGame\Objects\Vehicles\BikeVehicle.h" />
     <ClInclude Include="!TestGame\Objects\Vehicles\Vehicle.h" />
     <ClInclude Include="!TestGame\SettingsManager.h" />

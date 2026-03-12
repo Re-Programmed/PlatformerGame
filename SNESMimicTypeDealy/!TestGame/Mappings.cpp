@@ -13,6 +13,7 @@
 
 #include "../!TestGame/Objects/Platforms/RotatingPlatform.h"
 #include "../!TestGame/Objects/Platforms/FallingPlatform.h"
+#include "../!TestGame/Objects/Platforms/JointSpinPlatform.h"
 
 #include "../!TestGame/Objects/Environment/Buildings/SpinningObject.h"
 
@@ -25,6 +26,7 @@
 
 #include "../!TestGame/Objects/Enemies/Types/LeftRightEnemy.h"
 #include "../!TestGame/Objects/Enemies/Types/PassiveRabbit.h"
+#include "../!TestGame/Objects/Enemies/Types/AngryFarmer.h"
 #include "../!TestGame/Objects/Enemies/Types/FeralRabbit.h"
 
 #include "../!TestGame/Cutscenes/InnerThoughtScene.h"
@@ -63,13 +65,19 @@
 
 #include "Objects/LevelCompleteZone.h"
 
+#include "Objects/Mechanical/Cog.h"
+#include "Objects/Mechanical/TriggerCog.h"
+#include "Objects/Mechanical/Belt.h"
 
 #include "Objects/Environment/Buildings/Electrical/ElectricalTransformer.h"
+#include "Objects/Environment/Buildings/GarageDoor.h"
 
 #include "./Objects/Environment/Waterfall.h"
 #include "Objects/LayerFlipObject.h"
 
 #include "Objects/Vehicles/BikeVehicle.h"
+
+#include "./Objects/Environment/Spikes.h"
 
 #define COMPONENT_MAPPINGS_SIZE 1	//How many component mappings there are
 #define MAPPINGS_SIZE 20			//How many object mappings there are.
@@ -258,6 +266,7 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 				- A platform that rotates about a fixed point.
 			1: Falling (fallDelay[float])
 				- A platform that falls when it is stepped on.
+			2: JointSpin (fallDelay[float], fallsFrontToBack?[bool])
 	*/
 	[](std::vector<std::string> data, size_t n) {
 #if _DEBUG
@@ -284,6 +293,16 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 				Renderer::GetSprite(std::stoi(data[5])),	//sprite
 				std::stof(data[7])							//fallDelay[float]
 			), std::stoi(data[0]));							//layer
+			break;
+		case 2:
+			Renderer::LoadObject(new GAME_NAME::Objects::Platforms::JointSpinPlatform(
+				STOIVEC(data[1], data[2]),					//positionX,positionY
+				STOIVEC(data[3], data[4]),					//scaleX,scaleY
+				Renderer::GetSprite(std::stoi(data[5])),	//sprite
+				std::stof(data[7]),							//fallDelay[float]
+				(std::stoi(data[8]) == 1)					//isForwardBack[bool]
+			), std::stoi(data[0]));							//layer
+			break;
 		}
 	},
 
@@ -363,6 +382,7 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 			1 - PassiveRabbit (runningSprite)
 			2 - FeralRabbit (runningSprite,asleep),
 			3 - Dummy Enemy (health)
+			4 - Angry Farmer (anchorLeftX,anchorLeftY,anchorRightX,anchorRightY)
 	*/
 	[](std::vector<std::string> data, size_t n)
 	{
@@ -401,6 +421,23 @@ using namespace Enemies;
 			{
 				Enemy* e = new Enemy(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), new Enemy::EnemyAttributes(), n, std::stof(data[7]), false);
 				Renderer::LoadActiveObject(e, std::stoi(data[6]));
+				break;
+			}
+
+			case 4:		//Farmer
+			{
+				Sprite* finalSprite = nullptr;
+
+				if (data[4].starts_with("sb_"))
+				{
+					finalSprite =Renderer::GetSprite(SpriteBase(std::stoi(data[4].substr(3))));
+				}
+				else {
+					finalSprite = Renderer::GetSprite(std::stoi(data[4]));
+				}
+
+				AngryFarmer* lre = new AngryFarmer(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), finalSprite, STOIVEC(data[7], data[8]), STOIVEC(data[9], data[10]), new AngryFarmer::AngryFarmerAttributes(), n);
+				Renderer::LoadActiveObject(lre, std::stoi(data[6]));
 				break;
 			}
 
@@ -761,6 +798,125 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 			break;
 		}
 		}
+		break;
+	}
+
+	/*
+	26: Spikes(map, positionX, positionY, scaleX, scaleY, sprite, damage, facingDirection(0:up,1:left,2:down,3:right), layer)
+	*/
+
+	case 26:
+	{
+		Environment::Spikes* spikes = new Environment::Spikes(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), std::stof(data[5]), std::stoi(data[6]));
+		Renderer::LoadObject(spikes, std::stoi(data[7]));
+		break;
+	}
+
+	/*
+	27: Cog(map, positionX, positionY, scaleX, scaleY, sprite, isCounterClockwise, gearRatio, layer, cogsRight = 0, cogsUpRight = 0, isRotationSource = false)
+	*/
+
+	case 27:
+	{
+		Sprite* finalSprite = nullptr;
+
+		if (data[4].starts_with("sb_"))
+		{
+			finalSprite = Renderer::GetSprite(SpriteBase(std::stoi(data[4].substr(3))));
+		}
+		else {
+			finalSprite = Renderer::GetSprite(std::stoi(data[4]));
+		}
+
+		int cogsRight = data.size() > 8 ? std::stoi(data[8]) : 0;
+		int cogsUpRight = data.size() > 9 ? std::stoi(data[9]) : 0;
+		bool isRotationSource = data.size() > 10 ? (std::stoi(data[10]) == 1) : false;
+
+		Mechanical::Cog* cog = new Mechanical::Cog(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), finalSprite, std::stoi(data[5]) == 1, std::stoi(data[6]), 0.f, isRotationSource);
+		Renderer::LoadObject(cog, std::stoi(data[7]));
+
+		Mechanical::Cog* currentCog = cog;
+		for (int i = 0; i < cogsRight; i++) { currentCog = currentCog->CreateAdjacentCog(Mechanical::Cog::CogConnection::Right); }
+
+		currentCog = cog;
+		for (int i = 0; i < cogsUpRight; i++) { currentCog = currentCog->CreateAdjacentCog(Mechanical::Cog::CogConnection::Up_Right); }
+		break;
+	}
+
+	/*
+28: Belt and Cogs(map, positionX, positionY, length, firstGearRatio, secondGearRatio, cogSprite, isCounterClockwise, layer, isRotationSource = false)
+*/
+
+	case 28:
+	{
+		int firstSprite = 0;
+
+		if (data[5].starts_with("sb_"))
+		{
+			firstSprite = (SpriteBase(std::stoi(data[5].substr(3))));
+		}
+		else {
+			firstSprite = (std::stoi(data[5]));
+		}
+
+		int secondSprite = firstSprite;
+
+		int firstGearRatio = std::stoi(data[3]);
+		int secondGearRatio = std::stoi(data[4]);
+		bool isRotationSource = data.size() > 8 ? (std::stoi(data[8]) == 1) : false;
+		float length = std::stoi(data[2]);
+		
+		if (firstGearRatio == 2)
+		{
+			firstSprite = Mechanical::Cog::CogSpriteReference.at(firstSprite);
+		}
+
+		if (secondGearRatio == 2)
+		{
+			secondSprite = Mechanical::Cog::CogSpriteReference.at(secondSprite);
+		}
+
+		Vec2 scale = firstGearRatio == 1 ? Vec2{ 16.f } : Vec2{ 32.f };
+		Mechanical::Cog* cog1 = new Mechanical::Cog(STOIVEC(data[0], data[1]) - scale/2.f, scale, Renderer::GetSprite(firstSprite), std::stoi(data[6]) == 1, firstGearRatio, 0.f, isRotationSource);
+		Renderer::LoadObject(cog1, std::stoi(data[7]));
+
+		scale = secondGearRatio == 1 ? Vec2{ 16.f } : Vec2{ 32.f };
+		Mechanical::Cog* cog2 = new Mechanical::Cog(STOIVEC(data[0], data[1]) + Vec2{ 0.f, length } - scale / 2.f, scale, Renderer::GetSprite(secondSprite), std::stoi(data[6]) == 1, secondGearRatio, 0.f, false);
+		Renderer::LoadObject(cog2, std::stoi(data[7]));
+
+		Mechanical::Belt* belt = new Mechanical::Belt(cog1, cog2);
+		Renderer::LoadObject(belt, std::stoi(data[7]) + 1);
+
+		break;
+	}
+
+	/*
+29: Cog Controlled Door (map, positionX, positionY, scaleX, scaleY, sprite, cogSprite, layer, maxOpenDistance = scaleY, startOpen = false)
+*/
+
+	case 29:
+	{
+		int gearSprite = 0;
+
+		if (data[5].starts_with("sb_"))
+		{
+			gearSprite = (SpriteBase(std::stoi(data[5].substr(3))));
+		}
+		else {
+			gearSprite = (std::stoi(data[5]));
+		}
+
+		Vec2 position = STOIVEC(data[0], data[1]);
+		Vec2 scale = STOIVEC(data[2], data[3]);
+
+		Mechanical::TriggerCog* cog = new Mechanical::TriggerCog(position + scale - Vec2{8.f}, Vec2{ 16.f }, Renderer::GetSprite(gearSprite));
+		Renderer::LoadObject(cog, std::stoi(data[6]) + 1);
+
+		Objects::Environment::Buildings::GarageDoor* door = new Objects::Environment::Buildings::GarageDoor(position, scale, Renderer::GetSprite(std::stoi(data[4])), data.size() > 7 ? std::stof(data[7]) : scale.Y, data.size() > 8 ? (std::stoi(data[8]) == 1) : false);
+		Renderer::LoadObject(door, std::stoi(data[6]));
+
+		cog->SetEffect(door);
+
 		break;
 	}
 	}

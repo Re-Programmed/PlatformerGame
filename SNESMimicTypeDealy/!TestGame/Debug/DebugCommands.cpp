@@ -41,6 +41,8 @@
 
 #include "../Cutscenes/DialogueManager.h"
 
+#include "../Objects/Mechanical/Cog.h"
+
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
 
 std::vector<std::string> DebugCommands::m_queuedCommands = std::vector<std::string>(2);
@@ -51,7 +53,7 @@ void DebugCommands::HandleKeybinds()
 {
 	if (GAME_NAME::InputManager::GetKeyUpDown(GAME_NAME::keyRef::DEBUG_OBJECT_MENU) & GAME_NAME::InputManager::KEY_STATE::KEY_STATE_PRESSED)
 	{
-		m_queuedCommands.push_back("loadlevel,/green_region");
+		m_queuedCommands.push_back("loadlevel,/green_region_barninterior");
 	}
 }
 
@@ -159,6 +161,26 @@ void DebugCommands::HandleCommands()
 		{
 			DebugCommands_Log("Diving.");
 			GAME_NAME::TestGame::ThePlayer->Dive(Vec2{ 100.f, 80.f }, 15.f);
+			continue;
+		}
+		
+		if (input.starts_with("character"))
+		{
+			std::vector<std::string> params = getParams(input);
+
+			if (params.size() < 1)
+			{
+				DebugCommands_Log("Provide a character index. (i)");
+				continue;
+			}
+
+			int index = std::stoi(params.at(0));
+
+			GAME_NAME::TestGame::ThePlayer->SetPlayerTextureData(static_cast<GAME_NAME::Objects::Player::Player::TEXTURE_OFFSETS>(index));
+
+			std::string message("Setting player to texture: ");
+			message.append(std::to_string(index));
+			DebugCommands_Log(message);
 			continue;
 		}
 
@@ -280,6 +302,9 @@ void DebugCommands::HandleCommands()
 			GAME_NAME::Renderer::ClearTextures();
 
 			GAME_NAME::TestGame::SetLoadLevelWithSavedPlayer(true);
+
+			Mechanical::Cog::HidePlacingCog();
+			Mechanical::Cog::ClearCogRegistry();
 
 			GAME_NAME::TestGame::INSTANCE->LoadLevel(params[0].c_str(), GAME_NAME::TestGame::LEVEL_DATA_TEXTURES_BACKGROUND, true);
 			GAME_NAME::TestGame::INSTANCE->LoadLevel("/global_assets", GAME_NAME::TestGame::LEVEL_DATA_TEXTURES_SPRITES);

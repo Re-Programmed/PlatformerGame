@@ -130,7 +130,7 @@ using namespace Particles;
 					Renderer::InstantiateObject(Renderer::InstantiateGameObject(myItem, true, 1, false));
 				}
 				else {
-					Items::FloorItem* myItem = new Items::FloorItem(m_position + Vec2::RandVec2(m_scale.X, m_scale.Y), new Items::Food(Items::APPLE, 20), 0.5f);
+					Items::FloorItem* myItem = new Items::FloorItem(m_position + Vec2::RandVec2(m_scale.X, m_scale.Y), new Items::Food(Items::APPLE, std::stoi(ITEMTYPE_GetItemData(Items::APPLE).Attributes.at(TOOL_ACTION::FOOD))), 0.5f);
 					Renderer::InstantiateObject(Renderer::InstantiateGameObject(myItem, true, 1, false));
 				}
 			}

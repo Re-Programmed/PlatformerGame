@@ -41,7 +41,7 @@ namespace GAME_NAME::Objects::Enemies
 
 		float distanceToPlayer = Vec2::Distance(m_position, TestGame::ThePlayer->GetPosition() + Vec2{ TestGame::ThePlayer->GetScale().X / 2.f, 0.f });
 
-		if (m_isAsleep)
+		if (m_isAsleep && m_attackedAnimationTimer <= 0.f)
 		{
 			//delete m_sprite; //Cannot delete original sprite since it is used by PassiveRabbit as m_baseSprite.
 			m_sprite.reset(Renderer::GetSprite(95));

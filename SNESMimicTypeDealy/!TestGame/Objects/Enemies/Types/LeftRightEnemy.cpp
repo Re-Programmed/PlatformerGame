@@ -15,7 +15,6 @@ namespace GAME_NAME::Objects::Enemies
 
 	LeftRightEnemy::~LeftRightEnemy()
 	{
-		Enemy::~Enemy();
 	}
 
 #if _DEBUG
@@ -30,7 +29,7 @@ namespace GAME_NAME::Objects::Enemies
 			endPoint->Render(cameraPosition, m_rightAnchor + Vec2{ 0, 8 + ((!m_movingLeft) * 5.f) }, { 16, 16 });
 		}
 
-		GameObject::Render(cameraPosition);
+		ActiveBoxCollisionGravityObject::Render(cameraPosition);
 	}
 #endif
 

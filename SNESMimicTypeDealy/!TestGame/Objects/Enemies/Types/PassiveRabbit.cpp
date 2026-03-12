@@ -27,19 +27,20 @@ namespace GAME_NAME::Objects::Enemies
 	void PassiveRabbit::Update(GLFWwindow* window)
 	{
 
+		if (m_isDead) { 
+			Enemy::Update(window); 
+			return; 
+		}
+
 		//If the passive rabbit becomes supercharged, it will become angry.
-		if (m_supercharge > 0)
+		FeralRabbit* fr = dynamic_cast<FeralRabbit*>(this);
+		if (m_supercharge > 0 && fr == nullptr)
 		{
-			Renderer::InstantiateObject(Renderer::InstantiateGameObject(new FeralRabbit(this->m_position, this->m_scale, this->m_sprite.get(), this->m_jumpingSprite), true, 2, false));
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(new FeralRabbit(this->m_position, this->m_scale, new Sprite(this->m_sprite->GetSpriteId()), this->m_jumpingSprite), true, 2, false));
 			Renderer::DestroyActiveObject(this);
 			RemoveSupercharge();
 			m_isDead = true;
 			return;
-		}
-
-		if (m_isDead) { 
-			Enemy::Update(window); 
-			return; 
 		}
 
 		//If the rabbit is currently pathfinding, ignore updating anything until it reaches its destination, then begin countdown.
@@ -112,6 +113,8 @@ namespace GAME_NAME::Objects::Enemies
 			m_position.X -= m_scale.X;
 		}
 
+		if (m_attackedAnimationTimer > 0.f) { return; }
+
 		//The rabbit is running
 		if (m_allowPathfinding)
 		{
@@ -122,7 +125,7 @@ namespace GAME_NAME::Objects::Enemies
 				m_oddFrame = !m_oddFrame;
 
 				//Alternate between the jumping sprite and 1 after the jumping sprite.
-				SetSprite(Renderer::GetSprite(m_jumpingSprite + m_oddFrame));
+				SetSpriteId(Renderer::GetSpriteIdFromTextureId(m_jumpingSprite + m_oddFrame));
 			}
 			//The rabbit is jumping.
 		}

@@ -138,7 +138,7 @@ namespace GAME_NAME::Objects::Enemies
 		/// Returns true if the enemy has reached its destination.
 		/// </summary>
 		/// <returns></returns>
-		inline bool completedPathfinding() { return m_pathfindTimeout.Timer > 2.0 ? true : 
+		inline bool completedPathfinding() { return m_pathfindTimeout.Timer > 10.0 ? true : 
 													((m_enemyAttributes->IgnoreYPathfind ?
 														(std::abs(m_position.X - m_pathfind.X) <= PATHFINDING_PADDING) : 
 														(Vec2::Distance(m_pathfind, m_position) <= PATHFINDING_PADDING))); }

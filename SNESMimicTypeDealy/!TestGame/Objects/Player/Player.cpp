@@ -43,6 +43,8 @@
 #include "../../../Audio/SoundEvents.h"
 #include "../SoundMaterial.h"
 
+#include "../Mechanical/Cog.h"
+
 #include "../Projectile.h"
 
 #define PLAYER_ROOM_SPEED 40	//How fast the player moves vertically in room control mode.
@@ -156,7 +158,7 @@ using namespace Utils;
 using namespace Audio;
 
 			//TODO: Pixel Birb sitting animation is glitched because of weird offset issues from climbing sprites :(
-			const Player::PlayerTextureData Player::TextureData[3] = {
+			const Player::PlayerTextureData Player::TextureData[4] = {
 				Player::PlayerTextureData(), //Default Sprites (0)
 				Player::PlayerTextureData(SpriteBase(191), SpriteBase(217), SpriteBase(204), SpriteBase(212), SpriteBase(219), SpriteBase(225), 0 /*Missing Dead*/, 0 /*Missing Victory Balloon*/, 0 /*Missing Riding Bike*/, 0 /*Missing unintentional flying*/, new Player::PlayerAnimationData(	//Pixel Birb (1)
 					Player::AnimationOverride(new int[4] { 1, 2, 1, 3 }, 4, ANIM_6_SPF * 1.33f),		//Walking 
@@ -173,7 +175,23 @@ using namespace Audio;
 					Player::AnimationOverride(new int[2] { 2, 3 }, 2, ANIM_12_SPF * 1.5f),				//Idle 2
 					Player::AnimationOverride(0, 0)														//No Biking Animation
 				)),
-				Player::PlayerTextureData(SpriteBase(299), SpriteBase(326), SpriteBase(327), SpriteBase(335), SpriteBase(344), SpriteBase(357), SpriteBase(369), SpriteBase(368), SpriteBase(370), SpriteBase(367))
+				Player::PlayerTextureData(SpriteBase(299), SpriteBase(326), SpriteBase(327), SpriteBase(335), SpriteBase(344), SpriteBase(357), SpriteBase(369), SpriteBase(368), SpriteBase(370), SpriteBase(367)),	//Default Foxo (2)
+				Player::PlayerTextureData(SpriteBase(389), SpriteBase(406), SpriteBase(407), SpriteBase(415), SpriteBase(419), 0 /*Missing Idle Animation*/, SpriteBase(429), 0 /*Missing victory balloon*/, 0 /*Missing riding bike*/, SpriteBase(427), new Player::PlayerAnimationData(
+					Player::AnimationOverride(new int[8] { 1, 2, 3, 2, 1, 4, 5, 4 }, 8, ANIM_12_SPF),		//walking.
+					Player::AnimationOverride(new int[8] { 1, 2, 3, 2, 1, 4, 5, 4 }, 8, ANIM_16_SPF),		//running.
+					Player::AnimationOverride(new int[4] { 6, 7, 8, 9 }, 4, ANIM_12_SPF),					//jumping.
+					Player::AnimationOverride(new int[4] { 10, 11 }, 2, ANIM_12_SPF),						//falling.
+					Player::AnimationOverride(new int[4] { 12, 13, 14, 15 }, 4, ANIM_12_SPF),				//skdding.
+					Player::AnimationOverride(new int[4] { 1, 2, 3, 0 }, 4, ANIM_6_SPF),					//fall over.
+					Player::AnimationOverride(new int[4] { 4, 5, 6, 7 }, 4, ANIM_6_SPF),					//get up.
+					Player::AnimationOverride(new int[9] { 0, 1, 2, 3 }, 4, ANIM_12_SPF),					//basic attack.
+					Player::AnimationOverride(new int[8] { 0, 1, 2, 3, 4, 5, 6, 7 }, 8, ANIM_12_SPF),		//climbing behind.
+					Player::AnimationOverride(new int[5] { 9, 10, 11, 12, 13 }, 5, ANIM_6_SPF),				//NONE: sitting puff.
+					Player::AnimationOverride(new int[4] { 0, 1, 2, 1 }, 4, ANIM_6_SPF),					//NONE: idle toe tap.
+					Player::AnimationOverride(new int[8] { 3, 4, 5, 6, 7, 8, 8 }, 8, ANIM_6_SPF),			//NONE: idle stomp.
+					Player::AnimationOverride(new int[2] { 0, 1 }, 2, ANIM_6_SPF)							//NONE: biking.
+
+				)),
 			};
 
 			Player::Player(Vec2 position, bool loadFromSavedPosition)
@@ -267,6 +285,24 @@ using namespace Audio;
 			float m_curr = 0;
 			void Player::Update(GLFWwindow* window)
 			{
+				//TODO: Make this only happen if you are actually trying to place a cog.
+
+				if (m_screenInventory->GetHeldItem() != nullptr)
+				{
+					ITEM_TYPE type = m_screenInventory->GetHeldItem()->GetType();
+					if (type == ITEM_TYPE::SMALL_WOODEN_COG || type == ITEM_TYPE::LARGE_WOODEN_COG)
+					{
+						Mechanical::Cog::DetectPlacingCog(type == ITEM_TYPE::SMALL_WOODEN_COG ? 1 : 2);
+					}
+					else {
+						Mechanical::Cog::HidePlacingCog();
+					}
+				}
+				else {
+					Mechanical::Cog::HidePlacingCog();
+				}
+
+
 				//Death by falling out of level.
 				if (m_position.Y < -80.f && IsAlive)
 				{
@@ -411,6 +447,8 @@ using namespace Audio;
 				if (!m_onGround)
 				{
 					m_airTime += Time::GameTime::GetScaledDeltaTime();
+
+					if (GetVelocity().Y < 0.f) { m_fallTime += Time::GameTime::GetScaledDeltaTime(); }
 				}
 
 				//Update the health bar display.
@@ -921,7 +959,7 @@ using namespace Audio;
 
 #define KNOCKBACK_DAMAGE_MULTIPLIER 100.f
 
-			void Player::Damage(float damage, GameObject* cause, bool causeFainting)
+			void Player::Damage(float damage, GameObject* cause, bool causeFainting, bool createParticles)
 			{
 				constexpr float maxHealth = 100.f;
 
@@ -931,7 +969,7 @@ using namespace Audio;
 					m_physics->AddVelocity(Vec2{ (cause->GetPosition().X > m_position.X + m_scale.X / 2.f ? -1.f : 1.f) * KNOCKBACK_DAMAGE_MULTIPLIER, 0.f });
 				}
 
-				if(damage > 0.f){ CreateBloodParticle(cause, causeFainting); }
+				if(damage > 0.f && createParticles){ CreateBloodParticle(cause, causeFainting); }
 
 				//Damage with the applied damage minus the armor effect.
 				float finalDamage = damage - m_stats.Armor;
@@ -959,7 +997,7 @@ using namespace Audio;
 			{
 				constexpr float maxHealth = 100.f;
 
-				m_stats.Health += maxHealth;
+				m_stats.Health += amount;
 
 				if (m_stats.Health > maxHealth)
 				{
@@ -1001,6 +1039,17 @@ using namespace Audio;
 			void Player::SetPlayerTextureData(TEXTURE_OFFSETS offsets)
 			{
 				m_textureData = TextureData[offsets];
+
+				if (offsets == DEFAULT_FOXO)
+				{
+					m_scaleMultiplier = Vec2{ 1.625f, 1.f };
+					m_heldItemDisplayOffset = { Vec2{9.f, 0.f}, Vec2{ 0.f, 0.f } };
+				}
+				else {
+					m_scaleMultiplier = Vec2{ 1.f };
+					m_heldItemDisplayOffset = { Vec2{ 0.f }, Vec2{ 0.f } };
+				}
+
 				registerAnimations();
 			}
 
@@ -1136,7 +1185,7 @@ using namespace Audio;
 			}
 
 #define PLAYER_AIR_TIME_FALL_SOUND 0.32f	//How long you have to be in the air to play the fall sound when you land.
-#define PLAYER_AIR_TIME_FALL_DAMAGE 1.35f	//How long you have to be in the air to take damage from falling.
+#define PLAYER_AIR_TIME_FALL_DAMAGE 0.95f	//How long you have to be in the air to take damage from falling.
 
 
 			void Player::onCollision(Vec2 push, GameObject* self, GameObject* other)
@@ -1164,7 +1213,8 @@ using namespace Audio;
 						}
 
 						Damage(m_diving, self);
-						m_airTime = 0.f;
+						m_airTime = 0;
+						m_fallTime = 0;
 						m_diving = 0.f;
 					}
 
@@ -1205,13 +1255,11 @@ using namespace Audio;
 					}
 
 					//Calculate fall damage.
-					if (m_airTime > PLAYER_AIR_TIME_FALL_DAMAGE)
+					if (m_fallTime > PLAYER_AIR_TIME_FALL_DAMAGE)
 					{
-						std::cout << m_airTime << std::endl;
-
 						SoundEvents::PlaySoundAtPoint(SoundEvents::Event::PLAYER_BIG_FALL, m_position, 0.45f);
 
-						Damage(((float)m_airTime - PLAYER_AIR_TIME_FALL_DAMAGE) * 10.f, self);
+						Damage(((float)m_fallTime - PLAYER_AIR_TIME_FALL_DAMAGE) * 10.f, self);
 
 					//Play landing sound for the material that was landed on.
 					}else if (m_airTime > PLAYER_AIR_TIME_FALL_SOUND)
@@ -1221,6 +1269,7 @@ using namespace Audio;
 					}
 
 					m_airTime = 0;
+					m_fallTime = 0;
 				}
 
 				
@@ -1288,7 +1337,7 @@ using namespace Audio;
 						float targetHealth = std::stof(param);
 						if (m_stats.Health > targetHealth)
 						{
-							this->Damage(m_stats.Health - targetHealth, nullptr, false);
+							this->Damage(m_stats.Health - targetHealth, nullptr, false, false);
 						}
 						else if (m_stats.Health < targetHealth)
 						{
@@ -1454,6 +1503,7 @@ using namespace Audio;
 				if (m_controlType == ControlType::ROOM)
 				{
 					m_airTime = 0;
+					m_fallTime = 0;
 
 					if (m_frozen <= 0)
 					{
@@ -1483,7 +1533,8 @@ using namespace Audio;
 					if (m_targetSequence[0].IgnoreGravity)
 					{
 						m_physics->SetGravityStrength(0);
-						m_airTime = 0.f;
+						m_airTime = 0;
+						m_fallTime = 0;
 					}
 
 					if (glfwGetTime() - m_targetSequence[0].StartTime > m_targetSequence[0].Delay)
@@ -1524,9 +1575,17 @@ using namespace Audio;
 					}
 				}
 
+				//No fall damage if you are swimming.
+				if (m_swimming)
+				{
+					m_fallTime = 0;
+					m_airTime = 0;
+				}
+
 				if (m_climbing)
 				{
 					m_airTime = 0;
+					m_fallTime = 0;
 					m_animator->SetSpeedMult(0);
 
 					if (InputManager::GetKey(PLAYER_MOVE_UP))
@@ -1805,6 +1864,7 @@ using namespace Audio;
 
 					if (!m_swimming)
 					{
+
 						if (m_onGround)
 						{
 							//Jump Sound
@@ -2131,6 +2191,8 @@ using namespace Audio;
 							//Do a puff animation.
 							if (std::rand() < RAND_MAX / 525)
 							{
+								//Sitting occasionally adds health too.
+								Heal(14.f);
 								m_animator->SetCurrentAnimation(9);
 								m_animator->SetSpeedMult(1);
 							}
@@ -2157,6 +2219,7 @@ using namespace Audio;
 						}
 
 						m_airTime = 0;
+						m_fallTime = 0;
 						m_physics->SetVelocity(0);
 
 						break;

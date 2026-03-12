@@ -76,7 +76,13 @@ namespace GAME_NAME::Objects::Enemies
 			//Move the enemy towards the pathfinding point if they are not already at it and ensure the enemy dosent exceed terminal velocity.
 			if (std::abs(m_physics->GetVelocity().X) < m_enemyAttributes->TerminalMovementSpeed && m_onGround)
 			{
-				m_physics->AddVelocity(Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0) * 0.013f /*Speed is still changing with framerate for some reason???*/);
+				Vec2 addVel = Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0) * 0.013f /*Speed is still changing with framerate for some reason??? BECAUSE OF setVelocity(0) in omCollision*/;
+				if ((addVel.X < 0 && m_physics->GetVelocity().X > 0) || (addVel.X > 0 && m_physics->GetVelocity().X < 0))
+				{
+					addVel = addVel * 8.f;
+				}
+
+				m_physics->AddVelocity(addVel);
 			}
 		}
 
@@ -127,7 +133,6 @@ finish_pathfind:
 
 		createHealthBar();
 
-		std::cout << "<ENEMY DAMAGED> Health: " << m_health << ".\n";
 	}
 
 	void Enemy::Heal(float health)
@@ -172,12 +177,13 @@ finish_pathfind:
 		//Either in the first or last 1/3 of the attacking animation, turn sprite red.
 		if ((m_attackedAnimationTimer > ATTACK_ANIMATION_LENGTH * (2.f / 3.f)) || (m_attackedAnimationTimer > 0.f && m_attackedAnimationTimer < ATTACK_ANIMATION_LENGTH * (1.f / 3.f)))
 		{
-			Rendering::DynamicSprite* redSprite = new Rendering::DynamicSprite(m_sprite->GetSpriteId());
+			if (m_sprite == nullptr || m_sprite->GetSpriteId() == 0) { return; }
 
-			redSprite->UpdateTextureColor(Enemy_redTextureColor);
+			Rendering::DynamicSprite redSprite = Rendering::DynamicSprite(m_sprite->GetSpriteId());
 
-			redSprite->Render(cameraPostion, { m_position.X + m_scale.X, m_position.Y + m_scale.Y }, { -m_scale.X, -m_scale.Y });
-			delete redSprite;
+			redSprite.UpdateTextureColor(Enemy_redTextureColor);
+
+			redSprite.Render(cameraPostion, { m_position.X + m_scale.X, m_position.Y + m_scale.Y }, { -m_scale.X, -m_scale.Y });
 
 			m_attackedAnimationTimer -= Utils::Time::GameTime::GetScaledDeltaTime();
 
@@ -185,8 +191,11 @@ finish_pathfind:
 			return;
 		}
 
+		
 		if (m_supercharge > 0)
 		{
+			if (m_sprite == nullptr || m_sprite->GetSpriteId() == 0) { return; }
+
 			Rendering::DynamicSprite superchargedSpriteVersion(m_sprite->GetSpriteId());
 
 			//Darken the enemy's color as they become more supercharged.
@@ -207,8 +216,12 @@ finish_pathfind:
 			m_didRender = true;
 			return;
 		}
+		
+		if (m_sprite == nullptr || m_sprite->GetSpriteId() == 0) { return; }
 
-		ActiveBoxCollisionGravityObject::Render(cameraPostion);
+		Rendering::DynamicSprite sp(m_sprite->GetSpriteId());
+		sp.Render(cameraPostion, { m_position.X + m_scale.X, m_position.Y + m_scale.Y }, { -m_scale.X, -m_scale.Y });
+		m_didRender = true;
 
 	}
 

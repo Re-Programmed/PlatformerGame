@@ -49,6 +49,7 @@
 #include "./Level/MainMenu/MainMenuManager.h"
 #include "./Level/Introduction/IntroductionLevelManager.h"
 #include "./Level/Stages/GreenRegionLevelManager.h"
+#include "./Level/Stages/GreenRegion2LevelManager.h"
 #include "./Level/Stages/EmptyLevelSystem.h"
 #include "./Level/Hub/HubLevelManager.h"
 #include "./Level/Hub/DepartManager.h"
@@ -71,6 +72,8 @@
 #include "./Objects/Environment/Effects/ElectricalZap.h"
 
 #include "./Cutscenes/Character/AnimatingCharacter.h"
+
+#include "./Objects/Mechanical/Cog.h"
 
 #define SKIP_MAIN_MENU
 #define STANDARD_LOAD
@@ -131,6 +134,9 @@ namespace GAME_NAME
 	{
 		if (!Game_nextLevelToLoad.empty())
 		{
+			//Ensure all cogs get reset.
+			Mechanical::Cog::ClearCogRegistry();
+
 			if (Game_nextLevelIsOnlyObjects)
 			{
 				GAME_NAME::Resources::SaveManager::SetCurrentFile("default_s");
@@ -142,7 +148,8 @@ namespace GAME_NAME
 				Rendering::Renderer::LoadActiveObject(ThePlayer.get(), 2); //Spawn in the player on Active Layer 2.
 				LevelManager::LevelCircleAnimation(Vec2{-1}, true);
 
-				//IF the game name ends with interior, the level manager will not reload.
+				//IF the game name ends with interior, the 
+				// will not reload.
 				//Reload the level mannager and data for the current level.
 				if (!Game_nextLevelToLoad.ends_with("interior"))
 				{
@@ -340,6 +347,8 @@ namespace GAME_NAME
 		DebugCommands::RunRecieverThread();
 #endif
 
+		Mechanical::Cog::HidePlacingCog();
+
 		//Ensure new glitched sprites are loaded.
 		GlitchedRegion::ResetSpriteCount();
 		GlitchedRegion::LoadGlitchedAreas();
@@ -440,7 +449,7 @@ namespace GAME_NAME
 
 				case 2:
 					//Green Region Area 2
-					m_currentLevelSystem = std::unique_ptr<LevelSystem>(new EmptyLevelSystem());
+					m_currentLevelSystem = std::unique_ptr<LevelSystem>(new GreenRegion2LevelManager());
 					break;
 				}
 				break;
