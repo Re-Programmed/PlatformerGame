@@ -107,11 +107,11 @@ namespace GAME_NAME::Objects::Player
 					//Fade in general slots.
 					for (uint8_t i = 0; i < m_generalSlots.size(); i++)
 					{
+						m_animatingMutex.lock();
 						Vec4 baseColor = m_generalSlots[i]->GetBaseColor();
 
 						//TODO: Add MUTEX FOR SLOTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-						m_animatingMutex.lock();
 						m_generalSlots[i]->SetBaseColor(Vec4::LerpBetween(baseColor, { 1.f, 1.f, 1.f, 1.f }, 0.05));
 						m_animatingMutex.unlock();
 						/*

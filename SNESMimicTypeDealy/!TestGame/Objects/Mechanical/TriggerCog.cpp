@@ -3,7 +3,7 @@
 namespace GAME_NAME::Objects::Mechanical
 {
 	TriggerCog::TriggerCog(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, uint8_t gearRatio, Triggerable* effect)
-		: Cog(position, scale, sprite, false, gearRatio, 0.f, false), m_effect(effect)
+		: Cog(position, scale, sprite, false, gearRatio, 0.f, false), Trigger(effect)
 	{
 
 	}
@@ -12,11 +12,12 @@ namespace GAME_NAME::Objects::Mechanical
 	{
 		Cog::Update(window);
 
-		if (m_effect == nullptr) { return; }
+		if (GetEffect() == nullptr) { return; }
 
 		if (m_gearSpeed > 0.f)
 		{
-			m_effect->Trigger(m_counterClockwise, m_gearSpeed/33.f);
+			trigger(m_counterClockwise, m_gearSpeed/33.f);
 		}
 	}
 }
+ 

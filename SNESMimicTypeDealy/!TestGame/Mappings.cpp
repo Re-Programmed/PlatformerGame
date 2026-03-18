@@ -67,6 +67,7 @@
 
 #include "Objects/Mechanical/Cog.h"
 #include "Objects/Mechanical/TriggerCog.h"
+#include "Objects/Mechanical/TriggerLever.h"
 #include "Objects/Mechanical/Belt.h"
 
 #include "Objects/Environment/Buildings/Electrical/ElectricalTransformer.h"
@@ -76,6 +77,8 @@
 #include "Objects/LayerFlipObject.h"
 
 #include "Objects/Vehicles/BikeVehicle.h"
+
+#include "Objects/Environment/Foragable.h"
 
 #include "./Objects/Environment/Spikes.h"
 
@@ -891,7 +894,7 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 	}
 
 	/*
-29: Cog Controlled Door (map, positionX, positionY, scaleX, scaleY, sprite, cogSprite, layer, maxOpenDistance = scaleY, startOpen = false)
+29: Cog Controlled Door (map, positionX, positionY, scaleX, scaleY, sprite, cogSprite, layer, maxOpenDistance = scaleY, startOpen = false, hasCollision = true, hasCog = true)
 */
 
 	case 29:
@@ -906,16 +909,86 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 			gearSprite = (std::stoi(data[5]));
 		}
 
+		bool hasCog = !(data.size() > 10 && data[10] == "0");
+
 		Vec2 position = STOIVEC(data[0], data[1]);
 		Vec2 scale = STOIVEC(data[2], data[3]);
 
-		Mechanical::TriggerCog* cog = new Mechanical::TriggerCog(position + scale - Vec2{8.f}, Vec2{ 16.f }, Renderer::GetSprite(gearSprite));
-		Renderer::LoadObject(cog, std::stoi(data[6]) + 1);
+		Mechanical::TriggerCog* cog = nullptr;
 
-		Objects::Environment::Buildings::GarageDoor* door = new Objects::Environment::Buildings::GarageDoor(position, scale, Renderer::GetSprite(std::stoi(data[4])), data.size() > 7 ? std::stof(data[7]) : scale.Y, data.size() > 8 ? (std::stoi(data[8]) == 1) : false);
+		if (hasCog)
+		{
+			cog = new Mechanical::TriggerCog(position + scale - Vec2{ 8.f }, Vec2{ 16.f }, Renderer::GetSprite(gearSprite));
+			Renderer::LoadObject(cog, std::stoi(data[6]) + 1);
+		}
+
+		Objects::Environment::Buildings::GarageDoor* door = new Objects::Environment::Buildings::GarageDoor(position, scale, Renderer::GetSprite(std::stoi(data[4])), data.size() > 7 ? std::stof(data[7]) : scale.Y, data.size() > 8 ? (std::stoi(data[8]) == 1) : false, data.size() > 9 ? (std::stoi(data[9]) == 1) : false);
 		Renderer::LoadObject(door, std::stoi(data[6]));
 
-		cog->SetEffect(door);
+		if(cog)
+		{
+			cog->SetEffect(door);
+		}
+
+		break;
+	}
+
+	/*
+	30: Trigger Lever (map, positionX, positionY, scaleX, scaleY, sprite, layer, triggerObjectTag)
+	*/
+
+	case 30:
+	{
+		int leverSprite = 0;
+
+		if (data[4].starts_with("sb_"))
+		{
+			leverSprite = (SpriteBase(std::stoi(data[4].substr(3))));
+		}
+		else {
+			leverSprite = (std::stoi(data[4]));
+		}
+
+		Vec2 position = STOIVEC(data[0], data[1]);
+		Vec2 scale = STOIVEC(data[2], data[3]);
+
+		Mechanical::TriggerLever* lever = new Mechanical::TriggerLever(position, scale, Renderer::GetSprite(leverSprite));
+		Renderer::LoadObject(lever, std::stoi(data[5]));
+
+		lever->SetEffect(data[6]);
+
+		break;
+	}
+
+
+	/*
+	31: Forageable (map, positionX, positionY, scaleX, scaleY, sprite, layer, itemDrop = nullptr, forageTime = 1.0)
+	*/
+
+	case 31:
+	{
+		int forageableSprite = 0;
+
+		if (data[4].starts_with("sb_"))
+		{
+			forageableSprite = (SpriteBase(std::stoi(data[4].substr(3))));
+		}
+		else {
+			forageableSprite = (std::stoi(data[4]));
+		}
+
+		Vec2 position = STOIVEC(data[0], data[1]);
+		Vec2 scale = STOIVEC(data[2], data[3]);
+
+		InventoryItem* drops = nullptr;
+		if (data.size() > 6)
+		{
+			drops = InventoryItem::DecodeItemString(data[6]);
+		}
+
+
+		Environment::Forageable* forageable = new Environment::Forageable(position, scale, Renderer::GetSprite(forageableSprite), saveIndex, drops, data.size() > 7 ? std::stod(data[7]) : 1.0);
+		Renderer::LoadObject(forageable, std::stoi(data[5]));
 
 		break;
 	}

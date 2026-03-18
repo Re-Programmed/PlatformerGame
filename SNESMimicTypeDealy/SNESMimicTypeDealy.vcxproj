@@ -207,6 +207,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Effects\GlitchEffect.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\Rain.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\ExplosiveObject.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Foragable.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Levels\Town1Manager.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Movement\Trampoline.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Plants\Tree.cpp" />
@@ -222,6 +223,7 @@
     <ClCompile Include="!TestGame\Objects\Mechanical\Belt.cpp" />
     <ClCompile Include="!TestGame\Objects\Mechanical\Cog.cpp" />
     <ClCompile Include="!TestGame\Objects\Mechanical\TriggerCog.cpp" />
+    <ClCompile Include="!TestGame\Objects\Mechanical\TriggerLever.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\JointSpinPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.h" />
@@ -383,6 +385,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchEffect.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\Rain.h" />
     <ClInclude Include="!TestGame\Objects\Environment\ExplosiveObject.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Foragable.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Levels\Town1Manager.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Movement\Trampoline.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Plants\Tree.h" />
@@ -398,7 +401,9 @@
     <ClInclude Include="!TestGame\Objects\LevelCompleteZone.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\Belt.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\Cog.h" />
+    <ClInclude Include="!TestGame\Objects\Mechanical\Trigger.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\TriggerCog.h" />
+    <ClInclude Include="!TestGame\Objects\Mechanical\TriggerLever.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\JointSpinPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />

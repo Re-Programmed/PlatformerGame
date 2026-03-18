@@ -86,6 +86,9 @@ namespace GAME_NAME::Objects::Enemies
 	AngryFarmer::AngryFarmer(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, Vec2 leftAnchor, Vec2 rightAnchor, AngryFarmerAttributes* attributes, size_t saveID)
 		: LeftRightEnemy(position, scale, sprite, leftAnchor, rightAnchor, attributes, saveID), m_animatorComponent(nullptr)
 	{
+		//Set health I guess.
+		m_health = 35.f; m_maxHealth = 35.f;
+
 		std::vector<std::shared_ptr<GAME_NAME::Components::Animation::Animation>> animations;
 
 		std::vector<std::shared_ptr<Sprite>> walkAnimation;

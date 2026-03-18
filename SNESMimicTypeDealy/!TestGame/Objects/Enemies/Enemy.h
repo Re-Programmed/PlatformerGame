@@ -147,7 +147,7 @@ namespace GAME_NAME::Objects::Enemies
 		/// <summary>
 		/// The health the enemy started with. Healing the enemy will never allow its health to exceed this value.
 		/// </summary>
-		const float m_maxHealth;
+		float m_maxHealth;
 
 		inline void setPathfinding(Vec2 position)
 		{

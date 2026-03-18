@@ -507,6 +507,12 @@
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\GarageDoor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Objects\Mechanical\TriggerLever.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="!TestGame\Objects\Environment\Foragable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -1071,6 +1077,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\GarageDoor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Mechanical\TriggerLever.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Mechanical\Trigger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Environment\Foragable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
