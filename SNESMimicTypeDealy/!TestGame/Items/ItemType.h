@@ -14,7 +14,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 38
+#define ITEM_COUNT 39
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -57,7 +57,8 @@ namespace GAME_NAME
 			SOURDOUGH_BREAD = 34,
 			SCREWDRIVER = 35,
 			SMALL_WOODEN_COG = 36,
-			LARGE_WOODEN_COG = 37
+			LARGE_WOODEN_COG = 37,
+			KEY = 38
 		};
 
 		/// <summary>
@@ -168,6 +169,8 @@ namespace GAME_NAME
 
 			{ "Small Cog", SpriteBase(441), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "3"  } }, "RMB to remove, LMB to place next to cogs."},							//36
 			{ "Large Cog", SpriteBase(442), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5"  } }, "RMB to remove, LMB to place next to cogs."},							//37
+
+			{ "Key", SpriteBase(444), FOLLOW_HAND_TEXTURE, 0, { }, "Unlocks stuff."},																							//38
 		};
 		
 		/// <summary>

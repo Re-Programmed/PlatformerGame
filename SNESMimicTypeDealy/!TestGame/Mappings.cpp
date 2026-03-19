@@ -68,6 +68,7 @@
 #include "Objects/Mechanical/Cog.h"
 #include "Objects/Mechanical/TriggerCog.h"
 #include "Objects/Mechanical/TriggerLever.h"
+#include "Objects/Mechanical/TriggerKeyHole.h"
 #include "Objects/Mechanical/Belt.h"
 
 #include "Objects/Environment/Buildings/Electrical/ElectricalTransformer.h"
@@ -989,6 +990,34 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 
 		Environment::Forageable* forageable = new Environment::Forageable(position, scale, Renderer::GetSprite(forageableSprite), saveIndex, drops, data.size() > 7 ? std::stod(data[7]) : 1.0);
 		Renderer::LoadObject(forageable, std::stoi(data[5]));
+
+		break;
+	}
+
+
+	/*
+	32: Trigger Key Hole (map, positionX, positionY, scaleX, scaleY, sprite, layer, triggerObjectTag)
+	*/
+
+	case 32:
+	{
+		int keyHoleSprite = 0;
+
+		if (data[4].starts_with("sb_"))
+		{
+			keyHoleSprite = (SpriteBase(std::stoi(data[4].substr(3))));
+		}
+		else {
+			keyHoleSprite = (std::stoi(data[4]));
+		}
+
+		Vec2 position = STOIVEC(data[0], data[1]);
+		Vec2 scale = STOIVEC(data[2], data[3]);
+
+		Mechanical::TriggerKeyHole* keyHole = new Mechanical::TriggerKeyHole(position, scale, Renderer::GetSprite(keyHoleSprite));
+		Renderer::LoadObject(keyHole, std::stoi(data[5]));
+
+		keyHole->SetEffect(data[6]);
 
 		break;
 	}

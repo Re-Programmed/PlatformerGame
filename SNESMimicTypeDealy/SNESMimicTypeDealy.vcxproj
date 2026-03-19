@@ -222,7 +222,9 @@
     <ClCompile Include="!TestGame\Objects\LevelCompleteZone.cpp" />
     <ClCompile Include="!TestGame\Objects\Mechanical\Belt.cpp" />
     <ClCompile Include="!TestGame\Objects\Mechanical\Cog.cpp" />
+    <ClCompile Include="!TestGame\Objects\Mechanical\MechanicalSaveManager.cpp" />
     <ClCompile Include="!TestGame\Objects\Mechanical\TriggerCog.cpp" />
+    <ClCompile Include="!TestGame\Objects\Mechanical\TriggerKeyHole.cpp" />
     <ClCompile Include="!TestGame\Objects\Mechanical\TriggerLever.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\JointSpinPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
@@ -401,8 +403,10 @@
     <ClInclude Include="!TestGame\Objects\LevelCompleteZone.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\Belt.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\Cog.h" />
+    <ClInclude Include="!TestGame\Objects\Mechanical\MechanicalSaveManager.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\Trigger.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\TriggerCog.h" />
+    <ClInclude Include="!TestGame\Objects\Mechanical\TriggerKeyHole.h" />
     <ClInclude Include="!TestGame\Objects\Mechanical\TriggerLever.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\JointSpinPlatform.h" />

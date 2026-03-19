@@ -75,6 +75,8 @@
 
 #include "./Objects/Mechanical/Cog.h"
 
+#include "./Objects/Mechanical/MechanicalSaveManager.h"
+
 #define SKIP_MAIN_MENU
 #define STANDARD_LOAD
 #define SKIP_INTRODUCTION
@@ -136,6 +138,8 @@ namespace GAME_NAME
 		{
 			//Ensure all cogs get reset.
 			Mechanical::Cog::ClearCogRegistry();
+
+			GAME_NAME::Mechanical::MechanicalSaveManager::ClearObjectRefs();
 
 			if (Game_nextLevelIsOnlyObjects)
 			{
@@ -247,6 +251,10 @@ namespace GAME_NAME
 			m_loadLevelWithSavedPlayer = false;
 		}
 
+
+		//Load all save data stuff for mechanical objects.
+		Mechanical::MechanicalSaveManager::Init();
+
 #ifdef SKIP_MAIN_MENU
 
 #ifdef STANDARD_LOAD
@@ -330,6 +338,7 @@ namespace GAME_NAME
 
 		Crafting::CraftingDataManager::Initilize();
 		Collectables::CollectableTracker::Init();
+
 	}
 
 	void TestGame::LateUpdate(GLFWwindow* window)
@@ -348,6 +357,8 @@ namespace GAME_NAME
 #endif
 
 		Mechanical::Cog::HidePlacingCog();
+
+		Mechanical::MechanicalSaveManager::LoadAllMechanicalObjectsForCurrentLevel();
 
 		//Ensure new glitched sprites are loaded.
 		GlitchedRegion::ResetSpriteCount();

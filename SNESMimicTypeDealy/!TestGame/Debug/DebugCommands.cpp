@@ -42,6 +42,7 @@
 #include "../Cutscenes/DialogueManager.h"
 
 #include "../Objects/Mechanical/Cog.h"
+#include "../Objects/Mechanical/MechanicalSaveManager.h"
 
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
 
@@ -300,6 +301,8 @@ void DebugCommands::HandleCommands()
 
 			GAME_NAME::Renderer::ClearObjects();
 			GAME_NAME::Renderer::ClearTextures();
+
+			GAME_NAME::Mechanical::MechanicalSaveManager::ClearObjectRefs();
 
 			GAME_NAME::TestGame::SetLoadLevelWithSavedPlayer(true);
 
