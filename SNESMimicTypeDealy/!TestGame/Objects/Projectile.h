@@ -24,7 +24,7 @@ namespace GAME_NAME::Objects
 
 		double m_fuse = 0.0;
 
-#define PROJECTILE_TYPE_COUNT 3
+#define PROJECTILE_TYPE_COUNT 4
 		struct ProjectileType
 		{
 			Vec2 Scale;

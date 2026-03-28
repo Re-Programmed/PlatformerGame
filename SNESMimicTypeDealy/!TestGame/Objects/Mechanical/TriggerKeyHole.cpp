@@ -57,6 +57,7 @@ namespace GAME_NAME::Objects::Mechanical
 			}
 			else {
 				if (m_twoKeysIn) { return; }
+				if (!m_keyRemovable) { return; }
 
 				if (player->GetInventory()->GetHeldItem() != nullptr && player->GetInventory()->GetHeldItem()->GetType() == ITEM_TYPE::KEY)
 				{

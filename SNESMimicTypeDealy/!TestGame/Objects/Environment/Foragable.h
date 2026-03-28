@@ -13,7 +13,7 @@ namespace GAME_NAME::Objects::Environment
 		: public Interactable, public GameObjectState
 	{
 	public:
-		Forageable(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, Items::InventoryItem* drops = nullptr, double forageLength = 1.0);
+		Forageable(Vec2 position, Vec2 scale, Rendering::Sprite* sprite, size_t saveID, Items::InventoryItem* drops = nullptr, double forageLength = 1.0, ITEM_TYPE requiredTool = ITEM_TYPE::NULL_ITEM);
 		void LoadState() override;
 		void SaveState() override;
 
@@ -27,6 +27,8 @@ namespace GAME_NAME::Objects::Environment
 		bool m_foraged = false;
 	private:
 		Items::InventoryItem* const m_drop;
+
+		const ITEM_TYPE m_requiredTool;
 
 		const double m_forageLength;
 

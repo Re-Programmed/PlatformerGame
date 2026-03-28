@@ -1500,6 +1500,8 @@ using namespace Audio;
 
 			void Player::readKeys()
 			{
+				if (!IsAlive) { return; }
+
 				if (m_controlType == ControlType::ROOM)
 				{
 					m_airTime = 0;
@@ -1746,6 +1748,8 @@ using namespace Audio;
 				//int joyAxesCount;		JOYSTICK INPUT
 				//const float* joyAxes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &joyAxesCount);
 
+				//Make it harder to change your velocity if you are slipping.
+				float slideMutliplier = m_physics->GetSliding() > 0 ? 0.33f : 1.f;
 
 				//If the player is frozen, do not check any key presses.
 				if ((m_diving <= 0.f && m_frozen <= 0.f) || animateMoveLeft || animateMoveRight)
@@ -1770,7 +1774,7 @@ using namespace Audio;
 						if (m_physics->GetVelocity().X < (PlayerSpeedCap + addSpeedCap) * (m_blocking ? BlockingMovementSlowdown : 1.f))
 						{
 							m_physics->SetFrictionDrag(0.f);
-							m_physics->AddVelocity(Vec2(((float)Time::GameTime::GetScaledDeltaTime() / 0.017f) * (PlayerSpeedCap - m_physics->GetVelocity().X) * (PlayerSpeed), 0.f));
+							m_physics->AddVelocity(Vec2(((float)Time::GameTime::GetScaledDeltaTime() / 0.017f) * (PlayerSpeedCap - m_physics->GetVelocity().X) * (PlayerSpeed) * slideMutliplier, 0.f));
 
 							//Check if the player has begun to move to the right, play a sliding animation if slowing down, flip the sprite if moving right.
 							if (m_physics->GetVelocity().X > 0)
@@ -1779,7 +1783,7 @@ using namespace Audio;
 							}
 							else
 							{
-								m_physics->SetFrictionDrag(3.f);
+								if (m_physics->GetSliding() <= 0) { m_physics->SetFrictionDrag(3.f); }
 								playerIsSkidding = true;
 
 							}
@@ -1798,7 +1802,7 @@ using namespace Audio;
 						if (m_physics->GetVelocity().X > (-PlayerSpeedCap - addSpeedCap) * (m_blocking ? BlockingMovementSlowdown : 1.f))
 						{
 							m_physics->SetFrictionDrag(0);
-							m_physics->AddVelocity(Vec2(((float)Time::GameTime::GetScaledDeltaTime() / 0.017f) * (PlayerSpeedCap - m_physics->GetVelocity().X) * (-(PlayerSpeed - 0.0165F)), 0.f));
+							m_physics->AddVelocity(Vec2(((float)Time::GameTime::GetScaledDeltaTime() / 0.017f) * (PlayerSpeedCap - m_physics->GetVelocity().X) * (-(PlayerSpeed - 0.0165F)) * slideMutliplier, 0.f));
 						}
 
 						//Check if the player has begun to move to the left, play a sliding animation if slowing down, flip the sprite if moving left.
@@ -1808,7 +1812,7 @@ using namespace Audio;
 						}
 						else
 						{
-							m_physics->SetFrictionDrag(3.f);
+							if (m_physics->GetSliding() <= 0) { m_physics->SetFrictionDrag(3.f); }
 							playerIsSkidding = true;
 						}
 					}

@@ -84,9 +84,9 @@ namespace GAME_NAME::Objects::Mechanical
 
 		static inline void ClearObjectRefs()
 		{
-			for (MechanicalSave& save : m_saves)
+			for (MechanicalSave*& save : m_saves)
 			{
-				save.Object = nullptr;
+				save->Object = nullptr;
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace GAME_NAME::Objects::Mechanical
 		/// <returns></returns>
 		static size_t getObjectId(Vec2 position);
 
-		static std::vector<MechanicalSave> m_saves;
+		static std::vector<MechanicalSave*> m_saves;
 	};
 
 }

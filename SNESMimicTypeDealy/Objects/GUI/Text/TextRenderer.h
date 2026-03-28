@@ -55,9 +55,9 @@ namespace GAME_NAME::Objects::GUI::Text
 		/// <param name="position">The position to draw the digit.</param>
 		/// <param name="scale">The scale to draw the digit.</param>
 		/// <returns></returns>
-		static StaticGUIElement* RenderDigit(digit digit, Vec2& position, const float scale, int font = TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID);
+		static StaticGUIElement* RenderDigit(digit digit, Vec2& position, const float scale, int font = TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, int layer = 1);
 
-		static RenderedDigit RenderNumber(uint16_t number, Vec2 firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits = 0, int font = TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID);
+		static RenderedDigit RenderNumber(uint16_t number, Vec2 firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits = 0, int font = TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, int layer = 1);
 
 		/// <summary>
 		/// Renders the given char as a texture offset from the "DEFAULT_FONT_RENDER_A_SPRITE_ID."

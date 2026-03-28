@@ -259,10 +259,10 @@ namespace GAME_NAME
 
 			for (int i = 0; i < MICRO_GUI_LAYER_COUNT; i++)
 			{
-				//for (GUI::IGUIElement* obj : m_guiGameObjects[i])
-				//{
+				for (GUI::IGUIElement* obj : m_guiGameObjects[i])
+				{
 					//delete obj;
-				//}
+				}
 
 				m_guiGameObjects[i].clear();
 			}

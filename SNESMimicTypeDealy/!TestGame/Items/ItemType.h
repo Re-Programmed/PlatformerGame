@@ -14,7 +14,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 39
+#define ITEM_COUNT 55
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -58,7 +58,8 @@ namespace GAME_NAME
 			SCREWDRIVER = 35,
 			SMALL_WOODEN_COG = 36,
 			LARGE_WOODEN_COG = 37,
-			KEY = 38
+			KEY = 38,
+			BUTTER = 39
 		};
 
 		/// <summary>
@@ -122,10 +123,10 @@ namespace GAME_NAME
 			{ "Log", SpriteBase(248), NO_HELD_TEXTURE, 0, {}, "Log of wood."},	//0
 			{ "Leaves", SpriteBase(246), NO_HELD_TEXTURE, 0, {}, ""},		//1
 			{ "Stone", 55, NO_HELD_TEXTURE, 0, {}, "" },		//2
-			{ "(Temp) Axe", SpriteBase(65), SpriteBase(65), WEAPON | CHOP, {{TOOL_ACTION::CHOP , "1"}, {TOOL_ACTION::WEAPON, "4,0,0.9,20"}}, ""},	//3
+			{ "Axe", SpriteBase(65), SpriteBase(65), WEAPON | CHOP, {{TOOL_ACTION::CHOP , "1"}, {TOOL_ACTION::WEAPON, "4,0,0.9,20"}}, ""},	//3
 			{ "Unknown", 0, NO_HELD_TEXTURE, 0, {}, "" },																	//4
-			{ "Wooden Shoes", 18, NO_HELD_TEXTURE, EQUIPMENT, { { TOOL_ACTION::EQUIPMENT, "Health:10" } }, "" },			//5
-			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.2,26"}}, ""},			//6
+			{ "Wooden Shoes", SpriteBase(453), NO_HELD_TEXTURE, VALUE | EQUIPMENT, { {TOOL_ACTION::VALUE, "10" }, { TOOL_ACTION::EQUIPMENT, "Health:8" }}, ""},			//5
+			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.5,26"}}, ""},			//6
 			{ "Toast", SpriteBase(132), SpriteBase(233), 0, {}, "Probably made in a toaster." },							//7
 			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "6" } }, "Apple."},					//8
 			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."},			//9
@@ -140,7 +141,7 @@ namespace GAME_NAME
 			{ "Butter Knife", SpriteBase(292), SpriteBase(292), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("4,0,0.3,17,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, {TOOL_ACTION::VALUE, "12"}}, "Still pretty sharp."},					//16
 			{ "Iron Sword", SpriteBase(287), SpriteBase(287), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("8,0,0.9,22,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "60" }}, "8 Damage."},					//17
 			{ "Wooden Club", SpriteBase(297), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "6,0,1.66,26" }, { TOOL_ACTION::VALUE, "30" }}, "Slow but hurts."},					//18
-			{ "Spear", SpriteBase(298), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("5,0,1.2,45,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "30" }}, "Reach really far."},					//19
+			{ "Spear", SpriteBase(298), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("6,0,1.2,45,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "30" }}, "Reach really far."},					//19
 
 			{ "Wooden Plating", SpriteBase(374), NO_HELD_TEXTURE, EQUIPMENT | VALUE, { { TOOL_ACTION::EQUIPMENT, "Health:15" }, { TOOL_ACTION::VALUE, "20" }}, "15 health."},					//20
 			{ "Leaf Helmet", SpriteBase(375), NO_HELD_TEXTURE, EQUIPMENT | VALUE, { { TOOL_ACTION::EQUIPMENT, "Health:5" }, { TOOL_ACTION::VALUE, "5" }}, "5 health."},					//21
@@ -162,15 +163,44 @@ namespace GAME_NAME
 			{ "Log Shield", SpriteBase(385), FOLLOW_HAND_TEXTURE, SHIELD | VALUE, { { TOOL_ACTION::SHIELD, "4,0.75" }, { TOOL_ACTION::VALUE, "7" } }, "Might block some weapons?"},						//31
 
 			{ "White Bread", SpriteBase(386), FOLLOW_HAND_TEXTURE, 0, { }, "Hyper gluten injected."},						//32
-			{ "Gluten Free Bread", SpriteBase(387), FOLLOW_HAND_TEXTURE, 0, { }, "Xanthan gum never tasted\nso good."},		//33
+			{ "Gluten Free Bread", SpriteBase(387), FOLLOW_HAND_TEXTURE, 0, { }, "Almonds?"},		//33
 			{ "Sourdough Bread", SpriteBase(388), FOLLOW_HAND_TEXTURE, 0, { }, "Flavorful."},								//34
 
-			{ "Screwdriver", SpriteBase(430), FOLLOW_HAND_TEXTURE, VALUE | WEAPON, { { TOOL_ACTION::WEAPON, "3,0,0.4,26" }, { TOOL_ACTION::VALUE, "3"  } }, "Flathead."},								//35
+			{ "Screwdriver", SpriteBase(430), FOLLOW_HAND_TEXTURE, VALUE | WEAPON, { { TOOL_ACTION::WEAPON, "3,0,0.4,26" }, { TOOL_ACTION::VALUE, "3"  } }, "Has a magnetic tip."},								//35
 
 			{ "Small Cog", SpriteBase(441), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "3"  } }, "RMB to remove, LMB to place next to cogs."},							//36
 			{ "Large Cog", SpriteBase(442), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5"  } }, "RMB to remove, LMB to place next to cogs."},							//37
 
 			{ "Key", SpriteBase(444), FOLLOW_HAND_TEXTURE, 0, { }, "Unlocks stuff."},																							//38
+
+			{ "Butter", SpriteBase(445), FOLLOW_HAND_TEXTURE, VALUE | RANGED_WEAPON, { { TOOL_ACTION::RANGED_WEAPON, "4,0,0.35,80,3" }, { TOOL_ACTION::VALUE, "3" } }, "Thowable.\nMakes things slippery."},			//39
+
+			{ "Iron Rod", SpriteBase(447), FOLLOW_HAND_TEXTURE, VALUE | WEAPON, { { TOOL_ACTION::VALUE, "5" }, {TOOL_ACTION::WEAPON, "3,0,0.5,26"} }, "Very structural."},			//40
+
+			{ "Copper Wire", SpriteBase(448), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "6" } }, "Simple conductive material."},			//41
+			{ "Resistor", SpriteBase(449), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "12" } }, "Uncalled for\nelectron gatekeeping."},			//42
+			{ "Capacitor", SpriteBase(450), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "12" } }, "0.1 uF."},			//43
+
+			{ "Pear", SpriteBase(451), FOLLOW_HAND_TEXTURE, VALUE | FOOD, { { TOOL_ACTION::VALUE, "2" }, { TOOL_ACTION::FOOD, "10"} }, "Pears grow on pear trees."},			//44
+			{ "Orange", SpriteBase(452), FOLLOW_HAND_TEXTURE, VALUE | FOOD, { { TOOL_ACTION::VALUE, "2" }, { TOOL_ACTION::FOOD, "10"} }, "Edible."},			//45
+			
+			{ "Spring Boots", SpriteBase(454), FOLLOW_HAND_TEXTURE, VALUE | EQUIPMENT, { { TOOL_ACTION::VALUE, "24" }, { TOOL_ACTION::EQUIPMENT, "Health:8,Jump:10"} }, "Jump higher."},			//46
+
+			{ "Spring", SpriteBase(455), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "4" } }, "Bouncy."},			//47
+
+			{ "Launchpad", SpriteBase(456), NO_HELD_TEXTURE, VALUE | PLACEABLE, { { TOOL_ACTION::VALUE, "12" }, { TOOL_ACTION::PLACEABLE, "24,24" }}, "Place to get launched."},			//48
+
+			{ "Wrench", SpriteBase(458), FOLLOW_HAND_TEXTURE, VALUE | WEAPON, { { TOOL_ACTION::WEAPON, "3,0,0.6,26" }, { TOOL_ACTION::VALUE, "8" } }, "Works on all screws."},			//49
+
+			{ "Pitchfork", SpriteBase(459), FOLLOW_HAND_TEXTURE, VALUE | WEAPON, { { TOOL_ACTION::WEAPON, std::string("5,0,1.1,36,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, {TOOL_ACTION::VALUE, "6"}}, "Stabs far away."},			//50
+			
+			{ "Bucket", SpriteBase(460), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Holds whatever you want."},			//51
+
+			{ "Milk Bucket", SpriteBase(461), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "8" } }, "Holds milk."},			//52
+
+			{ "Wheat", SpriteBase(462), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "1" } }, "Almost bread?"},			//53
+
+			{ "Pickaxe", SpriteBase(463), FOLLOW_HAND_TEXTURE, VALUE | MINE, { { TOOL_ACTION::VALUE, "30" }, { TOOL_ACTION::MINE, "3" } }, "Mines certain resources.\nCan clear certain pathways."},			//54
 		};
 		
 		/// <summary>

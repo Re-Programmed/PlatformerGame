@@ -184,6 +184,7 @@
     <ClCompile Include="!TestGame\Objects\Enemies\Types\FeralRabbit.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\LeftRightEnemy.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\PassiveRabbit.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\AnimatingObject.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\BackgroundObjects.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\BreakableBlock.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Buildings\Bench.cpp" />
@@ -210,6 +211,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Foragable.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Levels\Town1Manager.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Movement\Trampoline.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\PassTriggerObject.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Plants\Tree.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Spikes.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Water.cpp" />
@@ -227,6 +229,7 @@
     <ClCompile Include="!TestGame\Objects\Mechanical\TriggerKeyHole.cpp" />
     <ClCompile Include="!TestGame\Objects\Mechanical\TriggerLever.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\JointSpinPlatform.cpp" />
+    <ClCompile Include="!TestGame\Objects\Platforms\MovingPathPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Platforms\RotatingPlatform.h" />
     <ClCompile Include="!TestGame\Objects\Platforms\FallingPlatform.cpp" />
@@ -236,6 +239,7 @@
     <ClCompile Include="!TestGame\Objects\Player\ScreenInventory.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Skills\SkillHolder.cpp" />
     <ClCompile Include="!TestGame\Objects\Projectile.cpp" />
+    <ClCompile Include="!TestGame\Objects\SlipperySurface.cpp" />
     <ClCompile Include="!TestGame\Objects\SoundMaterial.cpp" />
     <ClCompile Include="!TestGame\Objects\StartState.cpp" />
     <ClCompile Include="!TestGame\Objects\Vehicles\BikeVehicle.cpp" />
@@ -362,6 +366,7 @@
     <ClInclude Include="!TestGame\Objects\Enemies\Types\FeralRabbit.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\LeftRightEnemy.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\PassiveRabbit.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\AnimatingObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\BackgroundObjects.h" />
     <ClInclude Include="!TestGame\Objects\Environment\BGParallax.h" />
     <ClInclude Include="!TestGame\Objects\Environment\BreakableBlock.h" />
@@ -390,6 +395,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Foragable.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Levels\Town1Manager.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Movement\Trampoline.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\PassTriggerObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Plants\Tree.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Buildings\SaggingObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Spikes.h" />
@@ -410,6 +416,7 @@
     <ClInclude Include="!TestGame\Objects\Mechanical\TriggerLever.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\FallingPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Platforms\JointSpinPlatform.h" />
+    <ClInclude Include="!TestGame\Objects\Platforms\MovingPathPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />
     <ClInclude Include="!TestGame\Objects\Player\Currency.h" />
     <ClInclude Include="!TestGame\Objects\Player\Player.h" />
@@ -418,6 +425,7 @@
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillHolder.h" />
     <ClInclude Include="!TestGame\Objects\Player\Skills\SkillType.h" />
     <ClInclude Include="!TestGame\Objects\Projectile.h" />
+    <ClInclude Include="!TestGame\Objects\SlipperySurface.h" />
     <ClInclude Include="!TestGame\Objects\SoundMaterial.h" />
     <ClInclude Include="!TestGame\Objects\StartState.h" />
     <ClInclude Include="!TestGame\Objects\Triggerable.h" />

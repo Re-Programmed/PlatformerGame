@@ -10,10 +10,16 @@
 
 #include "../Objects/Environment/Effects/BloodMark.h"
 
+#include "../Objects/SlipperySurface.h"
+
 #define EXPLOSIVE_PROJECTILE_FUSE_MAX 0.33
 
 #define EXPLOSION_MARK_SPRITE SpriteBase(133)
 #define EXPLOSION_MARK_SCALE Vec2{24,13.5f}
+
+#define BUTTER_SPLASH_SPRITE SpriteBase(446)
+#define BUTTER_SPLASH_WIDTH 32.f
+#define BUTTER_SPLASH_HEIGHT 7.f
 
 namespace GAME_NAME::Objects
 {
@@ -23,7 +29,8 @@ namespace GAME_NAME::Objects
 	std::array<const Projectile::ProjectileType, PROJECTILE_TYPE_COUNT> Projectile::m_projectileTypes = { 
 		ProjectileType(Vec2{ 10, 10 }, SpriteBase(381)), 
 		ProjectileType(Vec2{ 10, 10 }, SpriteBase(383)), 
-		ProjectileType(Vec2{ 10, 10 }, SpriteBase(384)) };
+		ProjectileType(Vec2{ 10, 10 }, SpriteBase(384)),
+		ProjectileType(Vec2{ 10, 10 }, SpriteBase(445)) };
 
 	Projectile::Projectile(Vec2 position, int damage, float range, uint8_t projectileType, bool directionLeft)
 		: ActiveBoxCollisionGravityObject(position, m_projectileTypes[projectileType].Scale, Renderer::GetSprite(m_projectileTypes[projectileType].SpriteID)),
@@ -75,6 +82,16 @@ using namespace Environment::Effects;
 
 				Renderer::DestroyActiveObject(this);
 			}
+		}
+		//Butter.
+		else if (m_projectileType <= 3)
+		{
+			Vec2 pos(m_position.X - (BUTTER_SPLASH_WIDTH/2.f), other->GetPosition().Y + other->GetScale().Y - BUTTER_SPLASH_HEIGHT + 1.f);
+
+			SlipperySurface* butterSplash = new SlipperySurface(pos, Vec2{ BUTTER_SPLASH_WIDTH, BUTTER_SPLASH_HEIGHT }, Renderer::GetSprite(BUTTER_SPLASH_SPRITE));
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(butterSplash, false, 3, false));
+
+			Renderer::DestroyActiveObject(this);
 		}
 	}
 }

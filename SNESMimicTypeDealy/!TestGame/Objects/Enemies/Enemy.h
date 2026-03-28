@@ -4,6 +4,9 @@
 
 #include "../../../Objects/GameObjectState.h"
 
+#include "../../Items/InventoryItem.h"
+#include "../../Items/FloorItem.h"
+
 constexpr uint8_t PATHFINDING_PADDING = 1;
 
 namespace GAME_NAME::Objects::Enemies
@@ -113,6 +116,11 @@ namespace GAME_NAME::Objects::Enemies
 			m_supercharge = 0;
 		}
 
+		inline void SetDrops(Items::InventoryItem* item)
+		{
+			m_drops = item;
+		}
+
 		void onCollision(Vec2 push, GameObject* self, GameObject* other) override;
 	protected:
 		/// <summary>
@@ -170,6 +178,8 @@ namespace GAME_NAME::Objects::Enemies
 		~Enemy();
 
 		EnemyAttributes* m_enemyAttributes;
+
+		Items::InventoryItem* m_drops = nullptr;
 	private:
 		int m_enemyIndex; //This enemy's index in the registry.
 

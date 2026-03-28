@@ -14,6 +14,7 @@
 #include "../!TestGame/Objects/Platforms/RotatingPlatform.h"
 #include "../!TestGame/Objects/Platforms/FallingPlatform.h"
 #include "../!TestGame/Objects/Platforms/JointSpinPlatform.h"
+#include "../!TestGame/Objects/Platforms/MovingPathPlatform.h"
 
 #include "../!TestGame/Objects/Environment/Buildings/SpinningObject.h"
 
@@ -82,6 +83,12 @@
 #include "Objects/Environment/Foragable.h"
 
 #include "./Objects/Environment/Spikes.h"
+
+#include "./Objects/SlipperySurface.h"
+
+#include "./Objects/Environment/AnimatingObject.h"
+
+#include "./Objects/Environment/PassTriggerObject.h"
 
 #define COMPONENT_MAPPINGS_SIZE 1	//How many component mappings there are
 #define MAPPINGS_SIZE 20			//How many object mappings there are.
@@ -260,7 +267,7 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 #if _DEBUG
 		DebugMapper(">>> Loading ParallaxBGObject");
 #endif
-		Renderer::LoadActiveObject(new GAME_NAME::Objects::Environment::BGParallax(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), static_cast<float>(std::stoi(data[5])/100.f)), 0);
+		Renderer::LoadActiveObject(new GAME_NAME::Objects::Environment::BGParallax(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), static_cast<float>(std::stoi(data[5])/100.f)), data.size() > 6 ? (std::stoi(data[6])) : 0);
 	},
 
 	/*
@@ -271,6 +278,7 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 			1: Falling (fallDelay[float])
 				- A platform that falls when it is stepped on.
 			2: JointSpin (fallDelay[float], fallsFrontToBack?[bool])
+			3: MovingPath (motionSpeed[float], useesTrigger[bool], Vec2... pointsOfMotion)
 	*/
 	[](std::vector<std::string> data, size_t n) {
 #if _DEBUG
@@ -307,6 +315,18 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 				(std::stoi(data[8]) == 1)					//isForwardBack[bool]
 			), std::stoi(data[0]));							//layer
 			break;
+		case 3:
+		{
+			GAME_NAME::Objects::Platforms::MovingPathPlatform* plat = new GAME_NAME::Objects::Platforms::MovingPathPlatform(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[5])), std::stoi(data[8]) == 1, std::stof(data[7]), 0);
+
+			for (int i = 9; i < data.size(); i += 2)
+			{
+				plat->AddMotionPoint(STOIVEC(data[i], data[i + 1]));
+			}
+
+			Renderer::LoadActiveObject(plat, std::stoi(data[0]));
+			break;
+		}
 		}
 	},
 
@@ -386,7 +406,7 @@ std::function<void (std::vector<std::string>, size_t line)> m_mappings[MAPPINGS_
 			1 - PassiveRabbit (runningSprite)
 			2 - FeralRabbit (runningSprite,asleep),
 			3 - Dummy Enemy (health)
-			4 - Angry Farmer (anchorLeftX,anchorLeftY,anchorRightX,anchorRightY)
+			4 - Angry Farmer (anchorLeftX,anchorLeftY,anchorRightX,anchorRightY,drops)
 	*/
 	[](std::vector<std::string> data, size_t n)
 	{
@@ -440,15 +460,23 @@ using namespace Enemies;
 					finalSprite = Renderer::GetSprite(std::stoi(data[4]));
 				}
 
-				AngryFarmer* lre = new AngryFarmer(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), finalSprite, STOIVEC(data[7], data[8]), STOIVEC(data[9], data[10]), new AngryFarmer::AngryFarmerAttributes(), n);
+				AngryFarmer* lre = new AngryFarmer(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), finalSprite, 
+					STOIVEC(data[7], data[8]), STOIVEC(data[9], data[10]), new AngryFarmer::AngryFarmerAttributes(), n);
 				Renderer::LoadActiveObject(lre, std::stoi(data[6]));
+
+				if (data.size() > 11)
+				{
+					Items::InventoryItem* item = Items::InventoryItem::DecodeItemString(data[11]);
+					lre->SetDrops(item);
+				}
+
 				break;
 			}
 
 			default:
 			{
 #if _DEBUG
-				DEBUG::DebugLog::LogError("Tried to load unknown enemy type. (Mappings.cpp : m_mappings:12)");
+				DEBUG::DebugLog::LogError("Tried to load unknown enemy type. (Mappings.cpp : m_mappings:12)");  
 #endif
 				break;
 			}
@@ -817,7 +845,7 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 	}
 
 	/*
-	27: Cog(map, positionX, positionY, scaleX, scaleY, sprite, isCounterClockwise, gearRatio, layer, cogsRight = 0, cogsUpRight = 0, isRotationSource = false)
+	27: Cog(map, positionX, positionY, scaleX, scaleY, sprite, isCounterClockwise, gearRatio, layer, cogsRight = 0, cogsUpRight = 0, cogsUp = 0, isRotationSource = false)
 	*/
 
 	case 27:
@@ -834,7 +862,8 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 
 		int cogsRight = data.size() > 8 ? std::stoi(data[8]) : 0;
 		int cogsUpRight = data.size() > 9 ? std::stoi(data[9]) : 0;
-		bool isRotationSource = data.size() > 10 ? (std::stoi(data[10]) == 1) : false;
+		int cogsUp = data.size() > 10 ? std::stoi(data[10]) : 0;
+		bool isRotationSource = data.size() > 11 ? (std::stoi(data[11]) == 1) : false;
 
 		Mechanical::Cog* cog = new Mechanical::Cog(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), finalSprite, std::stoi(data[5]) == 1, std::stoi(data[6]), 0.f, isRotationSource);
 		Renderer::LoadObject(cog, std::stoi(data[7]));
@@ -844,6 +873,9 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 
 		currentCog = cog;
 		for (int i = 0; i < cogsUpRight; i++) { currentCog = currentCog->CreateAdjacentCog(Mechanical::Cog::CogConnection::Up_Right); }
+
+		currentCog = cog;
+		for (int i = 0; i < cogsUp; i++) { currentCog = currentCog->CreateAdjacentCog(Mechanical::Cog::CogConnection::Up); }
 		break;
 	}
 
@@ -935,7 +967,7 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 	}
 
 	/*
-	30: Trigger Lever (map, positionX, positionY, scaleX, scaleY, sprite, layer, triggerObjectTag)
+	30: Trigger Lever (map, positionX, positionY, scaleX, scaleY, sprite, layer, triggerObjectTag, description = "")
 	*/
 
 	case 30:
@@ -953,8 +985,8 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 		Vec2 position = STOIVEC(data[0], data[1]);
 		Vec2 scale = STOIVEC(data[2], data[3]);
 
-		Mechanical::TriggerLever* lever = new Mechanical::TriggerLever(position, scale, Renderer::GetSprite(leverSprite));
-		Renderer::LoadObject(lever, std::stoi(data[5]));
+		Mechanical::TriggerLever* lever = new Mechanical::TriggerLever(position, scale, Renderer::GetSprite(leverSprite), false, nullptr, data.size() > 7 ? data[7] : "");
+		Renderer::LoadActiveObject(lever, std::stoi(data[5]));
 
 		lever->SetEffect(data[6]);
 
@@ -963,7 +995,7 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 
 
 	/*
-	31: Forageable (map, positionX, positionY, scaleX, scaleY, sprite, layer, itemDrop = nullptr, forageTime = 1.0)
+	31: Forageable (map, positionX, positionY, scaleX, scaleY, sprite, layer, itemDrop = nullptr, forageTime = 1.0, requiredTool = NULL_ITEM)
 	*/
 
 	case 31:
@@ -988,7 +1020,7 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 		}
 
 
-		Environment::Forageable* forageable = new Environment::Forageable(position, scale, Renderer::GetSprite(forageableSprite), saveIndex, drops, data.size() > 7 ? std::stod(data[7]) : 1.0);
+		Environment::Forageable* forageable = new Environment::Forageable(position, scale, Renderer::GetSprite(forageableSprite), saveIndex, drops, data.size() > 7 ? std::stod(data[7]) : 1.0, data.size() > 8 ? static_cast<ITEM_TYPE>(std::stoi(data[8])) : ITEM_TYPE::NULL_ITEM);
 		Renderer::LoadObject(forageable, std::stoi(data[5]));
 
 		break;
@@ -996,7 +1028,7 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 
 
 	/*
-	32: Trigger Key Hole (map, positionX, positionY, scaleX, scaleY, sprite, layer, triggerObjectTag)
+	32: Trigger Key Hole (map, positionX, positionY, scaleX, scaleY, sprite, layer, triggerObjectTag, keyRemovable)
 	*/
 
 	case 32:
@@ -1014,12 +1046,115 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 		Vec2 position = STOIVEC(data[0], data[1]);
 		Vec2 scale = STOIVEC(data[2], data[3]);
 
-		Mechanical::TriggerKeyHole* keyHole = new Mechanical::TriggerKeyHole(position, scale, Renderer::GetSprite(keyHoleSprite));
+		Mechanical::TriggerKeyHole* keyHole = new Mechanical::TriggerKeyHole(position, scale, Renderer::GetSprite(keyHoleSprite), nullptr, data.size() > 7 ? (std::stoi(data[7]) == 1) : false);
 		Renderer::LoadObject(keyHole, std::stoi(data[5]));
 
 		keyHole->SetEffect(data[6]);
 
 		break;
 	}
+
+
+	/*
+	33: Slippery Surface (map, positionX, positionY, scaleX, scaleY, sprite, layer, slipFactor)
+	*/
+
+	case 33:
+	{
+		int sprite = 0;
+
+		if (data[4].starts_with("sb_"))
+		{
+			sprite = (SpriteBase(std::stoi(data[4].substr(3))));
+		}
+		else {
+			sprite = (std::stoi(data[4]));
+		}
+
+		Vec2 position = STOIVEC(data[0], data[1]);
+		Vec2 scale = STOIVEC(data[2], data[3]);
+
+		Objects::SlipperySurface* surface = new Objects::SlipperySurface(position, scale, Renderer::GetSprite(sprite), std::stof(data[6]));
+		Renderer::LoadObject(surface, std::stoi(data[5]));
+
+		break;
+	}
+
+	/*
+	34: Animating Object (map, positionX, positionY, scaleX, scaleY, layer, animationSpeed, spriteFrames...)
+	*/
+
+	case 34:
+	{
+		Vec2 position = STOIVEC(data[0], data[1]);
+		Vec2 scale = STOIVEC(data[2], data[3]);
+
+		float animSpeed = std::stof(data[5]);
+
+		std::vector<Sprite*> sprites;
+
+		if (data.size() > 6)
+		{
+			for (int i = 6; i < data.size(); i++)
+			{
+				int spId = 0;
+				if (data[i].starts_with("sb_"))
+				{
+					spId = (SpriteBase(std::stoi(data[i].substr(3))));
+				}
+				else {
+					spId = (std::stoi(data[i]));
+				}
+
+
+				sprites.push_back(Renderer::GetSprite(spId));
+			}
+		}
+
+		Objects::Environment::AnimatingObject* obj = new Objects::Environment::AnimatingObject(position, scale, new Sprite(sprites[0]->GetSpriteId()), animSpeed, sprites);
+		Renderer::LoadObject(obj, std::stoi(data[4]));
+
+		break;
+	}
+
+	/*
+	35: Pass Trigger Object (map, positionX, positionY, scaleX, scaleY, layer, type, animationSpeed, spriteFrames...)
+	*/
+
+	case 35:
+	{
+		Vec2 position = STOIVEC(data[0], data[1]);
+		Vec2 scale = STOIVEC(data[2], data[3]);
+		int type = std::stoi(data[5]);
+
+		float animSpeed = std::stof(data[6]);
+
+		std::vector<Sprite*> sprites;
+
+		if (data.size() > 7)
+		{
+			for (int i = 7; i < data.size(); i++)
+			{
+				int spId = 0;
+				if (data[i].starts_with("sb_"))
+				{
+					spId = (SpriteBase(std::stoi(data[i].substr(3))));
+				}
+				else {
+					spId = (std::stoi(data[i]));
+				}
+
+
+				sprites.push_back(Renderer::GetSprite(spId));
+			}
+		}
+
+		Objects::Environment::PassTriggerObject* obj = new Objects::Environment::PassTriggerObject(position, scale, new Sprite(sprites[0]->GetSpriteId()), sprites, animSpeed);
+		Renderer::LoadObject(obj, std::stoi(data[4]));
+
+		break;
+	}
+
+
 	}
 }

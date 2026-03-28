@@ -44,7 +44,13 @@ namespace GAME_NAME::Objects::Enemies
 		if (m_isAsleep && m_attackedAnimationTimer <= 0.f)
 		{
 			//delete m_sprite; //Cannot delete original sprite since it is used by PassiveRabbit as m_baseSprite.
-			m_sprite.reset(Renderer::GetSprite(95));
+			if (TestGame::INSTANCE->GetCurrentLevelPath().ends_with("barninterior"))
+			{
+				m_sprite.reset(Renderer::GetSprite(65));
+			}
+			else {
+				m_sprite.reset(Renderer::GetSprite(95));
+			}
 			
 			if (distanceToPlayer < FERAL_RABBIT_AWAKEN_DISTANCE)
 			{

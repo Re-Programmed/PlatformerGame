@@ -39,6 +39,9 @@ namespace GAME_NAME
 					return m_physicsTicks;
 				}
 
+				inline void SlideFor(int frames) { m_slideFrames = frames; }
+				inline int GetSliding() { return m_slideFrames; }
+
 				/// <summary>
 				/// Sets how much the object will slow down when moving left and right on the ground.
 				/// </summary>
@@ -54,6 +57,8 @@ namespace GAME_NAME
 				float m_frictionDrag;	//How much X velocity is subtracted each frame.
 				float m_airDrag;		//How much Y velocity is subtracted each frame.
 				float m_rotationalDrag;	//How much rotational velocity is subtracted each frame.
+
+				int m_slideFrames = 0;	//If the object is supposed to slide (no friction).
 
 				double m_stackedPhysicsTicks = 0;
 				unsigned char m_physicsTicks = 0;

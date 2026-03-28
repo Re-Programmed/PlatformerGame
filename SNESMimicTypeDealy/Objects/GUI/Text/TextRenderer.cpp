@@ -13,17 +13,17 @@
 namespace GAME_NAME::Objects::GUI::Text
 {
 
-	StaticGUIElement* TextRenderer::RenderDigit(digit digit, Vec2& position, const float scale, int font)
+	StaticGUIElement* TextRenderer::RenderDigit(digit digit, Vec2& position, const float scale, int font, int layer)
 	{
 		int texture = font + (int)digit;
 		StaticGUIElement* go = new StaticGUIElement(position, Vec2(-TEXT_RENDERER_DIGIT_SIZE_X * scale, TEXT_RENDERER_DIGIT_SIZE_Y * scale), Renderer::GetSprite(texture)->GetSpriteId());
 
-		Renderer::LoadGUIElement(go, 1);
+		Renderer::LoadGUIElement(go, layer);
 
 		return go;
 	}
 
-	GAME_NAME::Objects::GUI::Text::TextRenderer::RenderedDigit TextRenderer::RenderNumber(uint16_t number, Vec2 firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits, int font)
+	GAME_NAME::Objects::GUI::Text::TextRenderer::RenderedDigit TextRenderer::RenderNumber(uint16_t number, Vec2 firstDigitPosition, const float scale, const float digitPadding, uint8_t minimumDigits, int font, int layer)
 	{
 		RenderedDigit finalDigit;
 		finalDigit.reserve(num_digitsi(number));
@@ -38,7 +38,7 @@ namespace GAME_NAME::Objects::GUI::Text
 
 			Vec2 pos(firstDigitPosition.X, firstDigitPosition.Y);
 		
-			finalDigit.push_back(RenderDigit(number % 10, pos, scale, font));
+			finalDigit.push_back(RenderDigit(number % 10, pos, scale, font, layer));
 
 			number /= 10;
 			currentDigit++;

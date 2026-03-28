@@ -1,11 +1,12 @@
 #include "MechanicalSaveManager.h"
 #include "./TriggerKeyHole.h"
+#include "./TriggerLever.h"
 
 #include "../../../Resources/Save/SaveManager.h"
 
 namespace GAME_NAME::Objects::Mechanical
 {
-	std::vector<MechanicalSaveManager::MechanicalSave> MechanicalSaveManager::m_saves;
+	std::vector<MechanicalSaveManager::MechanicalSave*> MechanicalSaveManager::m_saves;
 
 	MechanicalSaveManager* MechanicalSaveManager::INSTANCE = nullptr;
 
@@ -22,11 +23,11 @@ namespace GAME_NAME::Objects::Mechanical
 		//Data format: level,id,data
 		for (std::string& data : *(states.get()))
 		{
-			MechanicalSave save("", 0, 0, "");
-			save.Decode(data);
+			MechanicalSave* save = new MechanicalSave("", 0, 0, "");
+			save->Decode(data);
 			m_saves.push_back(save);
 
-			assignState(&(m_saves[m_saves.size() - 1]));
+			assignState(m_saves[m_saves.size() - 1]);
 		}
 
 		INSTANCE = this;
@@ -83,11 +84,11 @@ namespace GAME_NAME::Objects::Mechanical
 	{
 		std::vector<MechanicalSave*> saves;
 
-		for (MechanicalSave& save : m_saves)
+		for (MechanicalSave*& save : m_saves)
 		{
-			if (save.Level == level)
+			if (save->Level == level)
 			{
-				saves.push_back(&save);
+				saves.push_back(save);
 			}
 		}
 
@@ -99,6 +100,7 @@ namespace GAME_NAME::Objects::Mechanical
 		switch (save.ID)
 		{
 		case static_cast<int>(MechanicalObjectId::TRIGGER_KEY_HOLE):
+		case static_cast<int>(MechanicalObjectId::TRIGGER_LEVER):
 		{
 			MiscState* state = dynamic_cast<MiscState*>(save.Object);
 			if (state != nullptr)
@@ -126,20 +128,20 @@ namespace GAME_NAME::Objects::Mechanical
 		objectIndex = getObjectId(go->GetPosition());		
 
 		//TODO: Should probably be a better searching algorithm to not make super slow?
-		for (MechanicalSave& save : m_saves)
+		for (MechanicalSave*& save : m_saves)
 		{
-			if (save.ObjectIndex == objectIndex)
+			if (save->ObjectIndex == objectIndex)
 			{
 				//If the object is already saved but has no related object, this means that we just tried to load the object from the level data after we had already loaded the previous actual save data.
 				//This allows us to cross reference the object and its data.
-				if (save.Object == nullptr)
+				if (save->Object == nullptr)
 				{
-					save.Object = go;
+					save->Object = go;
 				}
 				else {
-					if (dynamic_cast<MiscState*>(save.Object) == object)
+					if (dynamic_cast<MiscState*>(save->Object) == object)
 					{
-						save.Data = object->Encode();
+						save->Data = object->Encode();
 					}
 				}
 
@@ -148,8 +150,8 @@ namespace GAME_NAME::Objects::Mechanical
 		}
 
 		//No data exists yet.
-		m_saves.emplace_back(getCurrentLevelSaveId(), static_cast<char>(GetObjectIdFromType(object)), objectIndex, object->Encode(), go);
-		INSTANCE->assignState(&(m_saves[m_saves.size() - 1]));
+		m_saves.push_back(new MechanicalSave(getCurrentLevelSaveId(), static_cast<char>(GetObjectIdFromType(object)), objectIndex, object->Encode(), go));
+		INSTANCE->assignState(m_saves[m_saves.size() - 1]);
 	}
 
 	void MechanicalSaveManager::UnregisterObject(GameObject* object)
@@ -158,9 +160,9 @@ namespace GAME_NAME::Objects::Mechanical
 
 		for (int i = 0; i < m_saves.size(); i++)
 		{
-			if (m_saves[i].ObjectIndex == objectIndex)
+			if (m_saves[i]->ObjectIndex == objectIndex)
 			{
-				m_saves[i].Object = nullptr;
+				m_saves[i]->Object = nullptr;
 ;				return;
 			}
 		}
@@ -185,6 +187,11 @@ namespace GAME_NAME::Objects::Mechanical
 		if (dynamic_cast<TriggerKeyHole*>(state))
 		{
 			return MechanicalObjectId::TRIGGER_KEY_HOLE;
+		}
+
+		if (dynamic_cast<TriggerLever*>(state))
+		{
+			return MechanicalObjectId::TRIGGER_LEVER;
 		}
 
 		return MechanicalObjectId::SMALL_COG;

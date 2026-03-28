@@ -5,6 +5,7 @@
 #include "./Items/Types/Weapon.h"
 #include "./Items/Types/Food.h"
 #include "./Items/Types/Placeable.h"
+#include "./Items/Types/Blueprint.h"
 
 namespace GAME_NAME
 {
@@ -53,6 +54,9 @@ using namespace std;
 		case ITEM_PREFIX_PLACEABLE:
 			return new Placeable((ITEM_TYPE)std::stoi(parameters[0]));
 			
+		case ITEM_PREFIX_BLUEPRINT:
+			return new Blueprint((ITEM_TYPE)std::stoi(parameters[0]), std::stoi(parameters[1]));
+
 		case ITEM_PREFIX_ITEM:
 		default:
 			return new InventoryItem((ITEM_TYPE)std::stoi(parameters[0]));

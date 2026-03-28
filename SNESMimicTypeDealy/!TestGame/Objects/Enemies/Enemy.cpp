@@ -126,7 +126,10 @@ finish_pathfind:
 			Vec2 outwardVector = Vec2::FindExplosionDestination(attackOrigin, m_position + (m_scale/2.f), 2000.f, 120.f);
 			outwardVector.Y = 0;
 
-			std::cout << outwardVector.ToString();
+			if (outwardVector.X > 100.f)
+			{
+				outwardVector.X = 100.f;
+			}
 
 			m_physics->AddVelocity(outwardVector);
 		}
@@ -147,6 +150,12 @@ finish_pathfind:
 	void Enemy::Kill()
 	{
 		m_isDead = true;
+
+		if (m_drops != nullptr)
+		{
+			Items::FloorItem* item = new Items::FloorItem(m_position + m_scale / 2.f, m_drops, 0.75f);
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(item, true, 2, false));
+		}
 
 		destroyHealthBar();
 
@@ -248,6 +257,11 @@ finish_pathfind:
 		EnemyRegistry.erase(EnemyRegistry.begin() + m_enemyIndex);
 
 		delete m_enemyAttributes;
+		
+		if (m_drops != nullptr)
+		{
+			delete m_drops;
+		}
 
 		ActiveBoxCollisionGravityObject::~ActiveBoxCollisionGravityObject();
 	}

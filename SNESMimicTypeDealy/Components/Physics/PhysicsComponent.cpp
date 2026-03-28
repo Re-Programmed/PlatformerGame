@@ -29,11 +29,20 @@ namespace GAME_NAME
 						{
 							object->RotateAboutCenter(m_rotationalVelocity);
 
-							rotAirDrag();
+							if (m_slideFrames <= 0)
+							{
+								rotAirDrag();
+							}
 						}
 
-						if (m_velocity.X) { xAirDrag(); }
-						if (m_velocity.Y) { yAirDrag(); }
+						if (m_slideFrames <= 0)
+						{
+							if (m_velocity.X) { xAirDrag(); }
+							if (m_velocity.Y) { yAirDrag(); }
+						}
+						else {
+							m_slideFrames--;
+						}
 
 						physicsTick(window, object);
 

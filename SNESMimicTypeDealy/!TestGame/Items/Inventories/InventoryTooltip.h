@@ -1,6 +1,7 @@
 #pragma once
 #include "../../../Objects/GUI/StaticGUIElement.h"
 #include "./InventoryContainer.h"
+#include "../../../Objects/GUI/Text/TextRenderer.h"
 
 namespace GAME_NAME::Items::Inventories 
 {
@@ -16,14 +17,23 @@ namespace GAME_NAME::Items::Inventories
 		static void CreateTooltip();
 
 	private:
+		static Text::TextRenderer::ExpectedRenderedWord formatToolAttributeHeading(Vec2 pos, const TOOL_ACTION& action, const std::string& data);
+		static Text::TextRenderer::RenderedDigit formatToolAttributeValue(Vec2 pos, const TOOL_ACTION& action, const std::string& data);
+
 		static bool m_hidingTooltip;
 
-		static StaticGUIElement* m_tooltip;
+		struct TooltipElement
+		{
+			StaticGUIElement* const Element;
+			const Vec2 Offset;
+		};
+
+		static std::vector<TooltipElement> m_tooltip;
 		/// <summary>
 		/// The objects that make up the parts of the tooltip.
 		/// </summary>
 		static std::vector<StaticGUIElement*> m_tooltipComponents;
-		static std::vector<float> m_tooltipComponentsApproachedScales;
+		static std::vector<Vec2> m_tooltipComponentsApproachedScales;
 
 		/// <summary>
 		/// How tall the curent tooltip is. This will change based on how much text must display.

@@ -1,7 +1,6 @@
 #include "InventoryTooltip.h"
 #include "../../../Input/InputManager.h"
 #include <algorithm>
-#include "../../../Objects/GUI/Text/TextRenderer.h"
 
 
 #define TOOLTIP_ANIMATION_SPEED 0.28f
@@ -10,9 +9,9 @@ namespace GAME_NAME::Items::Inventories
 {
 	bool InventoryTooltip::m_hidingTooltip = false;
 
-	StaticGUIElement* InventoryTooltip::m_tooltip;
+	std::vector<InventoryTooltip::TooltipElement> InventoryTooltip::m_tooltip;
 	std::vector<StaticGUIElement*> InventoryTooltip::m_tooltipComponents;
-	std::vector<float> InventoryTooltip::m_tooltipComponentsApproachedScales;
+	std::vector<Vec2> InventoryTooltip::m_tooltipComponentsApproachedScales;
 
 	float InventoryTooltip::m_tooltipHeight = 25.6f;
 
@@ -32,7 +31,7 @@ namespace GAME_NAME::Items::Inventories
 		{
 			m_hidingTooltip = true;
 
-			if (m_tooltip != nullptr)
+			if (m_tooltip.size() != 0)
 			{
 				if (m_tooltipComponents.size() > 0)
 				{
@@ -42,43 +41,48 @@ namespace GAME_NAME::Items::Inventories
 					for (StaticGUIElement*& el : m_tooltipComponents)
 					{
 						Renderer::UnloadGUIElement(el, 2);
-						delete el; //no smart pointer ;)
+						delete el;
 					}
 					m_tooltipComponents.clear();
 					m_tooltipComponentsApproachedScales.clear();
 					TooltipCompoentDisplacement.clear();
 				}
 
-
-				if (m_tooltip->GetScale().Y > 0.05f)
+				for (TooltipElement& tooltip : m_tooltip)
 				{
-					//Scale down the tool tip by 2% until it has a height less than 0.05.
-					DynamicSprite* transparentSprite = new DynamicSprite(m_tooltip->GetSprite()->GetSpriteId());
-					float value = std::clamp(m_tooltip->GetScale().Y / (m_tooltipHeight - 3.f), 0.f, 1.f);
-					Vec4 textureColor[4] = {
-						{ value },
-						{ value },
-						{ value },
-						{ value }
-					};
-					transparentSprite->UpdateTextureColor(textureColor);
-					m_tooltip->SetSprite(transparentSprite);
 
-					m_tooltip->SetScale({ m_tooltip->GetScale().X, m_tooltip->GetScale().Y - (m_tooltip->GetScale().Y * TOOLTIP_ANIMATION_SPEED) });
+					if (tooltip.Element->GetScale().Y > 0.05f)
+					{
+						//Scale down the tool tip by 2% until it has a height less than 0.05.
+						DynamicSprite* transparentSprite = new DynamicSprite(tooltip.Element->GetSprite()->GetSpriteId());
+						float value = std::clamp(tooltip.Element->GetScale().Y / (m_tooltipHeight - 3.f), 0.f, 1.f);
+						Vec4 textureColor[4] = {
+							{ value },
+							{ value },
+							{ value },
+							{ value }
+						};
+						transparentSprite->UpdateTextureColor(textureColor);
+						tooltip.Element->SetSprite(transparentSprite);
+
+						tooltip.Element->SetScale({ tooltip.Element->GetScale().X, tooltip.Element->GetScale().Y - (tooltip.Element->GetScale().Y * TOOLTIP_ANIMATION_SPEED) });
+					}
+					else
+					{
+						//Tooltip is close to small enough, but will never actually reach 0 so set it to 0.
+						tooltip.Element->SetScale({ tooltip.Element->GetScale().X, 0 });
+					}
+
+					//tooltip.Element->SetPosition(MousePosition - Vec2{ 0, tooltip.Element->GetScale().Y } + tooltip.Offset - Vec2{ 0.f, 32.f });
 				}
-				else
-				{
-					//Tooltip is close to small enough, but will never actually reach 0 so set it to 0.
-					m_tooltip->SetScale({ m_tooltip->GetScale().X, 0 });
-				}
-				m_tooltip->SetPosition(MousePosition - Vec2{ 0, m_tooltip->GetScale().Y });
+
 
 			}
 
 			return;
 		}
 
-		if (m_tooltip == nullptr) { return; }
+		if (m_tooltip.size() == 0) { return; }
 
 		m_hidingTooltip = false;
 
@@ -91,7 +95,7 @@ namespace GAME_NAME::Items::Inventories
 			for (StaticGUIElement*& el : m_tooltipComponents)
 			{
 				Renderer::UnloadGUIElement(el, 2);
-				delete el; //no smart pointer ;)
+				delete el;
 			}
 			m_tooltipComponents.clear();
 			m_tooltipComponentsApproachedScales.clear();
@@ -106,58 +110,109 @@ namespace GAME_NAME::Items::Inventories
 				m_tooltipHeight = 5.f + (1 + std::floor(itemData.DisplayName.length() / 10)) * 5.f + (1 + std::count(itemData.Description.begin(), itemData.Description.end(), '\n')) * 3.f;
 
 				//Create item name text.
-				Text::TextRenderer::RenderedWord word = Text::TextRenderer::RenderWord(itemData.DisplayName, { m_tooltip->GetPosition().X + 2.f, MousePosition.Y - 2.f }, 5.f, -0.4f, 2);
+				Text::TextRenderer::RenderedWord word = Text::TextRenderer::RenderWord(itemData.DisplayName, { m_tooltip[0].Element->GetPosition().X + 2.f, MousePosition.Y - 2.f}, 5.f, -0.4f, 2);
 				m_tooltipComponents.reserve(itemData.DisplayName.length() + itemData.Description.length());
 
 				if (!itemData.Description.empty())
 				{
-					Text::TextRenderer::ExpectedRenderedWord description = Text::TextRenderer::RenderWordCaseSensitive(itemData.Description, { m_tooltip->GetPosition().X + 2.f, MousePosition.Y - 8.f }, 3.f, -0.4f, 2);
+					Text::TextRenderer::ExpectedRenderedWord description = Text::TextRenderer::RenderWordCaseSensitive(itemData.Description, { m_tooltip[0].Element->GetPosition().X + 2.f, MousePosition.Y - 8.f }, 3.f, -0.4f, 2);
 
 
 					//All the letters should exist as there was no animation, no need for mutex.
 					for (auto letter : description)
 					{
-						TooltipCompoentDisplacement.emplace_back(letter->letter->GetPosition() - Vec2{ m_tooltip->GetPosition().X, MousePosition.Y - m_tooltipHeight });
+						TooltipCompoentDisplacement.emplace_back(letter->letter->GetPosition() - Vec2{ m_tooltip[0].Element->GetPosition().X, MousePosition.Y - m_tooltipHeight });
 						m_tooltipComponents.push_back(letter->letter);
 						m_tooltipComponentsApproachedScales.emplace_back(3.f);
 					}
 				}
 
-				for (StaticGUIElement*& letter : word) { letter->SetScale({ -5.f, 0.f }); TooltipCompoentDisplacement.emplace_back(letter->GetPosition() - Vec2{ m_tooltip->GetPosition().X, MousePosition.Y - m_tooltipHeight }); m_tooltipComponentsApproachedScales.emplace_back(5.f); }
+				for (StaticGUIElement*& letter : word) { letter->SetScale({ -5.f, 0.f }); TooltipCompoentDisplacement.emplace_back(letter->GetPosition() - Vec2{ m_tooltip[0].Element->GetPosition().X, MousePosition.Y - m_tooltipHeight }); m_tooltipComponentsApproachedScales.emplace_back(5.f); }
 
 				m_tooltipComponents.insert(m_tooltipComponents.end(), word.begin(), word.end());
+
+				while (itemData.Attributes.size() < m_tooltip.size() - 1)
+				{
+					StaticGUIElement* element = m_tooltip[m_tooltip.size() - 1].Element;
+					Renderer::UnloadGUIElement(element, 2);
+					delete element;
+
+					m_tooltip.pop_back();
+				}
+
+				//Display item's attributes in new boxes.
+				if (itemData.Attributes.size() > 0)
+				{
+					size_t i = 1;
+					for (auto& [action, data] : itemData.Attributes)
+					{
+						//Create a new box to show the new information.
+						while(m_tooltip.size() <= i)
+						{
+							float offset = m_tooltip[m_tooltip.size() - 1].Offset.Y - m_tooltipHeight;
+							StaticGUIElement* element = new StaticGUIElement({ 0, offset }, { 40, 0 }, Renderer::GetSprite(SpriteBase(73))->GetSpriteId());
+							m_tooltip.emplace_back(element, Vec2{ 0.f, offset });
+							Renderer::LoadGUIElement(element, 2);
+						}
+
+						Vec2 pos(m_tooltip[i].Element->GetPosition().X + 2.f, MousePosition.Y - 8.f + m_tooltip[i].Offset.Y);
+						Text::TextRenderer::ExpectedRenderedWord attributeDescription = formatToolAttributeHeading(pos, action, data);
+
+						Text::TextRenderer::RenderedDigit attributeValues = formatToolAttributeValue(pos - Vec2{ 0.f, 4.f }, action, data);
+
+						for (auto& letter : attributeDescription)
+						{
+							TooltipCompoentDisplacement.emplace_back(letter->letter->GetPosition() - Vec2{ m_tooltip[i].Element->GetPosition().X, MousePosition.Y - m_tooltipHeight - 5.f });
+							m_tooltipComponents.push_back(letter->letter);
+							m_tooltipComponentsApproachedScales.emplace_back(4.f);
+						}
+
+						for (auto& digit : attributeValues)
+						{
+							TooltipCompoentDisplacement.emplace_back(digit->GetPosition() - Vec2{ m_tooltip[i].Element->GetPosition().X, MousePosition.Y - m_tooltipHeight - 4.f });
+							m_tooltipComponents.push_back(digit);
+							m_tooltipComponentsApproachedScales.emplace_back(digit->GetScale());
+						}
+
+						i++;
+					}
+				}
 			}
 
 		}
 
-		if (m_tooltip->GetScale().Y < m_tooltipHeight)
+		for (InventoryTooltip::TooltipElement& tooltip : m_tooltip)
 		{
-			DynamicSprite* transparentSprite = new DynamicSprite(m_tooltip->GetSprite()->GetSpriteId());
-			float value = std::clamp(m_tooltip->GetScale().Y / (m_tooltipHeight - 3.f), 0.f, 1.f);
-			Vec4 textureColor[4] = {
-				{ value },
-				{ value },
-				{ value },
-				{ value }
-			};
-			transparentSprite->UpdateTextureColor(textureColor);
-			m_tooltip->SetSprite(transparentSprite);
+			if (tooltip.Element->GetScale().Y < m_tooltipHeight)
+			{
+				DynamicSprite* transparentSprite = new DynamicSprite(tooltip.Element->GetSprite()->GetSpriteId());
+				float value = std::clamp(tooltip.Element->GetScale().Y / (m_tooltipHeight - 3.f), 0.f, 1.f);
+				Vec4 textureColor[4] = {
+					{ value },
+					{ value },
+					{ value },
+					{ value }
+				};
+				transparentSprite->UpdateTextureColor(textureColor);
+				tooltip.Element->SetSprite(transparentSprite);
 
 
-			//Scale up the tooltip until it reaches the objective m_tooltipHeight.
-			m_tooltip->SetScale({ m_tooltip->GetScale().X, m_tooltip->GetScale().Y + (m_tooltipHeight - m_tooltip->GetScale().Y) * TOOLTIP_ANIMATION_SPEED });
+				//Scale up the tooltip until it reaches the objective m_tooltipHeight.
+				tooltip.Element->SetScale({ tooltip.Element->GetScale().X, tooltip.Element->GetScale().Y + (m_tooltipHeight - tooltip.Element->GetScale().Y) * TOOLTIP_ANIMATION_SPEED });
+			}
+			else {
+				tooltip.Element->SetScale({ tooltip.Element->GetScale().X, m_tooltipHeight });
+			}
+
+			tooltip.Element->SetPosition(MousePosition - Vec2{ 0, tooltip.Element->GetScale().Y } + tooltip.Offset);
+			if (invertTooltipPosition)
+			{
+				tooltip.Element->SetPosition(tooltip.Element->GetPosition() - Vec2{ tooltip.Element->GetScale().X, 0.f } + tooltip.Offset);
+			}
+
 		}
-		else {
-			m_tooltip->SetScale({ m_tooltip->GetScale().X, m_tooltipHeight });
-		}
 
-		m_tooltip->SetPosition(MousePosition - Vec2{ 0, m_tooltip->GetScale().Y });
-		if (invertTooltipPosition)
-		{
-			m_tooltip->SetPosition(m_tooltip->GetPosition() - Vec2{ m_tooltip->GetScale().X, 0.f });
-		}
-
-		float value = std::clamp(m_tooltip->GetScale().Y / (m_tooltipHeight - 3.f), 0.f, 1.f);
+		float value = std::clamp(m_tooltip[0].Element->GetScale().Y / (m_tooltipHeight - 3.f), 0.f, 1.f);
 		Vec4 textureColor[4] = {
 			{ value },
 			{ value },
@@ -173,20 +228,24 @@ namespace GAME_NAME::Items::Inventories
 			transparentSprite->UpdateTextureColor(textureColor);
 			el->SetSprite(transparentSprite);
 
-			el->SetPosition(m_tooltip->GetPosition() + TooltipCompoentDisplacement[i]);
-			el->SetScale({ el->GetScale().X > 0.f ? el->GetScale().X : -el->GetScale().X, -std::lerp(-el->GetScale().Y, m_tooltipComponentsApproachedScales[i], 0.08f) });
+			el->SetPosition(m_tooltip[0].Element->GetPosition() + TooltipCompoentDisplacement[i]);
+			el->SetScale({ el->GetScale().X > 0.f ? el->GetScale().X : -el->GetScale().X, -std::lerp(-el->GetScale().Y, m_tooltipComponentsApproachedScales[i].Y, 0.08f) });
 			i++;
 		}
 	}
 
 	void InventoryTooltip::RemoveTooltip()
 	{
-		if (m_tooltip == nullptr) { return; }
+		if (m_tooltip.size() == 0) { return; }
 
 		//Remove tooltip.
-		Renderer::UnloadGUIElement(m_tooltip, 2);
-		delete m_tooltip;
-		m_tooltip = nullptr;
+		for (TooltipElement& tooltip : m_tooltip)
+		{
+			Renderer::UnloadGUIElement(tooltip.Element, 2);
+			delete tooltip.Element;
+		}
+
+		m_tooltip.clear();
 
 		for (auto& component : m_tooltipComponents)
 		{
@@ -198,10 +257,55 @@ namespace GAME_NAME::Items::Inventories
 
 	void InventoryTooltip::CreateTooltip()
 	{
-		if (m_tooltip == nullptr)
+		if (m_tooltip.size() == 0)
 		{
-			m_tooltip = new StaticGUIElement({ 0, 0 }, { 62, 0 }, Renderer::GetSprite(SpriteBase(73))->GetSpriteId());
-			Renderer::LoadGUIElement(m_tooltip, 2);
+			m_tooltip.emplace_back(new StaticGUIElement({ 0, 0 }, { 62, 0 }, Renderer::GetSprite(SpriteBase(73))->GetSpriteId()), Vec2{ 0.f, 0.f });
+			
+			for (TooltipElement& element : m_tooltip)
+			{
+				Renderer::LoadGUIElement(element.Element, 2);
+			}
 		}
+	}
+
+	Text::TextRenderer::ExpectedRenderedWord InventoryTooltip::formatToolAttributeHeading(Vec2 pos, const TOOL_ACTION& action, const std::string& data)
+	{
+		Text::TextRenderer::ExpectedRenderedWord word;
+
+		switch (action)
+		{
+		case TOOL_ACTION::VALUE:
+			word = Text::TextRenderer::RenderWordCaseSensitive("Value", pos, 4.f, -0.4f, 2);
+			break;
+		case TOOL_ACTION::FOOD:
+			word = Text::TextRenderer::RenderWordCaseSensitive("Food", pos, 4.f, -0.4f, 2);
+			break;
+		case TOOL_ACTION::WEAPON:
+			word = Text::TextRenderer::RenderWordCaseSensitive("Dmaage", pos, 4.f, -0.4f, 2);
+			break;
+		}
+
+		return word;
+	}
+
+	Text::TextRenderer::RenderedDigit InventoryTooltip::formatToolAttributeValue(Vec2 pos, const TOOL_ACTION& action, const std::string& data)
+	{
+		if (action & TOOL_ACTION::VALUE)
+		{
+			return Text::TextRenderer::RenderNumber(std::stoi(data), pos, 0.175f, 0.f, 1, -408, 2);
+		}
+
+		if (action & TOOL_ACTION::FOOD)
+		{
+			return Text::TextRenderer::RenderNumber(std::stoi(data), pos, 0.175f, 0.f, 1, -408, 2);
+		}
+
+		if (action & TOOL_ACTION::WEAPON)
+		{
+			int damage = std::stoi(data.substr(0, data.find_first_of(',')));
+			return Text::TextRenderer::RenderNumber(damage, pos, 0.175f, 0.f, 1, -408, 2);
+		}
+
+		return Text::TextRenderer::RenderedDigit();
 	}
 }
