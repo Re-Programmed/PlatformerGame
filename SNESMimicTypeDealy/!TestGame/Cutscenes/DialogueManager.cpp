@@ -12,7 +12,11 @@
 
 #include "../Items/ItemType.h"
 
+#include "./Character/AnimatingCharacter.h"
+
 #include <thread>
+
+#include "../../Utils/Time/GameTime.h"
 
 // The render text function used by text for dialogue events.
 #define DialogueManager_RenderDialogue(text) DialogueManager::RenderCaseSensitiveTextWithItemTextures(text, { DIALOGUE_TEXT_BOX_SPACING_X + 12, DIALOGUE_TEXT_BOX_SPACING_Y + 14 }, 9, -3, 1, DEFAULT_FONT_RENDER_A_SPRITE_ID, DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds(62))
@@ -57,15 +61,7 @@ namespace GAME_NAME::Cutscenes
 
 			//--- Handle camera --//
 
-		if (m_currentDialogueEvent.FocusObject != nullptr)
-		{
-			static_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->LockCamera(m_currentDialogueEvent.FocusObject);
-		}
-
-		if (m_currentDialogueEvent.Zoom > 0)
-		{
-			static_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->SetTargetZoom(m_currentDialogueEvent.Zoom);
-		}
+		updateDialogueEvents();
 
 	}
 
@@ -189,6 +185,9 @@ namespace GAME_NAME::Cutscenes
 			else {
 				advancingDialogue = false;
 			}
+
+			//Update to ensure the speaker display sprite matches the target object sprite.
+			updateSpeakerDisplay();
 		}
 	}
 
@@ -329,15 +328,7 @@ namespace GAME_NAME::Cutscenes
 
 			//--- Handle camera --//
 
-		if (m_currentDialogueEvent.FocusObject != nullptr)
-		{
-			static_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->LockCamera(m_currentDialogueEvent.FocusObject);
-		}
-
-		if (m_currentDialogueEvent.Zoom > 0)
-		{
-			static_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->SetTargetZoom(m_currentDialogueEvent.Zoom);
-		}
+		updateDialogueEvents();
 
 		return true;
 	}
@@ -351,7 +342,14 @@ namespace GAME_NAME::Cutscenes
 		Renderer::UnloadGUIElement(std::get<0>(m_guiDisplay));
 		delete std::get<0>(m_guiDisplay);
 
+		if (m_guiSpeakingDisplay != nullptr)
+		{
+			Renderer::UnloadGUIElement(m_guiSpeakingDisplay.get(), 0);
+			m_guiSpeakingDisplay.release();
+		}
+
 		m_guiDisplay = std::tuple<StaticGUIElement*, Text::TextRenderer::ExpectedRenderedWord>(nullptr, NULL);
+
 	}
 
 	void DialogueManager::createDialogueOptions()
@@ -391,6 +389,103 @@ namespace GAME_NAME::Cutscenes
 			m_guiOptionButtons[0] = button1;
 			m_guiOptionButtons[1] = button2;
 		}
+	}
+
+
+	void DialogueManager::updateDialogueEvents()
+	{
+		if (m_currentDialogueEvent.FocusObject != nullptr)
+		{
+			static_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->LockCamera(m_currentDialogueEvent.FocusObject);
+
+			
+			Objects::Player::Player* player = dynamic_cast<Objects::Player::Player*>(m_currentDialogueEvent.FocusObject);
+			if (player)
+			{
+				if (m_currentDialogueEvent.SpeakerAnimation != AnimationState::NO_LOOK_DIRECTION)
+				{
+					player->SetFrozen(false);
+					player->SetFrozen(true, m_currentDialogueEvent.SpeakerAnimation);
+				}
+			}
+
+			AnimatingCharacter* character = dynamic_cast<AnimatingCharacter*>(m_currentDialogueEvent.FocusObject);
+			if (character)
+			{
+				if (m_currentDialogueEvent.SpeakerAnimation != AnimationState::NO_LOOK_DIRECTION)
+				{
+					if (character->IsFrozen())
+					{
+						character->SetFrozen(false);
+					}
+
+					character->SetFrozen(true, m_currentDialogueEvent.SpeakerAnimation);
+				}
+			}
+
+			updateSpeakerDisplay();
+		}
+
+		if (m_currentDialogueEvent.Zoom > 0)
+		{
+			static_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->SetTargetZoom(m_currentDialogueEvent.Zoom);
+		}
+	}
+
+#define SPEAKING_DISPLAY_VERTICAL_PORTION 0.6f
+
+	const Vec2 DialogueManager_SpeakingSpriteVerts[4] = {
+		Vec2(1.0f, SPEAKING_DISPLAY_VERTICAL_PORTION),
+		Vec2(1.0f, 0.f),
+		Vec2(0.0f, 0.f),
+		Vec2(0.0f, SPEAKING_DISPLAY_VERTICAL_PORTION)
+	};
+
+#define SPEAKING_DISPLAY_POSITION Vec2{ 4.5f, 0.f }
+#define SPEAKING_DISPLAY_SCALE_SCALAR 3.f
+
+	void DialogueManager::updateSpeakerDisplay()
+	{
+		//No focus object, no speaker.
+		if (m_currentDialogueEvent.FocusObject == nullptr) { return; }
+
+		unsigned int speakingSpriteId(m_currentDialogueEvent.FocusObject->GetSprite()->GetSpriteId());
+
+		//If the display has the same id, no change occured with the sprte.
+		if (m_guiSpeakingDisplay != nullptr && m_guiSpeakingDisplay->GetSprite()->GetSpriteId() == speakingSpriteId)
+		{
+			m_guiSpeakingDisplayOpacity = std::lerp(m_guiSpeakingDisplayOpacity, 1.f, Utils::Time::GameTime::GetScaledDeltaTime() * 1.75f);
+
+			Vec4 colors[4] = {
+				Vec4{ 1.f, 1.f, 1.f, m_guiSpeakingDisplayOpacity },
+				Vec4{ 1.f, 1.f, 1.f, m_guiSpeakingDisplayOpacity },
+				Vec4{ 1.f, 1.f, 1.f, m_guiSpeakingDisplayOpacity },
+				Vec4{ 1.f, 1.f, 1.f, m_guiSpeakingDisplayOpacity }
+			};
+
+			dynamic_cast<DynamicSprite*>(m_guiSpeakingDisplay->GetSprite().get())->UpdateTextureColor(colors);
+
+			return;
+		}
+
+		//Make the display transparent as it is changing now.
+		m_guiSpeakingDisplayOpacity = 0.f;
+
+		Vec2 speakingSpriteScale(m_currentDialogueEvent.FocusObject->GetScale());
+
+		//Create the character speaking display GUI if the current focus object is a character or the player.
+		DynamicSprite* dialogueSprite = new DynamicSprite(speakingSpriteId);
+		dialogueSprite->UpdateTextureVerticies(DialogueManager_SpeakingSpriteVerts);
+
+		//Position the speaking sprite above the left side of the text box.
+		if (m_guiSpeakingDisplay == nullptr)
+		{
+			m_guiSpeakingDisplay = std::make_unique<StaticGUIElement>(std::get<0>(m_guiDisplay)->GetPosition() + Vec2{ 0.f, std::get<0>(m_guiDisplay)->GetScale().Y } + SPEAKING_DISPLAY_POSITION, Vec2{ 1.f, 1.f }, nullptr);
+			Renderer::LoadGUIElement(m_guiSpeakingDisplay.get(), 0);
+		}
+
+		m_guiSpeakingDisplay->SetSprite(dialogueSprite);
+		m_guiSpeakingDisplay->SetScale(speakingSpriteScale * Vec2{ SPEAKING_DISPLAY_SCALE_SCALAR, SPEAKING_DISPLAY_SCALE_SCALAR * SPEAKING_DISPLAY_VERTICAL_PORTION });
 	}
 
 	void DialogueManager::dialogueButtonCallback(int buttonId)

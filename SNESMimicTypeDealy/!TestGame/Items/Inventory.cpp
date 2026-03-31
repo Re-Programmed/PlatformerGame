@@ -55,6 +55,7 @@ namespace GAME_NAME::Items
 		return (int)m_items.size() - 1;
 	}
 
+	//If setting to nullptr, remember to delete the item if is not in use anymore (std::unique_ptr)
 	bool Inventory::SetItem(uint8_t slot, InventoryItem* item)
 	{
 		//If the slot given is not in within inventory size, fail.
@@ -119,6 +120,7 @@ namespace GAME_NAME::Items
 			if (m_items[slot]->GetType() == type)
 			{
 				removed++;
+				delete m_items[slot];
 				SetItem(slot, nullptr);
 			}
 

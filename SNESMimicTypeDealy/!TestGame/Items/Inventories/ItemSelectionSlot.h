@@ -13,6 +13,7 @@ namespace GAME_NAME::Items::Inventories
 using namespace GAME_NAME::Objects;
 using namespace GAME_NAME::Objects::GUI;
 
+//-----Does not delete it's contained item on removal.-----
 	class ItemSelectionSlot
 		: public GUIButton
 	{

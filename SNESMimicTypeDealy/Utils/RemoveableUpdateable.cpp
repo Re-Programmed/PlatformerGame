@@ -10,17 +10,17 @@ namespace GAME_NAME
 	{
 		RemoveableUpdateable::RemoveableUpdateable()
 		{
-			if (GetShouldEnableOnStart()) { m_index = UpdateManager::RegisterUpdateable(this); return; }
+			if (getShouldEnableOnStart()) { m_index = UpdateManager::RegisterUpdateable(this); return; }
 			
 			m_index = -1;
 		}
 
 		RemoveableUpdateable::~RemoveableUpdateable()
 		{
-			DisableUpdates();
+			disableUpdates();
 		}
 
-		void RemoveableUpdateable::DisableUpdates()
+		void RemoveableUpdateable::disableUpdates()
 		{
 #if _DEBUG
 			if (m_index == -1)
@@ -33,7 +33,7 @@ namespace GAME_NAME
 			m_index = -1;
 		}
 
-		void RemoveableUpdateable::EnableUpdates()
+		void RemoveableUpdateable::enableUpdates()
 		{
 #if _DEBUG
 			if (m_index != -1)

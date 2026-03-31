@@ -20,14 +20,14 @@ namespace GAME_NAME
 			/// <summary>
 			/// Stops the updateable from getting updated without destroying it. [UPDATES MUST BE ENABLED TO CALL]
 			/// </summary>
-			void DisableUpdates();
+			void disableUpdates();
 
 			/// <summary>
 			/// Reenables the updateable getting updates. [UPDATES MUST BE DISABLED TO CALL]
 			/// </summary>
-			void EnableUpdates();
+			void enableUpdates();
 
-			virtual bool GetShouldEnableOnStart()
+			virtual bool getShouldEnableOnStart()
 			{
 				return true;
 			}

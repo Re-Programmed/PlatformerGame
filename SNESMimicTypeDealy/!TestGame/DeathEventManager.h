@@ -20,7 +20,7 @@ namespace GAME_NAME
 		void Update(GLFWwindow* window) override;
 
 	protected:
-		inline bool GetShouldEnableOnStart() override { return true; }
+		inline bool getShouldEnableOnStart() override { return true; }
 
 	private:
 		static std::unique_ptr<DeathEventManager> UPDATE_INSTANCE;

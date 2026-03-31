@@ -77,6 +77,8 @@
 
 #include "./Objects/Mechanical/MechanicalSaveManager.h"
 
+#include "./Items/Inventories/GiveItemInventory.h"
+
 #define SKIP_MAIN_MENU
 #define STANDARD_LOAD
 #define SKIP_INTRODUCTION
@@ -558,20 +560,49 @@ namespace GAME_NAME
 
 
 		//Test Character
-		/*Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{50.f, 30.f}, Vec2{16.f, 26.f}, true, 50.f);
-		testCharacter->SetTarget(ThePlayer.get());
-		Renderer::LoadActiveObject(testCharacter);*/
+
 
 		//Finish load after any and all objects have been created.
 		//This function will only work if a StartState is getting loaded, so it won't affect anything when using doors or changing levels.
 		StartState::FinishLoad();
 
+
+
+		//Test Dialgoue
+
+
+		/*Cutscenes::DialogueSequence testSequence(2,
+			Cutscenes::DialogueSequence::DialogueEvent("Hey! You look like you need\nsome cash... Check out my Pyramid Scheme!!", ThePlayer.get(), 1.f, Objects::Player::Player::BAG),
+			Cutscenes::DialogueSequence::DialogueEvent("uhhhhuhuhuahhhhh.", ThePlayer.get(), 1.2f, Objects::Player::Player::DIVING)
+		);*/
+
+		//Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(testSequence); 
+
+		Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{ 50.f, 30.f }, Vec2{ 16.f, 26.f }, true, 50.f);
+
+		testCharacter->AddAbility(new Cutscenes::SpeakAbility(Cutscenes::DialogueSequence(1,
+			Cutscenes::DialogueSequence::DialogueEvent("Hey!!", testCharacter, 1.f, Objects::Player::Player::BAG)
+		)));
+
+		testCharacter->AddAbility(new Cutscenes::ItemRecieveAndSpeakAbility({
+			{ ITEM_TYPE::APPLE, Cutscenes::ItemRecieveAndSpeakAbility::SpeechPattern{ "Thank you for this delicious apple!", Objects::Player::Player::NO_LOOK_DIRECTION, "" }}
+		}));
+
+		testCharacter->SetTarget(ThePlayer.get());
+		Renderer::LoadActiveObject(testCharacter);
 	}
 
 	void TestGame::TogglePauseState()
 	{
 		if (SettingsManager::SettingsMenuIsOpen()) { return; }
 		
+		if (Items::Inventories::GiveItemInventory::IsOpen())
+		{
+			Items::Inventories::GiveItemInventory::Close();
+
+			return;
+		}
+
 		//Close any open inventory.
 		Items::Inventories::InventoryContainer* currentInv = Items::Inventories::InventoryContainerRenderer::GetCurrentContainer();
 		if (currentInv != nullptr)

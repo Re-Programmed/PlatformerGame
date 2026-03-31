@@ -37,7 +37,7 @@ using namespace GUI;
 		static void AttemptAutofillRecipe(const ITEM_TYPE& in1, const ITEM_TYPE& in2, const ITEM_TYPE& in3);
 
 	protected:
-		bool GetShouldEnableOnStart()
+		bool getShouldEnableOnStart()
 		{
 			return true;
 		}

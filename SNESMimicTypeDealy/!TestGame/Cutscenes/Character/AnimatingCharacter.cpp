@@ -2,11 +2,14 @@
 
 #include "../../../Utils/Time/GameTime.h"
 
+#include "../../InputDisplay/DisplayIconManager.h"
+
 namespace GAME_NAME::Cutscenes
 {
 
-	AnimatingCharacter::AnimatingCharacter(Vec2 position, Vec2 scale, bool gravityObserved, float stopDistance, Player::Player::PlayerTextureData* textureData)
-		: ActiveBoxCollisionGravityObject(position, scale, Renderer::GetSprite(textureData->DefaultSprites)), m_target{ /*Target Point: */position, /*Target Object: */nullptr }, m_gravityObserved(gravityObserved), m_stopDistance(stopDistance),
+	AnimatingCharacter::AnimatingCharacter(Vec2 position, Vec2 scale, bool gravityObserved, float stopDistance, Objects::Player::Player::PlayerTextureData* textureData)
+		: ActiveBoxCollisionGravityObject(position, scale, Renderer::GetSprite(textureData->DefaultSprites)), 
+		m_target{ /*Target Point: */position, /*Target Object: */nullptr }, m_gravityObserved(gravityObserved), m_stopDistance(stopDistance),
 		m_textureData(textureData)
 	{
 		if (gravityObserved)
@@ -22,6 +25,49 @@ namespace GAME_NAME::Cutscenes
 
 	void AnimatingCharacter::Update(GLFWwindow* window)
 	{
+		//Check if the player is in interaction range.
+		if (m_abilities.size() > 0 && Vec2::Distance(TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale() / 2.f, m_position + m_scale / 2.f) < m_scale.Y)
+		{
+			uint8_t i = 0;
+			for (CAbility*& ability : m_abilities)
+			{
+				//Assign this ability a key.
+				keyRef key = keyRef::PLAYER_INTERACT;
+				switch (i++)
+				{
+				case 1:
+					key = keyRef::PLAYER_TOGGLE_FLASHLIGHT;
+					break;
+				case 2:
+					key = keyRef::PLAYER_USE_ITEM;
+					break;
+				case 3:
+					key = keyRef::PLAYER_DROP_HELD_ITEM;
+					break;
+				}
+
+				//Show the display and detect if it should be triggered.
+				Input::DisplayIconManager::ShowKeyInputDisplay(key, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), 0, ability->GetPrompt());
+
+				if (InputManager::GetKeyUpDown(key) & InputManager::KEY_STATE_PRESSED)
+				{
+					ability->Trigger(this);
+					break;
+				}
+			}
+		}
+
+		if (IsFrozen())
+		{
+			m_animator->Update(window, this);
+			ActiveBoxCollisionGravityObject::Update(window);
+			updateLookDirection();
+			return;
+		}
+		
+		m_lookDirection = Objects::Player::Player::NO_LOOK_DIRECTION;
+		
+
 		if (m_target.Object != nullptr)
 		{
 			m_target.Location = m_target.Object->GetPosition() + m_target.Object->GetScale() / 2.f;
@@ -40,6 +86,19 @@ namespace GAME_NAME::Cutscenes
 
 		//DEFAULT RENDER MODE.
 		m_sprite->Render(cameraPos, m_position + (m_textureFlipped ? (m_scale * Vec2::OneX) : 0), m_scale * (m_textureFlipped ? Vec2::MinusOneXOneY : 1), m_rotation);
+	}
+
+	void AnimatingCharacter::AddAbility(CAbility* ability)
+	{
+		//Find all abilities that match. To ensure this character does not have the ability yet.
+		auto iter = std::find_if(m_abilities.begin(), m_abilities.end(), [ability](CAbility* abilityCheck) {
+			return abilityCheck->GetAbility() == ability->GetAbility();
+		});
+
+		//An ability already exists.
+		if (iter != m_abilities.end()) { return; }
+
+		m_abilities.push_back(ability);
 	}
 
 	void AnimatingCharacter::SetTarget(Vec2 targetLocation)
@@ -77,6 +136,19 @@ namespace GAME_NAME::Cutscenes
 			this->m_physics->SetVelocityY(0.f);
 
 			m_onGround = true;
+		}
+	}
+
+	void AnimatingCharacter::SetFrozen(bool frozen, Objects::Player::Player::PLAYER_ANIMATION_STATE state)
+	{
+		if (frozen)
+		{
+			m_frozen++;
+
+			m_lookDirection = state;
+		}
+		else {
+			m_frozen--;
 		}
 	}
 
@@ -193,5 +265,15 @@ using namespace Components::Animation;
 		std::vector<std::shared_ptr<GAME_NAME::Components::Animation::Animation>> anims{ walk_anim, run_anim, fall_anim, jump_anim };
 
 		m_animator = new AnimatorComponent(anims);
+	}
+
+	void AnimatingCharacter::updateLookDirection()
+	{
+
+	}
+
+	void AnimatingCharacter::onInteract()
+	{
+
 	}
 }

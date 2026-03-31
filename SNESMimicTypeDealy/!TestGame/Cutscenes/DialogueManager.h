@@ -8,6 +8,8 @@
 
 #include "../../Utils/ConstUpdateable.h"
 
+#include "./Character/AnimatingCharacter.h"
+
 using namespace GAME_NAME::Objects::GUI;
 
 #define DIALOGUE_TEXT_BOX_SPACING_X 40				//How far the dialogue box is from the edges (X).
@@ -16,6 +18,7 @@ using namespace GAME_NAME::Objects::GUI;
 
 namespace GAME_NAME::Cutscenes
 {
+
 	/// <summary>
 	/// The DialogueManager has the ability to display dialogue events and sequences in order that the player can click through.
 	/// </summary>
@@ -120,6 +123,13 @@ namespace GAME_NAME::Cutscenes
 		/// A tuple containing onscreen elements rendered during a GUI event.
 		/// </summary>
 		std::tuple<StaticGUIElement*, Text::TextRenderer::ExpectedRenderedWord> m_guiDisplay;
+
+		/// <summary>
+		/// A display for the current character talking.
+		/// </summary>
+		std::unique_ptr<StaticGUIElement> m_guiSpeakingDisplay;
+		float m_guiSpeakingDisplayOpacity = 1.f;
+
 		/// <summary>
 		/// An array of all buttons on screen during a GUI selection event.
 		/// </summary>
@@ -136,6 +146,16 @@ namespace GAME_NAME::Cutscenes
 		void createDialogueOptions();
 
 		/// <summary>
+		/// Makes sure the camera is set to the correct zoom values and updates any animations or events caused by the dialogue advancing.
+		/// </summary>
+		void updateDialogueEvents();
+
+		/// <summary>
+		/// Called each frame that dialogue is playing to ensure that the speaker sprite matches the target object.
+		/// </summary>
+		void updateSpeakerDisplay();
+
+		/// <summary>
 		/// Stops the dialogue and removes all graphics from the screen pertaining to dialogue (calling destroyDialogueBox()).
 		/// </summary>
 		inline void stopDialogue()
@@ -150,6 +170,16 @@ namespace GAME_NAME::Cutscenes
 			static_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera())->SetTargetZoom(1.f);
 
 			destroyDialogueBox();
+
+			//If the sequence was also freezing a character, un-freeze them.
+			AnimatingCharacter* character = dynamic_cast<AnimatingCharacter*>(m_currentDialogueEvent.FocusObject);
+			if (character)
+			{
+				if (character->IsFrozen())
+				{
+					character->SetFrozen(false);
+				}
+			}
 
 			TestGame::ThePlayer->SetFrozen(false);
 

@@ -531,6 +531,9 @@
     <ClCompile Include="!TestGame\Objects\Environment\PassTriggerObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Cutscenes\Character\CharacterAbility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -1122,6 +1125,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\Objects\Environment\PassTriggerObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Cutscenes\Character\CharacterAbility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Items\Inventories\GiveItemInventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="!TestGame\Camera\LevelBuilderCam.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\Character\AnimatingCharacter.cpp" />
+    <ClCompile Include="!TestGame\Cutscenes\Character\CharacterAbility.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\CutsceneManager.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\DialogueManager.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\DialogueSequence.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="!TestGame\Items\Crafting\CraftingMenuManager.cpp" />
     <ClCompile Include="!TestGame\Items\FloorItem.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\CraftingInventory.cpp" />
+    <ClCompile Include="!TestGame\Items\Inventories\GiveItemInventory.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\InventoryContainer.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\InventoryContainerRenderer.cpp" />
     <ClCompile Include="!TestGame\Items\Inventories\InventoryTooltip.cpp" />
@@ -313,6 +315,7 @@
   <ItemGroup>
     <ClInclude Include="!TestGame\Camera\LevelBuilderCam.h" />
     <ClInclude Include="!TestGame\Cutscenes\Character\AnimatingCharacter.h" />
+    <ClInclude Include="!TestGame\Cutscenes\Character\CharacterAbility.h" />
     <ClInclude Include="!TestGame\Cutscenes\Cutscene.h" />
     <ClInclude Include="!TestGame\Cutscenes\CutsceneManager.h" />
     <ClInclude Include="!TestGame\Cutscenes\DialogueManager.h" />
@@ -327,6 +330,7 @@
     <ClInclude Include="!TestGame\Items\Crafting\CraftingMenuManager.h" />
     <ClInclude Include="!TestGame\Items\FloorItem.h" />
     <ClInclude Include="!TestGame\Items\Inventories\CraftingInventory.h" />
+    <ClInclude Include="!TestGame\Items\Inventories\GiveItemInventory.h" />
     <ClInclude Include="!TestGame\Items\Inventories\InventoryContainer.h" />
     <ClInclude Include="!TestGame\Items\Inventories\InventoryContainerRenderer.h" />
     <ClInclude Include="!TestGame\Items\Inventories\InventoryTooltip.h" />

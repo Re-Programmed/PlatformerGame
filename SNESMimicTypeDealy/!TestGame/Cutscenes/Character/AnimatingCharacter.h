@@ -4,6 +4,10 @@
 #include "../../../Components/Physics/Collision/Helpers/ActiveBoxCollisionGravityObject.h"
 #include "../../../Rendering/Sprite.h"
 
+#include "./CharacterAbility.h"
+
+#include "../../../Objects/Helpers/Interactable.h"
+
 #include "../../Objects/Player/Player.h"
 
 using namespace GAME_NAME::Objects;
@@ -31,6 +35,8 @@ namespace GAME_NAME::Cutscenes
 
 		void Render(const Vec2& cameraPos) override;
 
+		void AddAbility(CAbility* ability);
+
 		void SetTarget(Vec2 targetLocation);
 		void SetTarget(GameObject* object);
 
@@ -48,6 +54,12 @@ namespace GAME_NAME::Cutscenes
 		
 		~AnimatingCharacter()
 		{
+			//Delete all abilities.
+			for (CAbility* ability : m_abilities)
+			{
+				delete ability;
+			}
+
 			delete m_textureData;
 		}
 
@@ -58,7 +70,12 @@ namespace GAME_NAME::Cutscenes
 
 		inline bool IsOnGround() { return m_onGround; }
 
+		inline bool IsFrozen() { return m_frozen > 0; }
+		void SetFrozen(bool frozen, Objects::Player::Player::PLAYER_ANIMATION_STATE state = Objects::Player::Player::NO_LOOK_DIRECTION);
+		
 	protected:
+		std::vector<CAbility*> m_abilities;
+
 		/// <summary>
 		/// All reference textures to use.
 		/// </summary>
@@ -86,8 +103,19 @@ namespace GAME_NAME::Cutscenes
 
 		void registerAnimations();
 
+		Objects::Player::Player::PLAYER_ANIMATION_STATE m_lookDirection = Objects::Player::Player::NO_LOOK_DIRECTION;
+		/// <summary>
+		/// Called each frame that the character is frozen.
+		/// </summary>
+		void updateLookDirection();
 
+		void onInteract();
 	private:
+		/// <summary>
+		/// If the character is frozen, they will not be able to move or perform actions until unfrozen.
+		/// </summary>
+		int m_frozen = 0;
+
 		bool m_onGround = false;
 		bool m_gravityObserved;
 

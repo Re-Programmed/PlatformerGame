@@ -4,10 +4,14 @@
 #include <queue>
 #include <cstdarg>
 
+#include "../Objects/Player/Player.h"
+
 using namespace GAME_NAME::Objects;
 
 namespace GAME_NAME::Cutscenes
 {
+typedef Objects::Player::Player::PLAYER_ANIMATION_STATE AnimationState;
+
 	class DialogueSequence
 	{
 	public:
@@ -19,8 +23,10 @@ namespace GAME_NAME::Cutscenes
 			float Zoom;
 			std::vector<std::shared_ptr<DialogueSequence>> Options;
 
-			DialogueEvent(std::string text, GameObject* focusObject = nullptr, float zoom = 1.f)
-				: Text(text), FocusObject(focusObject), Zoom(zoom)
+			AnimationState SpeakerAnimation = AnimationState::NO_LOOK_DIRECTION;
+
+			DialogueEvent(std::string text, GameObject* focusObject = nullptr, float zoom = 1.f, Objects::Player::Player::PLAYER_ANIMATION_STATE speakerAnimation = Objects::Player::Player::NO_LOOK_DIRECTION)
+				: Text(text), FocusObject(focusObject), Zoom(zoom), SpeakerAnimation(speakerAnimation)
 			{
 
 			}
@@ -38,7 +44,6 @@ namespace GAME_NAME::Cutscenes
 
 				va_end(args);
 			}
-
 
 			inline void SetFocusObject(GameObject*& focus)
 			{
