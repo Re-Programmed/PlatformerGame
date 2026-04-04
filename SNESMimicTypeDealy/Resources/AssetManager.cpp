@@ -231,6 +231,68 @@ namespace GAME_NAME
 			return "";
 		}
 
+		/*
+			Item language is formatted as:
+				>ItemKeyName
+				Translated Name
+				Description
+		*/
+		std::unordered_map<std::string, AssetManager::ItemInformation> AssetManager::GetItemLanguageData()
+		{
+			std::unordered_map<std::string, ItemInformation> data;
+
+			std::string filePath = AssetPath;
+			filePath += ItemFile;
+
+			if (!std::filesystem::exists(filePath))
+			{
+				std::string message = "Missing item file: \"" + filePath + "\"";
+				CreateResoruceErrorMessage(message);
+				return data;
+			}
+
+
+			std::ifstream ItemFile(filePath);
+			std::string line;
+
+			std::string key = ""; 
+			AssetManager::ItemInformation info{ "", "" };
+
+			while (std::getline(ItemFile, line, '\n'))
+			{
+				if (line.empty() || line.starts_with(' ')) { continue; }
+
+				if (line.starts_with(">"))
+				{
+					if (!key.empty())
+					{
+						data.emplace(key, info);
+						info.Name = "";
+						info.Description = "";
+					}
+
+					key = line.substr(1);
+					continue;
+				}
+
+				if (info.Name.empty())
+				{
+					info.Name = line;
+				}
+				else if(info.Description.empty()) 
+				{
+					info.Description = line;
+				}
+			}
+
+			if (!key.empty())
+			{
+				data.emplace(key, info);
+			}
+
+			return data;
+		}
+
 		std::unordered_map<std::string, std::string> AssetManager::GetDialogueData(const char* subfolder)
 		{
 			std::unordered_map<std::string, std::string> data;

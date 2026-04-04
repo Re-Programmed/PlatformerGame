@@ -4,6 +4,8 @@
 	This file was created for the purpose of adding custom defines that will be used during compiling.
 */
 
+#define DIALOGUE_MANAGER_GLOBAL_DIALOGUE_FOLDER "/global_assets"
+
 #pragma region InventoryData
 
 	#define INVENTORY_UNSELECTED_SLOT_SPRITE SpriteBase(53)	//The sprite of an inventory slot.

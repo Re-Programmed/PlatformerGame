@@ -55,27 +55,24 @@ namespace GAME_NAME::Objects::Environment
 					{
 						if (Cutscenes::DialogueManager::INSTANCE->IsSequencePlaying()) { return; }
 
-						std::string itemName = ITEMTYPE_GetItemTypeName(this->m_requiredTool);
-
 						int rand = std::rand();
 						int r = (4 * rand) / RAND_MAX;
-
-						std::string message = "I must have left my " + itemName + " %item_" + std::to_string(this->m_requiredTool) + " at home!";
 
 						switch (r)
 						{
 						case 0:
-							message = "I could use a " + itemName + " %item_" + std::to_string(this->m_requiredTool) + " to get this.";
+							Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(Cutscenes::DialogueManager::INSTANCE->GetDialogueSequence("Foragable_WrongItem1", this->m_requiredTool));
 							break;
 						case 1:
-							message = "I could go for a " + itemName + " %item_" + std::to_string(this->m_requiredTool) + " right now.";
+							Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(Cutscenes::DialogueManager::INSTANCE->GetDialogueSequence("Foragable_WrongItem2", this->m_requiredTool));
 							break;
-						case 2:						
-							message = "Oh. I misplaced my " + itemName + " %item_" + std::to_string(this->m_requiredTool) + " .";
+						case 2:		
+							Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(Cutscenes::DialogueManager::INSTANCE->GetDialogueSequence("Foragable_WrongItem3", this->m_requiredTool));
+							break;
+						case 3:
+							Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(Cutscenes::DialogueManager::INSTANCE->GetDialogueSequence("Foragable_WrongItem4", this->m_requiredTool));
 							break;
 						}
-
-						Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(Cutscenes::DialogueSequence(1, Cutscenes::DialogueSequence::DialogueEvent(message, TestGame::ThePlayer.get())));
 
 						return;
 					}

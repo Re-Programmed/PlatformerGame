@@ -36,6 +36,7 @@
 #include "../../../Utils/CollisionDetection.h"
 #include "../../Items/Types/Placeable.h"
 #include "../../Items/Types/Blueprint.h"
+#include "../../Items/Types/Firearm.h"
 
 #include "../../Objects/Furniture.h"
 #include "../../Level/Hub/HouseManager.h"
@@ -381,33 +382,86 @@ using namespace Audio;
 				}
 
 				//Check if the player is trying to use an item and use it if so.
-				if (m_screenInventory->GetHeldItem() != nullptr && InputManager::GetKey(keyRef::PLAYER_USE_ITEM) && !(m_frozen > 0) && !this->GetBackpack()->GetIsOpen())
+				if (m_screenInventory->GetHeldItem() != nullptr && !(m_frozen > 0) && !this->GetBackpack()->GetIsOpen())
 				{
-					//??? What is this doing? Attacking is handled on right click... 
-					if (ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].Actions & WEAPON)
+					if (m_attackCooldown <= 0.f && InputManager::GetKey(keyRef::PLAYER_RELOAD))
 					{
-						if (Weapon* w = dynamic_cast<Weapon*>(m_screenInventory->GetHeldItem()))
+
+						if (ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].Actions & FIREARM)
 						{
-							w->Use();
-							Attack(w->GetDamage(), /*TODO: Give weapons a range attribute*/12.f, 0);
-						}
-					}
-					else if (ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].Actions & FOOD)
-					{
-						if (Food* f = dynamic_cast<Food*>(m_screenInventory->GetHeldItem()))
-						{
-							if (f->Use())
+							Firearm* firearm = dynamic_cast<Firearm*>(m_screenInventory->GetHeldItem());
+							if (firearm)
 							{
-								m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+								Firearm::FirearmStats firearmStats = Firearm::GetStats(firearm->GetType());
+
+								//Sucessfully found and used the clip.
+								if (m_backpack->Remove(firearmStats.Clip, 1) > 0)
+								{
+									m_attackCooldown = firearm->Reload();
+
+									//TODO: Play reloading sound.
+								}
+								//Search screen inventory for clip.
+								else {
+									for (int i = 0; i < 3; i++)
+									{
+										Inventory::ReturnItem item = m_screenInventory->GetItem(i);
+										if (!item.ri_IsNull && item.ri_Item->GetType() == firearmStats.Clip)
+										{
+											delete item.ri_Item;
+											m_screenInventory->SetItem(i, nullptr);
+
+											m_attackCooldown = firearm->Reload();
+										}
+									}
+								}
 							}
 						}
-					}
-					else if (Blueprint* bp = dynamic_cast<Blueprint*>(m_screenInventory->GetHeldItem()))
-					{
-						bp->Use();
-						m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+						
 					}
 
+					if (InputManager::GetKey(keyRef::PLAYER_USE_ITEM))
+					{
+						//??? What is this doing? Attacking is handled on right click... 
+						if (ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].Actions & WEAPON)
+						{
+							if (Weapon* w = dynamic_cast<Weapon*>(m_screenInventory->GetHeldItem()))
+							{
+								w->Use();
+								Attack(w->GetDamage(), /*TODO: Give weapons a range attribute*/12.f, 0);
+							}
+						}
+						else if (ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].Actions & FIREARM)
+						{
+							//Gun shoot.
+							if (m_heldItemDisplay && m_attackCooldown <= 0.f)
+							{
+								if (Firearm* f = dynamic_cast<Firearm*>(m_screenInventory->GetHeldItem()))
+								{
+									//Returns true if the shot was sucessful (i.e. we had ammo).
+									if (f->Shoot(this, m_heldItemDisplay->GetPosition() + Vec2{ m_heldItemDisplay->GetScale().X, m_heldItemDisplay->GetScale().Y / 2.f }))
+									{
+										m_attackCooldown = Firearm::GetStats(f->GetType()).ShotTime;
+									}
+								}
+							}
+						}
+						else if (ITEM_DATA[m_screenInventory->GetHeldItem()->GetType()].Actions & FOOD)
+						{
+							if (Food* f = dynamic_cast<Food*>(m_screenInventory->GetHeldItem()))
+							{
+								if (f->Use())
+								{
+									m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+								}
+							}
+						}
+						else if (Blueprint* bp = dynamic_cast<Blueprint*>(m_screenInventory->GetHeldItem()))
+						{
+							bp->Use();
+							m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+						}
+					}
 				}
 
 				//Handle if the player is trying to attack an enemy.

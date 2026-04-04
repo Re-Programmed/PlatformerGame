@@ -154,48 +154,66 @@ namespace GAME_NAME::Cutscenes
 
 	void AnimatingCharacter::pathfind()
 	{
-		if (m_gravityObserved)
+
+		//Right edge is not stop distance away from target.
+		if (m_position.X + m_scale.X < m_target.Location.X - m_stopDistance && this->m_physics->GetVelocity().X < m_speedCap)
 		{
-			//Right edge is not stop distance away from target.
-			if (m_position.X + m_scale.X < m_target.Location.X - m_stopDistance && this->m_physics->GetVelocity().X < m_speedCap)
-			{
-				this->m_physics->AddVelocity(Vec2(((float)Utils::Time::GameTime::GetScaledDeltaTime() / 0.017f) * (m_speedCap - m_physics->GetVelocity().X) * (m_speed), 0.f));
-				m_textureFlipped = true;
+			this->m_physics->AddVelocity(Vec2(((float)Utils::Time::GameTime::GetScaledDeltaTime() / 0.017f) * (m_speedCap - m_physics->GetVelocity().X) * (m_speed), 0.f));
+			m_textureFlipped = true;
 
-				if (this->GetVelocity().X < 0.f)
-				{
-					//Skidding.
-					this->m_physics->SetFrictionDrag(3.f);
-				}
-				else {
-					this->m_physics->SetFrictionDrag(0.f);
-				}
-			}
-			//Left edge is not stop distance away from target (with width of target respected).
-			else if (m_position.X > m_target.Location.X + m_stopDistance + (m_target.Object == nullptr ? 0.f : m_target.Object->GetScale().X) && -this->m_physics->GetVelocity().X < m_speedCap)
+			if (this->GetVelocity().X < 0.f)
 			{
-				this->m_physics->AddVelocity(Vec2(((float)Utils::Time::GameTime::GetScaledDeltaTime() / 0.017f) * (m_speedCap - m_physics->GetVelocity().X) * (-(m_speed - 0.0165F)), 0.f));
-				this->m_physics->SetFrictionDrag(0.f);
-				m_textureFlipped = false;
-
-				if (this->GetVelocity().X > 0.f)
-				{
-					//Skidding.
-					this->m_physics->SetFrictionDrag(3.f);
-				}
-				else {
-					this->m_physics->SetFrictionDrag(0.f);
-				}
+				//Skidding.
+				this->m_physics->SetFrictionDrag(3.f);
 			}
 			else {
-				this->m_physics->SetFrictionDrag(DefaultCharacterFriction);
+				this->m_physics->SetFrictionDrag(0.f);
 			}
+		}
+		//Left edge is not stop distance away from target (with width of target respected).
+		else if (m_position.X > m_target.Location.X + m_stopDistance + (m_target.Object == nullptr ? 0.f : m_target.Object->GetScale().X) && -this->m_physics->GetVelocity().X < m_speedCap)
+		{
+			this->m_physics->AddVelocity(Vec2(((float)Utils::Time::GameTime::GetScaledDeltaTime() / 0.017f) * (m_speedCap - m_physics->GetVelocity().X) * (-(m_speed - 0.0165F)), 0.f));
+			this->m_physics->SetFrictionDrag(0.f);
+			m_textureFlipped = false;
+
+			if (this->GetVelocity().X > 0.f)
+			{
+				//Skidding.
+				this->m_physics->SetFrictionDrag(3.f);
+			}
+			else {
+				this->m_physics->SetFrictionDrag(0.f);
+			}
+		}
+		else {
+			this->m_physics->SetFrictionDrag(DefaultCharacterFriction);
+		}
+
+
+		if (m_gravityObserved)
+		{
+			//If there is gravity, the character will try to jump up to the target if it is too far up.
 
 			if (m_target.Location.Y - 60.f > m_position.Y)
 			{
 				Jump();
 			}
 		}
+		else
+		{
+			//If there is not gravity, we can move up or down to reach the target.
+
+			if (m_target.Location.Y > m_position.Y + m_scale.Y/2.f + m_stopDistance/4.f)
+			{
+				Translate(Vec2{ 0, static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 40.f });
+			}
+			else if (m_target.Location.Y < m_position.Y + m_scale.Y/2.f - m_stopDistance/4.f)
+			{
+				Translate(Vec2{ 0, static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * -40.f });
+			}
+		}
+
 	}
 
 	void AnimatingCharacter::updateAnimations()

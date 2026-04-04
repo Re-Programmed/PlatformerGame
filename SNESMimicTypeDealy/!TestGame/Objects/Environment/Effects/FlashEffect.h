@@ -11,8 +11,8 @@ namespace GAME_NAME::Objects::Environment::Effects
 		: public GameObject
 	{
 	public:
-		FlashEffect(Vec2 position, Vec2 scale, double duration, Vec4 color = Vec4{ 1, 1, 1, 1 })
-			: GameObject(position, scale, Renderer::GetSprite(FLASH_EFFECT_SPRITE)), m_color(color), m_lifetimeMax(duration)
+		FlashEffect(Vec2 position, Vec2 scale, double duration, Vec4 color = Vec4{ 1, 1, 1, 1 }, Rendering::Sprite* sprite = nullptr)
+			: GameObject(position, scale, sprite ? sprite : Renderer::GetSprite(FLASH_EFFECT_SPRITE)), m_color(color), m_lifetimeMax(duration)
 		{
 
 		}
@@ -28,7 +28,7 @@ namespace GAME_NAME::Objects::Environment::Effects
 		/// <param name="duration">How long the flash remains there.</param>
 		/// <param name="color">The color of the flash (rgb out of 1).</param>
 		static void CreateFlash(Vec2 center, float scale, double duration, Vec3 color = Vec3{ 1, 1, 1 });
-
+		static void CreateFlash(Vec2 bottomLeft, Vec2 scale, double duration, Rendering::Sprite* sprite, Vec3 color = Vec3{ 1.f, 1.f, 1.f });
 	private:
 		const Vec4 m_color;
 		const double m_lifetimeMax;

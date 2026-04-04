@@ -15,8 +15,16 @@
 #include "./Character/AnimatingCharacter.h"
 
 #include <thread>
+#include <regex>
 
 #include "../../Utils/Time/GameTime.h"
+
+#include "../../CustomCompileOptions.h"
+
+
+/*-----------------------------------------
+Items can be templated in dialogue files using "%item%".
+-----------------------------------------*/
 
 // The render text function used by text for dialogue events.
 #define DialogueManager_RenderDialogue(text) DialogueManager::RenderCaseSensitiveTextWithItemTextures(text, { DIALOGUE_TEXT_BOX_SPACING_X + 12, DIALOGUE_TEXT_BOX_SPACING_Y + 14 }, 9, -3, 1, DEFAULT_FONT_RENDER_A_SPRITE_ID, DEFAULT_FONT_RENDER_LOWERCASE_A_SPRITE_ID, std::chrono::milliseconds(62))
@@ -191,7 +199,7 @@ namespace GAME_NAME::Cutscenes
 		}
 	}
 
-	DialogueSequence DialogueManager::GetDialogueSequence(std::string sequenceName)
+	DialogueSequence DialogueManager::GetDialogueSequence(std::string sequenceName, ITEM_TYPE refItem)
 	{
 		if (m_storedDialogueSequences.contains(sequenceName))
 		{
@@ -236,7 +244,17 @@ namespace GAME_NAME::Cutscenes
 					events.push_back(event);
 				}
 				else {
-					events.push_back(DialogueSequence::DialogueEvent(line, nullptr, zoom));
+					std::string text = line;
+
+					std::string vowels("aeiou");
+					if (vowels.find_first_of(ITEMTYPE_GetItemTypeName(refItem).at(0)) != vowels.size())
+					{
+						text = std::regex_replace(line, std::regex("a %item%"), "an " + std::string(ITEMTYPE_GetItemTypeName(refItem) + " %item_" + std::to_string(refItem)));
+					}
+
+					text = std::regex_replace(line, std::regex("%item%"), std::string(ITEMTYPE_GetItemTypeName(refItem) + " %item_" + std::to_string(refItem)));
+
+					events.push_back(DialogueSequence::DialogueEvent(text, nullptr, zoom));
 				}
 
 			}
@@ -263,9 +281,51 @@ namespace GAME_NAME::Cutscenes
 		return NULL;
 	}
 
+	std::string DialogueManager::GetPhrase(std::string sequenceName, ITEM_TYPE refItem)
+	{
+		if (m_storedDialogueSequences.contains(sequenceName))
+		{
+			std::string text = m_storedDialogueSequences[sequenceName];
+
+			//If an item was given, replace all instances of %item% with that item.
+			if (refItem != ITEM_TYPE::NULL_ITEM)
+			{
+				std::string vowels("aeiou");
+				if (vowels.find_first_of(ITEMTYPE_GetItemTypeName(refItem).at(0)) != vowels.size())
+				{
+					text = std::regex_replace(text, std::regex("a %item%"), "an " + std::string(ITEMTYPE_GetItemTypeName(refItem) + " %item_" + std::to_string(refItem)));
+				}
+
+				text = std::regex_replace(text, std::regex("%item%"), std::string(ITEMTYPE_GetItemTypeName(refItem) + " %item_" + std::to_string(refItem)));
+			}
+
+			return m_storedDialogueSequences[sequenceName];
+		}
+	}
+
+	DialogueSequence DialogueManager::ReplaceDialogueSequenceItem(DialogueSequence& sequence, ITEM_TYPE item)
+	{
+		DialogueSequence out;
+		while (!sequence.IsEmpty())
+		{
+			DialogueSequence::DialogueEvent event = sequence.Next();
+			std::string text = std::regex_replace(event.Text, std::regex("%item%"), std::string(ITEMTYPE_GetItemTypeName(item) + " %item_" + std::to_string(item)));
+			
+			out.AddDialogueEvent(DialogueSequence::DialogueEvent(text, event.FocusObject, event.Zoom, event.SpeakerAnimation));
+		}
+
+		return out;
+	}
+
 	void DialogueManager::LoadStoredDialogueSequences(std::string path)
 	{
 		m_storedDialogueSequences = Resources::AssetManager::GetDialogueData(path.c_str());
+
+		//Load the global dialogue info too.
+		for (auto& [key, value] : Resources::AssetManager::GetDialogueData(DIALOGUE_MANAGER_GLOBAL_DIALOGUE_FOLDER))
+		{
+			m_storedDialogueSequences.emplace(key, value);
+		}
 	}
 
 	bool DialogueManager::advanceDialogue()

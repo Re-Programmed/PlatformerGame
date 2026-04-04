@@ -257,6 +257,8 @@ namespace GAME_NAME
 		//Load all save data stuff for mechanical objects.
 		Mechanical::MechanicalSaveManager::Init();
 
+		Items::ITEMTYPE_LoadItemTranslations();
+
 #ifdef SKIP_MAIN_MENU
 
 #ifdef STANDARD_LOAD
@@ -578,7 +580,7 @@ namespace GAME_NAME
 
 		//Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(testSequence); 
 
-		Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{ 50.f, 30.f }, Vec2{ 16.f, 26.f }, true, 50.f);
+		Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{ 50.f, 30.f }, Vec2{ 16.f, 26.f }, false, 50.f);
 
 		testCharacter->AddAbility(new Cutscenes::SpeakAbility(Cutscenes::DialogueSequence(1,
 			Cutscenes::DialogueSequence::DialogueEvent("Hey!!", testCharacter, 1.f, Objects::Player::Player::BAG)

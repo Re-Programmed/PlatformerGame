@@ -5,6 +5,7 @@
 #include "./Types/Food.h"
 #include "./Types/Placeable.h"
 #include "./Types/Blueprint.h"
+#include "./Types/Firearm.h"
 
 namespace GAME_NAME
 {
@@ -109,6 +110,15 @@ namespace GAME_NAME
 				Blueprint* bp = new Blueprint();
 				bp->Decode(data);
 				item = bp;
+				break;
+			}
+
+			case ITEM_PREFIX_FIREARM:
+			{
+				delete item;
+				Firearm* f = new Firearm();
+				f->Decode(data);
+				item = f;
 				break;
 			}
 			}

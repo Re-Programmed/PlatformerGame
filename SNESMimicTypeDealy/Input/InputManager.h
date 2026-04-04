@@ -9,9 +9,9 @@
 
 ///How many inputs to check for
 #if _DEBUG
-#define KEY_ARRAY_SIZE 25
+#define KEY_ARRAY_SIZE 26
 #else
-#define KEY_ARRAY_SIZE 17
+#define KEY_ARRAY_SIZE 18
 #endif
 
 #define JOYSTICK_DEADZONE 0.175f //TODO: Make this a setting.
@@ -33,6 +33,7 @@ const std::string_view KeybindNames[KEY_ARRAY_SIZE] {
 	"PLAYER_TOGGLE_FLASHLIGHT",
 	"PLAYER_ATTACK",
 	"PLAYER_USE_ITEM",
+	"PLAYER_RELOAD",
 	"DEFAULT_PAUSE_GAME",
 #if _DEBUG
 	"PLAYER_DEBUG",
@@ -68,6 +69,7 @@ namespace GAME_NAME
 		PLAYER_TOGGLE_FLASHLIGHT,	//Player Toggle Flashlight [F]
 		PLAYER_ATTACK,				//Player Attack [Right Mouse Button]
 		PLAYER_USE_ITEM,			//Player Use Item [Left Mouse Button]
+		PLAYER_RELOAD,				//Player Reload [R]
 
 		DEFAULT_PAUSE_GAME,			//Pause Game {DEFAULT} [ESC]
 

@@ -615,18 +615,19 @@ namespace GAME_NAME
 
 		std::vector<GameObject*> Renderer::GetAllObjectsInArea(Vec2 bottomLeft, Vec2 scale, bool boxOverlap, int8_t layer)
 		{
-			std::cout << "Searchcing from: " << bottomLeft.ToString() << std::endl;
-
+			std::mutex ret_lock;
 			std::vector<GameObject*> ret;
 			
-			std::thread activeObjectCheck([layer, bottomLeft, scale, boxOverlap](std::vector<GameObject*>& ret) {
+			std::thread activeObjectCheck([layer, bottomLeft, scale, boxOverlap](std::vector<GameObject*>& ret, std::mutex& ret_lock) {
 				if (layer != -1)
 				{
 					for (GameObject* obj : m_activeGameObjects[layer])
 					{
 						if (boxOverlap ? Utils::CollisionDetection::BoxWithinBox(bottomLeft, scale, obj->GetPosition(), obj->GetScale()) : Utils::CollisionDetection::PointWithinBoxBL(obj->GetPosition(), bottomLeft, scale))
 						{
+							ret_lock.lock();
 							ret.push_back(obj);
+							ret_lock.unlock();
 						}
 					}
 				}
@@ -637,12 +638,14 @@ namespace GAME_NAME
 						{
 							if (boxOverlap ? Utils::CollisionDetection::BoxWithinBox(bottomLeft, scale, obj->GetPosition(), obj->GetScale()) : Utils::CollisionDetection::PointWithinBoxBL(obj->GetPosition(), bottomLeft, scale))
 							{
+								ret_lock.lock();
 								ret.push_back(obj);
+								ret_lock.unlock();
 							}
 						}
 					}
 				}
-			}, std::ref(ret));
+			}, std::ref(ret), std::ref(ret_lock));
 
 			iVec2 chunkPos = AsChunkPosition(bottomLeft);
 			iVec2 chunkScale = AsChunkPosition(scale);
@@ -667,7 +670,9 @@ namespace GAME_NAME
 						{
 							if (boxOverlap ? Utils::CollisionDetection::BoxWithinBox(bottomLeft, scale, add->GetPosition(), add->GetScale()) : Utils::CollisionDetection::PointWithinBoxBL(add->GetPosition(), bottomLeft, scale))
 							{
+								ret_lock.lock();
 								ret.push_back(add);
+								ret_lock.unlock();
 							}
 						}
 
@@ -675,7 +680,9 @@ namespace GAME_NAME
 						{
 							if (boxOverlap ? Utils::CollisionDetection::BoxWithinBox(bottomLeft, scale, add->GetPosition(), add->GetScale()) : Utils::CollisionDetection::PointWithinBoxBL(add->GetPosition(), bottomLeft, scale))
 							{
+								ret_lock.lock();
 								ret.push_back(add);
+								ret_lock.unlock();
 							}
 						}
 					}

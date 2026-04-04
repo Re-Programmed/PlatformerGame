@@ -22,6 +22,20 @@ constexpr int DEFAULT_EXPLOSION_SPRITES[DEFAULT_EXPLOSION_SPRITES_COUNT] = { Spr
 
 namespace GAME_NAME::Objects::Environment::Effects
 {
+	Explosion::Explosion(Vec2 position, float radius)
+		: ParticleEmitter(position, 1.f), m_radius(radius), m_power(0.f)
+	{
+		for (int i = 0; i < DEFAULT_EXPLOSION_SPRITES_COUNT; i++)
+		{
+			Particle p(Vec2::Zero, 1.f, (std::rand() * 60 - 30) / RAND_MAX, Vec2::Zero, 0.f, 100.f, Renderer::GetSprite(DEFAULT_EXPLOSION_SPRITES[i]));
+			this->RegisterParticle(p);
+		}
+
+		m_position -= radius * 0.5f;
+		this->SpawnParticles(100, Vec2{ 0 }, 0.f, (std::rand() * 180) / RAND_MAX, Vec2{ radius });
+		m_position += radius * 0.5f;
+	}
+
 	Explosion::Explosion(Vec2 position, float radius, float power, uint8_t spriteCount, ...)
 		: ParticleEmitter(position, 1.f), m_radius(radius), m_power(power)
 	{

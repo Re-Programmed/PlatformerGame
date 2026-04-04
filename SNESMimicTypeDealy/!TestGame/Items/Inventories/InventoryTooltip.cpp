@@ -2,6 +2,9 @@
 #include "../../../Input/InputManager.h"
 #include <algorithm>
 
+#include "../../Cutscenes/DialogueManager.h"
+
+#include "../../Items/Types/Firearm.h"
 
 #define TOOLTIP_ANIMATION_SPEED 0.28f
 
@@ -158,7 +161,7 @@ namespace GAME_NAME::Items::Inventories
 						Vec2 pos(m_tooltip[i].Element->GetPosition().X + 2.f, MousePosition.Y - 8.f + m_tooltip[i].Offset.Y);
 						Text::TextRenderer::ExpectedRenderedWord attributeDescription = formatToolAttributeHeading(pos, action, data);
 
-						Text::TextRenderer::RenderedDigit attributeValues = formatToolAttributeValue(pos - Vec2{ 0.f, 4.f }, action, data);
+						Text::TextRenderer::RenderedDigit attributeValues = formatToolAttributeValue(pos - Vec2{ 0.f, 4.f }, action, data, item.ri_Item);
 
 						for (auto& letter : attributeDescription)
 						{
@@ -268,6 +271,13 @@ namespace GAME_NAME::Items::Inventories
 		}
 	}
 
+	/// <summary>
+	/// Creates the display for the title of a tooltip box based on what an item's abilities are.
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <param name="action"></param>
+	/// <param name="data"></param>
+	/// <returns></returns>
 	Text::TextRenderer::ExpectedRenderedWord InventoryTooltip::formatToolAttributeHeading(Vec2 pos, const TOOL_ACTION& action, const std::string& data)
 	{
 		Text::TextRenderer::ExpectedRenderedWord word;
@@ -275,20 +285,23 @@ namespace GAME_NAME::Items::Inventories
 		switch (action)
 		{
 		case TOOL_ACTION::VALUE:
-			word = Text::TextRenderer::RenderWordCaseSensitive("Value", pos, 4.f, -0.4f, 2);
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Value"), pos, 4.f, -0.4f, 2);
 			break;
 		case TOOL_ACTION::FOOD:
-			word = Text::TextRenderer::RenderWordCaseSensitive("Food", pos, 4.f, -0.4f, 2);
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Food"), pos, 4.f, -0.4f, 2);
 			break;
 		case TOOL_ACTION::WEAPON:
-			word = Text::TextRenderer::RenderWordCaseSensitive("Dmaage", pos, 4.f, -0.4f, 2);
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Damage"), pos, 4.f, -0.4f, 2);
+			break;
+		case TOOL_ACTION::FIREARM:
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Firearm"), pos, 4.f, -0.4f, 2);
 			break;
 		}
 
 		return word;
 	}
 
-	Text::TextRenderer::RenderedDigit InventoryTooltip::formatToolAttributeValue(Vec2 pos, const TOOL_ACTION& action, const std::string& data)
+	Text::TextRenderer::RenderedDigit InventoryTooltip::formatToolAttributeValue(Vec2 pos, const TOOL_ACTION& action, const std::string& data, InventoryItem* item)
 	{
 		if (action & TOOL_ACTION::VALUE)
 		{
@@ -304,6 +317,18 @@ namespace GAME_NAME::Items::Inventories
 		{
 			int damage = std::stoi(data.substr(0, data.find_first_of(',')));
 			return Text::TextRenderer::RenderNumber(damage, pos, 0.175f, 0.f, 1, -408, 2);
+		}
+
+		if (action & TOOL_ACTION::FIREARM)
+		{
+			Firearm::FirearmStats stats = Firearm::GetStats(data);
+
+			Firearm* f = dynamic_cast<Firearm*>(item);
+
+			if (f)
+			{
+				return Text::TextRenderer::RenderNumber(f->GetAmmo(), pos, 0.175f, 0.f, 1, -408, 2);
+			}
 		}
 
 		return Text::TextRenderer::RenderedDigit();

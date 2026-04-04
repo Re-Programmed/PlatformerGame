@@ -1,0 +1,32 @@
+>AnimatingCharacter_UnknownItem1
+Stop wiggling that in my face!
+
+>AnimatingCharacter_UnknownItem2
+Nice %item% .
+
+>AnimatingCharacter_UnknownItem3
+Oh, it's a %item% , like I haven't seen one before.
+
+>Foragable_WrongItem1
+I must have left my %item% at home.
+
+>Foragable_WrongItem2
+I could use a %item% to get this.
+
+>Foragable_WrongItem3
+Oh, I must have misplaced my %item% .
+
+>Foragable_WrongItem4
+I could go for a %item% right now.
+
+>InventoryTooltip_Value
+Value
+
+>InventoryTooltip_Food
+Food
+
+>InventoryTooltip_Damage
+Damage
+
+>InventoryTooltip_Firearm
+Ammo

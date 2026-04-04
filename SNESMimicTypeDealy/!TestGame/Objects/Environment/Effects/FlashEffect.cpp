@@ -52,5 +52,10 @@ namespace GAME_NAME::Objects::Environment::Effects
 		Renderer::InstantiateObject(Renderer::InstantiateGameObject(new FlashEffect(center - Vec2{ scale / 2.f }, Vec2{ scale }, duration, Vec4{ color.X, color.Y, color.Z, 1 }), true, 2, true));
 	}
 
+	void FlashEffect::CreateFlash(Vec2 bottomLeft, Vec2 scale, double duration, Rendering::Sprite* sprite, Vec3 color)
+	{
+		Renderer::InstantiateObject(Renderer::InstantiateGameObject(new FlashEffect(bottomLeft, scale, duration, Vec4{ color.X, color.Y, color.Z, 1.f }, sprite), true, 2, true));
+	}
+
 
 }

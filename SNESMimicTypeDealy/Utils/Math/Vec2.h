@@ -112,6 +112,13 @@ namespace GAME_NAME
 			}
 
 			/// <summary>
+			/// Makes the vector have its greatest length equal to div and its shorter length equal to the same proportion of div.
+			/// </summary>
+			/// <param name="div">The length that the greatest axis will become.</param>
+			/// <returns>The vector normalized to div as its largest axis.</returns>
+			Vec2& Normalize(float div = 1.f);
+
+			/// <summary>
 			/// Given two points and two other factors, returns the vector that points from the affectedObject away from the explosion origin, with magnitude inversley proportional to distaance.
 			/// </summary>
 			/// <param name="explosionOrigin"></param>

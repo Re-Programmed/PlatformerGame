@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "../../Audio/SoundEvents.h"
+#include "../../Resources/AssetManager.h"
 
 #define ITEM_PREFIX_ITEM 'i'
 #define ITEM_PREFIX_TOOL 't'
@@ -14,7 +15,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 55
+#define ITEM_COUNT 57
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -59,7 +60,24 @@ namespace GAME_NAME
 			SMALL_WOODEN_COG = 36,
 			LARGE_WOODEN_COG = 37,
 			KEY = 38,
-			BUTTER = 39
+			BUTTER = 39,
+			IRON_ROD = 40,
+			COPPER_WIRE = 41,
+			RESISTOR = 42,
+			CAPACITOR = 43,
+			PEAR = 44,
+			ORANGE = 45,
+			SPRING_BOOTS = 46,
+			SPRING = 47,
+			LAUNCHPAD = 48,
+			WRENCH = 49,
+			PITCHFORK = 50,
+			BUCKET = 51,
+			MILK_JUG = 52,
+			WHEAT = 53,
+			PICKAXE = 54,
+			PISTOL = 55,
+			PISTOL_AMMO = 56
 		};
 
 		/// <summary>
@@ -67,17 +85,18 @@ namespace GAME_NAME
 		/// </summary>
 		enum TOOL_ACTION
 		{
-			CHOP =			0b00000000001, //Can cut down trees.
-			EQUIPMENT =		0b00000000010, //Can be equipped to equipment slots.
-			MINE =			0b00000000100, //Can break BreakableBlocks. (provide a strength attribute)
-			WEAPON =		0b00000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
-			FOOD =			0b00000010000, //Can be eaten.
-			PLACEABLE =		0b00000100000, //Can be placed.
-			FURNITURE =		0b00001000000, //Furniture. (xScale, yScale, inventorySize[optional])
-			VALUE =			0b00010000000, //Give an item a specific price value. (crumbValue)
-			RANGED_WEAPON = 0b00100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
-			USE_SOUND =		0b01000000000, //Plays a different sound when used. [soundEventNumber]
-			SHIELD =		0b10000000000, //Blocks damage [resistance,recoveryTime]
+			CHOP =			0b000000000001, //Can cut down trees.
+			EQUIPMENT =		0b000000000010, //Can be equipped to equipment slots.
+			MINE =			0b000000000100, //Can break BreakableBlocks. (provide a strength attribute)
+			WEAPON =		0b000000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
+			FOOD =			0b000000010000, //Can be eaten.
+			PLACEABLE =		0b000000100000, //Can be placed.
+			FURNITURE =		0b000001000000, //Furniture. (xScale, yScale, inventorySize[optional])
+			VALUE =			0b000010000000, //Give an item a specific price value. (crumbValue)
+			RANGED_WEAPON = 0b000100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
+			USE_SOUND =		0b001000000000, //Plays a different sound when used. [soundEventNumber]
+			SHIELD =		0b010000000000, //Blocks damage [resistance,recoveryTime]
+			FIREARM =		0b100000000000	//Shoots bullet [clip_size,clip_itemID,damage,reload_time,shot_interval]
 		};
 
 		/// <summary>
@@ -89,7 +108,7 @@ namespace GAME_NAME
 			/// <summary>
 			/// The name of the item.
 			/// </summary>
-			const std::string DisplayName;
+			mutable std::string DisplayName;
 			/// <summary>
 			/// The texture for the inventory display of the item.
 			/// </summary>
@@ -101,7 +120,7 @@ namespace GAME_NAME
 			/// <summary>
 			/// A flag list of things the item can do.
 			/// </summary>
-			const uint16_t Actions = 0;
+			const uint32_t Actions = 0;
 			/// <summary>
 			/// Stores data about the items actions like its strength.
 			/// </summary>
@@ -109,7 +128,7 @@ namespace GAME_NAME
 			/// <summary>
 			/// Whatever you want.
 			/// </summary>
-			const std::string Description;
+			mutable std::string Description;
 		};
 
 #define NO_HELD_TEXTURE GLOBAL_SPRITE_BASE
@@ -196,13 +215,18 @@ namespace GAME_NAME
 			
 			{ "Bucket", SpriteBase(460), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Holds whatever you want."},			//51
 
-			{ "Milk Bucket", SpriteBase(461), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "8" } }, "Holds milk."},			//52
+			{ "Milk Jug", SpriteBase(461), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "8" } }, "Holds milk."},			//52
 
 			{ "Wheat", SpriteBase(462), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "1" } }, "Almost bread?"},			//53
 
 			{ "Pickaxe", SpriteBase(463), FOLLOW_HAND_TEXTURE, VALUE | MINE, { { TOOL_ACTION::VALUE, "30" }, { TOOL_ACTION::MINE, "3" } }, "Mines certain resources.\nCan clear certain pathways."},			//54
+
+			{ "Pistol", SpriteBase(463), FOLLOW_HAND_TEXTURE, VALUE | FIREARM, { { TOOL_ACTION::VALUE, "60" }, { TOOL_ACTION::FIREARM, "5,38,20,1.5,0.5" } }, "Shoots."},			//55
+
+			{ "Pistol Ammo", SpriteBase(455), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "15" } }, "Not that painful\nat low speed."},			//56
 		};
-		
+	
+
 		/// <summary>
 		/// Returns the corresponding texture for the given item type.
 		/// </summary>
@@ -233,6 +257,19 @@ namespace GAME_NAME
 			return ITEM_DATA[itemType];
 		}
 
-		
+		static void ITEMTYPE_LoadItemTranslations()
+		{
+			std::unordered_map<std::string, Resources::AssetManager::ItemInformation> itemLanguageData = Resources::AssetManager::GetItemLanguageData();
+
+			for (int i = 0; i < ITEM_COUNT; i++)
+			{
+				std::string itemName = ITEMTYPE_GetItemTypeName(static_cast<ITEM_TYPE>(i));
+				if (itemLanguageData.contains(itemName))
+				{
+					ITEM_DATA[i].DisplayName = itemLanguageData[itemName].Name;
+					ITEM_DATA[i].Description = itemLanguageData[itemName].Description;
+				}
+			}
+		};
 	}
 }

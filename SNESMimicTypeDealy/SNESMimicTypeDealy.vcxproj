@@ -158,6 +158,7 @@
     <ClCompile Include="!TestGame\Items\Inventory.cpp" />
     <ClCompile Include="!TestGame\Items\InventoryItem.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Blueprint.cpp" />
+    <ClCompile Include="!TestGame\Items\Types\Firearm.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Food.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Placeable.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Tool.cpp" />
@@ -294,6 +295,7 @@
     <ClCompile Include="Settings\AppDataFileManager.cpp" />
     <ClCompile Include="Settings\SettingsGlobals.cpp" />
     <ClCompile Include="Utils\IUpdateable.h" />
+    <ClCompile Include="Utils\Math\Ray.cpp" />
     <ClCompile Include="Utils\RemoveableUpdateable.cpp" />
     <ClCompile Include="Utils\UpdateManager.cpp" />
     <ClCompile Include="Utils\Math\iVec2.cpp" />
@@ -341,6 +343,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="!TestGame\Items\Types\Blueprint.h" />
+    <ClInclude Include="!TestGame\Items\Types\Firearm.h" />
     <ClInclude Include="!TestGame\Items\Types\Food.h" />
     <ClInclude Include="!TestGame\Items\Types\Placeable.h" />
     <ClInclude Include="!TestGame\Items\Types\Tool.h" />
@@ -498,6 +501,7 @@
     <ClInclude Include="Settings\AppDataFileManager.h" />
     <ClInclude Include="Settings\SettingsGlobals.h" />
     <ClInclude Include="Utils\ConstUpdateable.h" />
+    <ClInclude Include="Utils\Math\Ray.h" />
     <ClInclude Include="Utils\Math\VMath.h" />
     <ClInclude Include="Utils\RemoveableUpdateable.h" />
     <ClInclude Include="Utils\Math\iVec2.h" />

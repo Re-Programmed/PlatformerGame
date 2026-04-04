@@ -52,6 +52,14 @@ namespace GAME_NAME
 			return sqrtf(aDist * aDist + bDist * bDist);
 		}
 
+		Vec2& Vec2::Normalize(float mul)
+		{
+			float maxVal = std::fmaxf(std::abs(this->X), std::abs(this->Y));
+			this->X = (X / maxVal) * mul;
+			this->Y = (Y / maxVal) * mul;
+			return *this;
+		}
+
 		Vec2 Vec2::Lerp(const Vec2& original, const Vec2& target, double amount)
 		{
 			return Vec2{ static_cast<float>(std::lerp(original.X, target.X, amount)), static_cast<float>(std::lerp(original.Y, target.Y, amount)) };

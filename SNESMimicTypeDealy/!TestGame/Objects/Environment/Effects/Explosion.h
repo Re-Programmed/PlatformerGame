@@ -22,6 +22,13 @@ using namespace Particles;
 		/// <param name="..."> - accepts any number of spriteIDs for explosion sprites.</param>
 		Explosion(Vec2 position, float radius, float power, uint8_t spriteCount = 0, ...);
 
+		/// <summary>
+		/// Just the particles.
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="radius"></param>
+		Explosion(Vec2 position, float radius);
+
 		~Explosion();
 
 		void Update(GLFWwindow* window) override;

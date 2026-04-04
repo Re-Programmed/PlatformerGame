@@ -18,7 +18,7 @@ namespace GAME_NAME::Items::Inventories
 
 	private:
 		static Text::TextRenderer::ExpectedRenderedWord formatToolAttributeHeading(Vec2 pos, const TOOL_ACTION& action, const std::string& data);
-		static Text::TextRenderer::RenderedDigit formatToolAttributeValue(Vec2 pos, const TOOL_ACTION& action, const std::string& data);
+		static Text::TextRenderer::RenderedDigit formatToolAttributeValue(Vec2 pos, const TOOL_ACTION& action, const std::string& data, InventoryItem* item);
 
 		static bool m_hidingTooltip;
 

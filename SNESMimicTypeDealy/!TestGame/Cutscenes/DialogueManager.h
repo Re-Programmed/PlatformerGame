@@ -87,7 +87,22 @@ namespace GAME_NAME::Cutscenes
 		/// </summary>
 		/// <param name="sequenceName">What dialogue sequence to get.</param>
 		/// <returns></returns>
-		DialogueSequence GetDialogueSequence(std::string sequenceName);
+		DialogueSequence GetDialogueSequence(std::string sequenceName, ITEM_TYPE refItem = ITEM_TYPE::NULL_ITEM);
+
+		/// <summary>
+		/// Returns a dialogue sequence that is stored in a text file from its given key as a simple string.
+		/// </summary>
+		/// <param name="sequenceName"></param>
+		/// <param name="refItem"></param>
+		/// <returns></returns>
+		std::string GetPhrase(std::string sequenceName, ITEM_TYPE refItem = ITEM_TYPE::NULL_ITEM);
+
+		/// <summary>
+		/// Converts any instances of "%item%" to the respective item and display and returns a new sequence.
+		/// </summary>
+		/// <param name="sequence"></param>
+		/// <returns></returns>
+		DialogueSequence ReplaceDialogueSequenceItem(DialogueSequence& sequence, ITEM_TYPE item);
 
 		/// <summary>
 		/// Loads the dialogue sequences that are stored in the given level files.

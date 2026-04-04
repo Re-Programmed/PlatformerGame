@@ -90,20 +90,19 @@ namespace GAME_NAME::Cutscenes
 		Items::Inventories::GiveItemInventory::Close();
 		
 		int randLine = (std::rand() * 3) / RAND_MAX;
-		std::string message = "Stop wiggling that in my face!";
 
-		if (randLine == 1)
+		if (randLine == 0)
 		{
-			message = "Nice " + ITEMTYPE_GetItemTypeName(item) + " %item_" + std::to_string(item) + " .";
+			DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence("AnimatingCharacter_UnknownItem1", item));
+		}else if (randLine == 1)
+		{
+			DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence("AnimatingCharacter_UnknownItem2", item));
 		}
 		else if (randLine == 2)
 		{
-			message = "Oh its an "+ ITEMTYPE_GetItemTypeName(item) + " %item_" + std::to_string(item) + " , like I haven't seen those before...";
+			DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence("AnimatingCharacter_UnknownItem3", item));
 		}
 
-		DialogueManager::INSTANCE->PlayDialogueSequence(DialogueSequence(1,
-			DialogueSequence::DialogueEvent(message, m_self, 1.f, Objects::Player::Player::PLAYER_ANIMATION_STATE::NO_LOOK_DIRECTION)
-		));
 		return false;
 	}
 #pragma endregion
