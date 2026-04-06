@@ -18,7 +18,8 @@ class AnimatingCharacter;
 	{
 		Functional		= 0b00000001,
 		CanSpeak		= 0b00000010,
-		CanRecieveItem	= 0b00000100
+		CanRecieveItem	= 0b00000100,
+		NodeEnjoyer		= 0b00001000
 	};
 
 	/// <summary>
@@ -31,6 +32,11 @@ class AnimatingCharacter;
 		virtual std::string GetPrompt() = 0;
 
 		virtual const CharacterAbility GetAbility() = 0;
+
+		virtual void Update(AnimatingCharacter* character)
+		{
+			//Optional update method that can be used by abilities.
+		}
 	};
 
 	/// <summary>

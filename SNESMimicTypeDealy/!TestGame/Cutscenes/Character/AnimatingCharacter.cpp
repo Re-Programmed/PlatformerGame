@@ -31,6 +31,9 @@ namespace GAME_NAME::Cutscenes
 			uint8_t i = 0;
 			for (CAbility*& ability : m_abilities)
 			{
+				//The ability has no prompt to show; therefore, no interaction.
+				if (ability->GetPrompt().empty()) { continue; }
+
 				//Assign this ability a key.
 				keyRef key = keyRef::PLAYER_INTERACT;
 				switch (i++)
@@ -75,6 +78,11 @@ namespace GAME_NAME::Cutscenes
 
 		pathfind();
 		updateAnimations();
+
+		for (CAbility*& ability : m_abilities)
+		{
+			ability->Update(this);
+		}
 
 		m_animator->Update(window, this);
 		ActiveBoxCollisionGravityObject::Update(window);

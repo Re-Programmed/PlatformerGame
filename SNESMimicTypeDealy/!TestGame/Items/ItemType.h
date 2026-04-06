@@ -15,7 +15,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 57
+#define ITEM_COUNT 64
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -77,7 +77,14 @@ namespace GAME_NAME
 			WHEAT = 53,
 			PICKAXE = 54,
 			PISTOL = 55,
-			PISTOL_AMMO = 56
+			PISTOL_AMMO = 56,
+			BOW = 57,
+			COMPOUND_BOW = 58,
+			ARROW = 59,
+			COPPER_PLATE = 60,
+			IRON_PLATE = 61,
+			TANTALUM_PLATE = 62,
+			BRASS_PLATE = 63
 		};
 
 		/// <summary>
@@ -221,9 +228,17 @@ namespace GAME_NAME
 
 			{ "Pickaxe", SpriteBase(463), FOLLOW_HAND_TEXTURE, VALUE | MINE, { { TOOL_ACTION::VALUE, "30" }, { TOOL_ACTION::MINE, "3" } }, "Mines certain resources.\nCan clear certain pathways."},			//54
 
-			{ "Pistol", SpriteBase(463), FOLLOW_HAND_TEXTURE, VALUE | FIREARM, { { TOOL_ACTION::VALUE, "60" }, { TOOL_ACTION::FIREARM, "5,38,20,1.5,0.5" } }, "Shoots."},			//55
-
+			{ "Pistol", SpriteBase(463), FOLLOW_HAND_TEXTURE, VALUE | FIREARM, { { TOOL_ACTION::VALUE, "100" }, { TOOL_ACTION::FIREARM, "5,38,20,1.5,0.5" } }, "Shoots."},			//55
 			{ "Pistol Ammo", SpriteBase(455), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "15" } }, "Not that painful\nat low speed."},			//56
+
+			{ "Bow", SpriteBase(465), FOLLOW_HAND_TEXTURE, VALUE | FIREARM, { { TOOL_ACTION::VALUE, "45" }, { TOOL_ACTION::FIREARM, "8,59,10,2.0,1.0" } }, "Unstackable."},			//57
+			{ "Compound Bow", SpriteBase(466), FOLLOW_HAND_TEXTURE, VALUE | FIREARM, { { TOOL_ACTION::VALUE, "60" }, { TOOL_ACTION::FIREARM, "8,59,15,1.5,0.8" } }, "I'll have a Bow.\nWheels on the side."},			//58
+			{ "Arrows", SpriteBase(468), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "8" } }, "Eight arrows." },			//59
+
+			{ "Copper Plate", SpriteBase(469), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "15" } }, "Malleable." },									//60
+			{ "Iron Plate", SpriteBase(470), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "20" } }, "Sounds cool if\nyou smack it." },					//61
+			{ "Tantalum Plate", SpriteBase(471), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "23" } }, "I think there is\ntantalum in my pants." },		//62
+			{ "Brass Plate", SpriteBase(472), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "25" } }, "Someone got their\nzinc in my copper!" },			//63
 		};
 	
 

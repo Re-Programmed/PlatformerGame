@@ -138,6 +138,8 @@
     <ClCompile Include="!TestGame\Camera\LevelBuilderCam.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\Character\AnimatingCharacter.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\Character\CharacterAbility.cpp" />
+    <ClCompile Include="!TestGame\Cutscenes\Character\CharacterNodeManager.cpp" />
+    <ClCompile Include="!TestGame\Cutscenes\Character\NodeEnjoyerAbility.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\CutsceneManager.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\DialogueManager.cpp" />
     <ClCompile Include="!TestGame\Cutscenes\DialogueSequence.cpp" />
@@ -318,6 +320,9 @@
     <ClInclude Include="!TestGame\Camera\LevelBuilderCam.h" />
     <ClInclude Include="!TestGame\Cutscenes\Character\AnimatingCharacter.h" />
     <ClInclude Include="!TestGame\Cutscenes\Character\CharacterAbility.h" />
+    <ClInclude Include="!TestGame\Cutscenes\Character\CharacterNodeManager.h" />
+    <ClInclude Include="!TestGame\Cutscenes\Character\ICharacterNode.h" />
+    <ClInclude Include="!TestGame\Cutscenes\Character\NodeEnjoyerAbility.h" />
     <ClInclude Include="!TestGame\Cutscenes\Cutscene.h" />
     <ClInclude Include="!TestGame\Cutscenes\CutsceneManager.h" />
     <ClInclude Include="!TestGame\Cutscenes\DialogueManager.h" />
