@@ -36,6 +36,7 @@ namespace GAME_NAME::Cutscenes
 		void Render(const Vec2& cameraPos) override;
 
 		void AddAbility(CAbility* ability);
+		CAbility* GetAbility(CharacterAbility ability);
 
 		void SetTarget(Vec2 targetLocation);
 		void SetTarget(GameObject* object);
@@ -44,6 +45,8 @@ namespace GAME_NAME::Cutscenes
 
 		void beforeCollision() override;
 		void onCollision(Vec2 push, GameObject* self, GameObject* other) override;
+
+
 
 		typedef struct TargetPoint
 		{
@@ -73,7 +76,10 @@ namespace GAME_NAME::Cutscenes
 		inline bool IsFrozen() { return m_frozen > 0; }
 		void SetFrozen(bool frozen, Objects::Player::Player::PLAYER_ANIMATION_STATE state = Objects::Player::Player::NO_LOOK_DIRECTION);
 		
+		bool AtTarget();
+		
 	protected:
+
 		std::vector<CAbility*> m_abilities;
 
 		/// <summary>
@@ -86,6 +92,10 @@ namespace GAME_NAME::Cutscenes
 		/// How much space the character should aim to place between themselves and the target.
 		/// </summary>
 		float m_stopDistance = DefaultCharacterStopDistance;
+
+		bool m_atTarget = false;
+
+		bool m_collisionEnabled = true;
 
 		/// <summary>
 		/// How fast the character can accelerate.

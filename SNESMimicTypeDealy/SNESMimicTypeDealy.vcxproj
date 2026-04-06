@@ -321,6 +321,7 @@
     <ClInclude Include="!TestGame\Cutscenes\Character\AnimatingCharacter.h" />
     <ClInclude Include="!TestGame\Cutscenes\Character\CharacterAbility.h" />
     <ClInclude Include="!TestGame\Cutscenes\Character\CharacterNodeManager.h" />
+    <ClInclude Include="!TestGame\Cutscenes\Character\LobbyCharacters\FopsLobby.h" />
     <ClInclude Include="!TestGame\Cutscenes\Character\ICharacterNode.h" />
     <ClInclude Include="!TestGame\Cutscenes\Character\NodeEnjoyerAbility.h" />
     <ClInclude Include="!TestGame\Cutscenes\Cutscene.h" />

@@ -1,3 +1,12 @@
+>AnimatingCharacter_CannotSwitch1
+I only trust people with toast...
+
+>AnimatingCharacter_CannotSwitch2
+Maybe if I had some grains I would believe you.
+
+>AnimatingCharacter_CannotSwitch3
+You got any toast?
+
 >AnimatingCharacter_UnknownItem1
 Stop wiggling that in my face!
 
@@ -5,7 +14,18 @@ Stop wiggling that in my face!
 Nice %item% .
 
 >AnimatingCharacter_UnknownItem3
-Oh, it's a %item% , like I haven't seen one before.
+Oh, it's a %item% .
+Like I haven't seen one before.
+
+>AnimatingCharacter_DesiredItem
+Thank you for the %item% .
+
+>AnimatingCharacter_Food1
+Thank you for this delicious %item% !
+
+>AnimatingCharacter_CraftWooden1
+I've been getting good at working with wood!
+
 
 >Foragable_WrongItem1
 I must have left my %item% at home.
@@ -30,3 +50,24 @@ Damage
 
 >InventoryTooltip_Firearm
 Ammo
+
+>InventoryTooltip_Chop
+Chop
+
+>InventoryTooltip_EquipmentHealth
+Equipment Armor
+
+>InventoryTooltip_FurnitureOutdoor
+Amenity
+
+>InventoryTooltip_FurnitureIndoor
+Furniture
+
+>InventoryTooltip_Mine
+Tool
+
+>InventoryTooltip_Placeable
+Structure
+
+>InventoryTooltip_Shield
+Shield

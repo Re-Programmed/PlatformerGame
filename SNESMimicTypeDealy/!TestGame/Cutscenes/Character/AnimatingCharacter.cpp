@@ -42,7 +42,7 @@ namespace GAME_NAME::Cutscenes
 					key = keyRef::PLAYER_TOGGLE_FLASHLIGHT;
 					break;
 				case 2:
-					key = keyRef::PLAYER_USE_ITEM;
+					key = keyRef::PLAYER_RELOAD;
 					break;
 				case 3:
 					key = keyRef::PLAYER_DROP_HELD_ITEM;
@@ -60,16 +60,24 @@ namespace GAME_NAME::Cutscenes
 			}
 		}
 
+		for (CAbility*& ability : m_abilities)
+		{
+			ability->Update(this);
+		}
+
 		if (IsFrozen())
 		{
 			m_animator->Update(window, this);
-			ActiveBoxCollisionGravityObject::Update(window);
+			if (m_collisionEnabled)
+			{
+				ActiveBoxCollisionGravityObject::Update(window);
+			}
 			updateLookDirection();
 			return;
 		}
 		
 		m_lookDirection = Objects::Player::Player::NO_LOOK_DIRECTION;
-		
+		m_collisionEnabled = true;
 
 		if (m_target.Object != nullptr)
 		{
@@ -79,13 +87,13 @@ namespace GAME_NAME::Cutscenes
 		pathfind();
 		updateAnimations();
 
-		for (CAbility*& ability : m_abilities)
-		{
-			ability->Update(this);
-		}
+
 
 		m_animator->Update(window, this);
-		ActiveBoxCollisionGravityObject::Update(window);
+		if (m_collisionEnabled)
+		{
+			ActiveBoxCollisionGravityObject::Update(window);
+		}
 	}
 
 	void AnimatingCharacter::Render(const Vec2& cameraPos)
@@ -94,6 +102,11 @@ namespace GAME_NAME::Cutscenes
 
 		//DEFAULT RENDER MODE.
 		m_sprite->Render(cameraPos, m_position + (m_textureFlipped ? (m_scale * Vec2::OneX) : 0), m_scale * (m_textureFlipped ? Vec2::MinusOneXOneY : 1), m_rotation);
+
+		for (CAbility* ability : m_abilities)
+		{
+			ability->Render(cameraPos, this);
+		}
 	}
 
 	void AnimatingCharacter::AddAbility(CAbility* ability)
@@ -107,6 +120,19 @@ namespace GAME_NAME::Cutscenes
 		if (iter != m_abilities.end()) { return; }
 
 		m_abilities.push_back(ability);
+	}
+
+	CAbility* AnimatingCharacter::GetAbility(CharacterAbility ability)
+	{
+		for (CAbility*& cAbility : m_abilities)
+		{
+			if (cAbility->GetAbility() == ability)
+			{
+				return cAbility;
+			}
+		}
+
+		return nullptr;
 	}
 
 	void AnimatingCharacter::SetTarget(Vec2 targetLocation)
@@ -157,15 +183,26 @@ namespace GAME_NAME::Cutscenes
 		}
 		else {
 			m_frozen--;
+
+			if (m_frozen == 0) { m_lookDirection = Objects::Player::Player::NO_LOOK_DIRECTION; m_sprite.reset(Renderer::GetSprite(m_textureData->DefaultSprites)); }
 		}
+	}
+
+	bool AnimatingCharacter::AtTarget()
+	{
+		return m_atTarget;
 	}
 
 	void AnimatingCharacter::pathfind()
 	{
+		//Set true and then false if any motion is occuring.
+		m_atTarget = true;
 
 		//Right edge is not stop distance away from target.
 		if (m_position.X + m_scale.X < m_target.Location.X - m_stopDistance && this->m_physics->GetVelocity().X < m_speedCap)
 		{
+			m_atTarget = false;
+
 			this->m_physics->AddVelocity(Vec2(((float)Utils::Time::GameTime::GetScaledDeltaTime() / 0.017f) * (m_speedCap - m_physics->GetVelocity().X) * (m_speed), 0.f));
 			m_textureFlipped = true;
 
@@ -181,6 +218,8 @@ namespace GAME_NAME::Cutscenes
 		//Left edge is not stop distance away from target (with width of target respected).
 		else if (m_position.X > m_target.Location.X + m_stopDistance + (m_target.Object == nullptr ? 0.f : m_target.Object->GetScale().X) && -this->m_physics->GetVelocity().X < m_speedCap)
 		{
+			m_atTarget = false;
+
 			this->m_physics->AddVelocity(Vec2(((float)Utils::Time::GameTime::GetScaledDeltaTime() / 0.017f) * (m_speedCap - m_physics->GetVelocity().X) * (-(m_speed - 0.0165F)), 0.f));
 			this->m_physics->SetFrictionDrag(0.f);
 			m_textureFlipped = false;
@@ -205,6 +244,7 @@ namespace GAME_NAME::Cutscenes
 
 			if (m_target.Location.Y - 60.f > m_position.Y)
 			{
+				m_atTarget = false;
 				Jump();
 			}
 		}
@@ -214,10 +254,12 @@ namespace GAME_NAME::Cutscenes
 
 			if (m_target.Location.Y > m_position.Y + m_scale.Y/2.f + m_stopDistance/4.f)
 			{
+				m_atTarget = false;
 				Translate(Vec2{ 0, static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * 40.f });
 			}
 			else if (m_target.Location.Y < m_position.Y + m_scale.Y/2.f - m_stopDistance/4.f)
 			{
+				m_atTarget = false;
 				Translate(Vec2{ 0, static_cast<float>(Utils::Time::GameTime::GetScaledDeltaTime()) * -40.f });
 			}
 		}
@@ -296,6 +338,16 @@ using namespace Components::Animation;
 	void AnimatingCharacter::updateLookDirection()
 	{
 
+		if (m_lookDirection == Objects::Player::Player::SITTING_FORWARD)
+		{
+			m_collisionEnabled = false;
+
+			auto nSprite = Renderer::GetSpriteIdFromTextureId(m_textureData->Climbing + 8);
+			if (m_sprite->GetSpriteId() != nSprite)
+			{
+				m_sprite.reset(new Sprite(nSprite));
+			}
+		}
 	}
 
 	void AnimatingCharacter::onInteract()

@@ -15,7 +15,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 64
+#define ITEM_COUNT 65
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -84,7 +84,8 @@ namespace GAME_NAME
 			COPPER_PLATE = 60,
 			IRON_PLATE = 61,
 			TANTALUM_PLATE = 62,
-			BRASS_PLATE = 63
+			BRASS_PLATE = 63,
+			WOODEN_BENCH = 64
 		};
 
 		/// <summary>
@@ -98,7 +99,7 @@ namespace GAME_NAME
 			WEAPON =		0b000000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
 			FOOD =			0b000000010000, //Can be eaten.
 			PLACEABLE =		0b000000100000, //Can be placed.
-			FURNITURE =		0b000001000000, //Furniture. (xScale, yScale, inventorySize[optional])
+			FURNITURE =		0b000001000000, //Furniture. (xScale, yScale, inventorySize[optional], isOutdoor[optional])
 			VALUE =			0b000010000000, //Give an item a specific price value. (crumbValue)
 			RANGED_WEAPON = 0b000100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
 			USE_SOUND =		0b001000000000, //Plays a different sound when used. [soundEventNumber]
@@ -239,6 +240,8 @@ namespace GAME_NAME
 			{ "Iron Plate", SpriteBase(470), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "20" } }, "Sounds cool if\nyou smack it." },					//61
 			{ "Tantalum Plate", SpriteBase(471), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "23" } }, "I think there is\ntantalum in my pants." },		//62
 			{ "Brass Plate", SpriteBase(472), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "25" } }, "Someone got their\nzinc in my copper!" },			//63
+
+			{ "Wooden Bench", 53, NO_HELD_TEXTURE, FURNITURE | VALUE, {{TOOL_ACTION::FURNITURE, "28,16.5.5,0,1"}, {TOOL_ACTION::VALUE, "15"}}, "Fits 10 people."},					//64
 		};
 	
 

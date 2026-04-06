@@ -8,6 +8,9 @@
 #include "../Items/Inventories/InventoryContainer.h"
 #include "../Items/Inventories/InventoryContainerRenderer.h"
 
+#include "../Cutscenes/Character/CharacterNodeManager.h"
+#include "../Cutscenes/Character/AnimatingCharacter.h"
+
 namespace GAME_NAME::Objects
 {
 	using namespace GAME_NAME::Components::Physics::Collision;
@@ -15,9 +18,28 @@ namespace GAME_NAME::Objects
 	constexpr float FURNITURE_PLACE_OFFSET = 12.f;
 
 	class Furniture
-		: public LayerFlipObject, public MiscState
+		: public LayerFlipObject, public MiscState, public Cutscenes::ICharacterNode
 	{
 	public:
+		struct FurnitureItemInfo
+		{
+			Vec2 Scale = Vec2{ 0, 0 };
+			uint8_t InventorySize = 0;
+			bool IsOutdoor = false;
+		};
+
+		inline FurnitureItemInfo GetInfo() { return Furniture::GetInfo(Items::ITEMTYPE_GetItemData(m_item->GetType()).Attributes.at(Items::FURNITURE)); }
+
+		static FurnitureItemInfo GetInfo(std::string furnitureData);
+
+		const Vec2& GetPosition()
+		{
+			return m_position;
+		}
+
+		///Used by an animating character.
+		bool Use(Cutscenes::AnimatingCharacter * character);
+
 		enum class FurnitureInteractions
 		{
 			None,
@@ -49,6 +71,11 @@ namespace GAME_NAME::Objects
 				Renderer::DestroyObject(m_inventory);
 			}
 
+			if (m_isOutdoor)
+			{
+				Cutscenes::CharacterNodeManager::RemoveNode(this);
+			}
+
 			//LayerFlipObject::~LayerFlipObject();
 		}
 
@@ -57,11 +84,12 @@ namespace GAME_NAME::Objects
 		{
 			Renderer::LoadObject(m_collider, 0);
 
-			//Sprite and scale data are stored based on the item that this furniture is.
-			std::string scaleInfo = Items::ITEMTYPE_GetItemData(m_item->GetType()).Attributes.at(Items::FURNITURE);
+			FurnitureItemInfo info = GetInfo();
 
-			m_scale.X = (m_flipped ? -1.f : 1.f) * std::stof(scaleInfo.substr(0, scaleInfo.find_first_of(',')));
-			m_scale.Y = std::stof(scaleInfo.substr(scaleInfo.find_first_of(',') + 1));
+			//Sprite and scale data are stored based on the item that this furniture is.
+			
+			m_scale.X = (m_flipped ? -1.f : 1.f) * info.Scale.X;
+			m_scale.Y = info.Scale.Y;
 
 			if (m_scale.X > 0)
 			{
@@ -77,13 +105,24 @@ namespace GAME_NAME::Objects
 
 			if (FurnitureAbilities.at(m_item->GetType()) == FurnitureInteractions::Inventory)
 			{
-				std::string attr = ITEMTYPE_GetItemData(m_item->GetType()).Attributes.at(FURNITURE);
-				int invSize = std::stoi(attr.substr(attr.find_last_of(',') + 1));
+				uint8_t& invSize = info.InventorySize;
 
 				m_inventory = new Items::Inventories::InventoryContainer(ITEMTYPE_GetItemTypeName(m_item->GetType()), invSize, m_position - Vec2{ m_scale.X < 0.f ? 4.f - m_scale.X : 4.f, 4.f }, (m_scale.X < 0.f ? Vec2{ -m_scale.X, m_scale.Y } : m_scale) + Vec2{ 8.f, 8.f }, nullptr, 0, 0.f, false);
 				Renderer::InstantiateObject(Renderer::InstantiateGameObject(m_inventory, false, 1, false));
-
 			}
+
+			m_isOutdoor = info.IsOutdoor;
+
+			//If outdoor, characters will be able to interact with this.
+			if (m_isOutdoor)
+			{
+				Cutscenes::CharacterNodeManager::RegisterNode(this);
+			}
+		}
+
+		inline bool IsOutdoor()
+		{
+			return m_isOutdoor;
 		}
 
 		void Update(GLFWwindow* window) override;
@@ -104,8 +143,11 @@ namespace GAME_NAME::Objects
 		Items::Inventories::InventoryContainer* m_inventory = nullptr;
 
 		bool m_inUse = false;
+		Cutscenes::AnimatingCharacter* m_inUseByCharacter = nullptr;
 
 		double m_interactionRemovalTimer = 0.0;
+
+		bool m_isOutdoor = false;
 
 		bool m_hovered = false;
 		StaticBoxCollisionObject* m_collider;

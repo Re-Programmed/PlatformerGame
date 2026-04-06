@@ -4,6 +4,8 @@
 #include "../../Items/Inventories/GiveItemInventory.h"
 #include "../../Items/FloorItem.h"
 
+#include "../../Objects/Environment/Effects/Explosion.h"
+
 namespace GAME_NAME::Cutscenes
 {
 	
@@ -67,11 +69,24 @@ namespace GAME_NAME::Cutscenes
 
 	bool ItemRecieveAndSpeakAbility::recieve(ITEM_TYPE item)
 	{
+		//Check if the character is desiring a specific item right now.
+		CAbility* desiredItemAbility = m_self->GetAbility(CharacterAbility::DesiredItem);
+
+		if (desiredItemAbility)
+		{
+			//Try to give the desired item.
+			if ((dynamic_cast<DesiredItemAbility*>(desiredItemAbility))->Give(item))
+			{
+				Items::Inventories::GiveItemInventory::Close();
+				return true;
+			}
+		}
+
 		if (m_speechPatterns.contains(item))
 		{
 			Items::Inventories::GiveItemInventory::Close();
 			DialogueManager::INSTANCE->PlayDialogueSequence(DialogueSequence(1,
-				DialogueSequence::DialogueEvent(m_speechPatterns[item].Say, m_self, 1.f, m_speechPatterns[item].Action)
+				DialogueSequence::DialogueEvent(m_speechPatterns[item].Say.starts_with(">") ? (DialogueManager::INSTANCE->GetPhrase(m_speechPatterns[item].Say.substr(1), item)) : m_speechPatterns[item].Say, m_self, 1.f, m_speechPatterns[item].Action)
 			));
 
 			if (!m_speechPatterns[item].GiveItemCode.empty())
@@ -104,6 +119,89 @@ namespace GAME_NAME::Cutscenes
 		}
 
 		return false;
+	}
+#pragma endregion
+
+#pragma region PlayAs
+	PlayAsAbility::PlayAsAbility(Objects::Player::Player::TEXTURE_OFFSETS character, bool available)
+		: m_character(character), m_available(available)
+	{
+
+	}
+
+	void PlayAsAbility::Trigger(AnimatingCharacter* character)
+	{
+		if (!m_available)
+		{ 
+			int randLine = (std::rand() * 3) / RAND_MAX;
+
+			if (randLine == 0)
+			{
+				DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence(">AnimatingCharacter_CannotSwitch1"));
+			}
+			else if (randLine == 1)
+			{
+				DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence(">AnimatingCharacter_CannotSwitch2"));
+			}
+			else if (randLine == 2)
+			{
+				DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence(">AnimatingCharacter_CannotSwitch3"));
+			}
+
+			return;
+		}
+
+		Explosion* playerExplosion = new Explosion(TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale()/2.f, 20.f);
+		Renderer::InstantiateObject(Renderer::InstantiateGameObject(playerExplosion, true, 2, true));
+		Explosion* characterExplosion = new Explosion(character->GetPosition() + character->GetScale()/2.f, 20.f);
+		Renderer::InstantiateObject(Renderer::InstantiateGameObject(characterExplosion, true, 2, true));
+
+
+		TestGame::ThePlayer->SetPlayerTextureData(this->m_character);
+	}
+
+#pragma endregion
+
+#pragma region DesiredItem
+	DesiredItemAbility::DesiredItemAbility(ITEM_TYPE item, std::string givenSequenceCode, std::string giveItemCode)
+		: m_item(item), m_givenSequence(givenSequenceCode), m_giveItemCode(giveItemCode)
+	{
+
+	}
+
+	void DesiredItemAbility::Trigger(AnimatingCharacter* character)
+	{
+		//pass
+	}
+	bool DesiredItemAbility::Give(ITEM_TYPE attempt)
+	{
+		if (m_given) { return false; }
+
+		if (m_item == attempt)
+		{
+			if (!DialogueManager::INSTANCE->IsSequencePlaying())
+			{
+				DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence(this->m_givenSequence, attempt));
+			}
+			
+			InventoryItem* giveItem = InventoryItem::DecodeItemString(m_giveItemCode);
+			FloorItem* floorItem = new FloorItem(TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale() / 2.f, giveItem, 0.5f);
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(floorItem, true, 2, false));
+			m_given = true;
+			return true;
+		}
+
+		return false;
+	}
+
+	//Render the desired item above the character's head.
+	void DesiredItemAbility::Render(const Vec2& cameraPos, AnimatingCharacter* character)
+	{
+		if (m_given) { return; }
+
+		Sprite* sprite = ITEMTYPE_GetItemTypeTexture(m_item);
+		sprite->Render(cameraPos, character->GetPosition() + Vec2{ character->GetScale().X / 2.f - 4.f, character->GetScale().Y + 3.f }, Vec2{ 8.f });
+		delete sprite;
 	}
 #pragma endregion
 }

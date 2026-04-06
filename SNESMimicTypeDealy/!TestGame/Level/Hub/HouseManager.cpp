@@ -9,6 +9,7 @@
 #include "../../../Objects/StateSaver.h"
 #include "../../Objects/StartState.h"
 
+#include "./HubLevelManager.h"
 
 #define HOUSE_MANAGER_FURNITURE_STORE_POSITION { 200, 48 }
 #define HOUSE_MANAGER_FURNITURE_STORE_SCALE { 42, 38 }
@@ -61,12 +62,17 @@ namespace GAME_NAME::Level
 
 	HouseFrontDoor* HouseManager_HouseFrontDoor;
 
-	void HouseManager::LoadHouse()
+	void HouseManager::LoadHouse(bool outdoor)
 	{
 		if (INSTANCE != nullptr) { return; }
 		INSTANCE = new HouseManager();
-		INVENTORY_INSTANCE = new HouseInventorySaveManager();
-		m_houseTradeSaveManager = new HouseManager::HouseTradeSaveManager();
+
+		if (!outdoor)
+		{
+			INVENTORY_INSTANCE = new HouseInventorySaveManager();
+			m_houseTradeSaveManager = new HouseManager::HouseTradeSaveManager();
+		}
+
 
 		std::shared_ptr<std::vector<std::string>> states = INSTANCE->getStates();
 
@@ -78,30 +84,37 @@ namespace GAME_NAME::Level
 			PlaceFurniture(furn);
 		}
 
-		m_storeInteractable = new FurnitureStoreInteractable(HOUSE_MANAGER_FURNITURE_STORE_POSITION, HOUSE_MANAGER_FURNITURE_STORE_SCALE, Renderer::GetSprite(HOUSE_MANAGER_FURNITURE_STORE_SPRITE));
-		Renderer::LoadObject(m_storeInteractable, 1);
+		if (!outdoor)
+		{
+			m_storeInteractable = new FurnitureStoreInteractable(HOUSE_MANAGER_FURNITURE_STORE_POSITION, HOUSE_MANAGER_FURNITURE_STORE_SCALE, Renderer::GetSprite(HOUSE_MANAGER_FURNITURE_STORE_SPRITE));
+			Renderer::LoadObject(m_storeInteractable, 1);
 
-		//Load saved shop.
-		m_houseTradeSaveManager->LoadFurnitureTrades();
-		
-		INVENTORY_INSTANCE->Load();
+			//Load saved shop.
+			m_houseTradeSaveManager->LoadFurnitureTrades();
 
-		HouseManager_HouseFrontDoor = new HouseFrontDoor();
-		Renderer::InstantiateObject(Renderer::InstantiateGameObject(HouseManager_HouseFrontDoor, false, 2, false));
+			INVENTORY_INSTANCE->Load();
+
+			HouseManager_HouseFrontDoor = new HouseFrontDoor();
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(HouseManager_HouseFrontDoor, false, 2, false));
+		}
 	}
 
 	void HouseManager::CloseHouse()
 	{
 		if (INSTANCE == nullptr) { return; }
 
-		Renderer::DestroyObject(m_storeInteractable);
-		m_storeInteractable = nullptr;
-
 		delete INSTANCE; INSTANCE = nullptr;
-		delete INVENTORY_INSTANCE; INVENTORY_INSTANCE = nullptr;
-		delete m_houseTradeSaveManager; m_houseTradeSaveManager = nullptr;
+
+		if (m_storeInteractable != nullptr)
+		{
+			Renderer::DestroyObject(m_storeInteractable);
+			m_storeInteractable = nullptr;
+		}
+
+		if (INVENTORY_INSTANCE != nullptr) { delete INVENTORY_INSTANCE; INVENTORY_INSTANCE = nullptr; }
+		if (m_houseTradeSaveManager != nullptr) { delete m_houseTradeSaveManager; m_houseTradeSaveManager = nullptr; }
 	 
-		Renderer::DestroyObject(HouseManager_HouseFrontDoor);
+		if (HouseManager_HouseFrontDoor != nullptr) { Renderer::DestroyObject(HouseManager_HouseFrontDoor); }
 	}
 
 	
@@ -186,10 +199,17 @@ namespace GAME_NAME::Level
 
 	bool HouseManager::CheckValidPlaceLocation(const Vec2 pos, const Vec2 scale)
 	{
+		if (INSTANCE == nullptr) { return false; }
+		
+		const bool inHouse = HubLevelManager::GetInHouse();
 		for (Furniture* f : m_placedFurniture)
 		{
+			//If we are indoor, don't check outdoor furniture.
+			//Same if we are outdoor.
+			if (inHouse == f->GetInfo().IsOutdoor) { continue; }
+
 			Vec2 fScale = f->GetScale();
-			Vec2 fPos = f->GetPosition();
+			Vec2 fPos = (reinterpret_cast<LayerFlipObject*>(f))->GetPosition();
 
 			if (fScale.X < 0)
 			{
@@ -263,6 +283,11 @@ namespace GAME_NAME::Level
 
 			if (ITEMTYPE_GetItemData(item.ri_Item->GetType()).Actions & Items::FURNITURE)
 			{
+				if (Furniture::GetInfo(ITEMTYPE_GetItemData(item.ri_Item->GetType()).Attributes.at(Items::FURNITURE)).IsOutdoor)
+				{
+					continue;
+				}
+
 				INVENTORY_INSTANCE->AddItem(item.ri_Item->GetType());
 				inventory->SetItem(i, nullptr);
 				delete item.ri_Item;

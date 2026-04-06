@@ -301,6 +301,8 @@ namespace GAME_NAME::Cutscenes
 
 			return m_storedDialogueSequences[sequenceName];
 		}
+
+		return sequenceName;
 	}
 
 	DialogueSequence DialogueManager::ReplaceDialogueSequenceItem(DialogueSequence& sequence, ITEM_TYPE item)

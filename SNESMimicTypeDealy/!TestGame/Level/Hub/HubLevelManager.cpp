@@ -13,11 +13,11 @@
 
 #include "../../Objects/Player/Currency.h"
 
-
-
 #include "HouseManager.h"
 
 #include "DepartManager.h"
+
+#include "../../Cutscenes/Character/LobbyCharacters/FopsLobby.h"
 
 #define HUB_L2_PLAYER_HOUSE_TAG "L2PlayerHouse"
 #define HUB_L3_PLAYER_HOUSE_TAG "L3PlayerHouse"
@@ -27,6 +27,8 @@
 namespace GAME_NAME::Level
 {
 	bool HubLevelManager::m_shopGUIOpen = false;
+
+	bool HubLevelManager::m_isInHouse = false;
 
 	using namespace GAME_NAME::Resources;
 
@@ -96,17 +98,24 @@ namespace GAME_NAME::Level
 		Currency::Load();
 		Currency::RenderCurrencyDisplay();
 
+		HouseManager::CloseHouse();
+
+		m_isInHouse = false;
+
 		if (TestGame::INSTANCE->GetCurrentLevelPath().ends_with("_shop"))
 		{
 
 			//--Do for shop--
-
+			
 			loadShopArea();
 
 			return;
 		}
 		else if (TestGame::INSTANCE->GetCurrentLevelPath().ends_with("_house"))
 		{
+			//We are in the house now.
+			m_isInHouse = true;
+
 			loadHouseArea();
 
 			return;
@@ -120,12 +129,13 @@ namespace GAME_NAME::Level
 		else {
 			HubLevelManager_FountainInteractable = new FountainInteractable();
 			Renderer::InstantiateObject(Renderer::InstantiateGameObject(HubLevelManager_FountainInteractable, false, 1, false));
+
+			loadCharacters();
 		}
 
 		//--Do for lobby only--
 
-		updateHouseUnlock();
-		HouseManager::CloseHouse();
+		updateHouseUnlock();	
 	}
 
 	/// <summary>
@@ -171,7 +181,7 @@ namespace GAME_NAME::Level
 
 	void HubLevelManager::loadHouseArea()
 	{
-		HouseManager::LoadHouse();
+		HouseManager::LoadHouse(false);
 	}
 
 	bool HubLevelManager::OpenShopGUI()
@@ -223,6 +233,14 @@ namespace GAME_NAME::Level
 	}
 
 
+
+	void HubLevelManager::loadCharacters()
+	{
+		//Load the outdoor house system.
+		HouseManager::LoadHouse(true);
+
+		Cutscenes::LobbyCharacters::FopsLobby::Load();
+	}
 
 	void HubLevelManager::generateShop()
 	{

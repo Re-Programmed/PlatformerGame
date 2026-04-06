@@ -27,6 +27,7 @@
 #include "./Items/Inventories/InventoryContainerRenderer.h"
 
 #include "./Cutscenes/CutsceneManager.h"
+#include "./Cutscenes/Character/CharacterNodeManager.h"
 
 #include "../Objects/GUI/Text/TextRenderer.h"
 
@@ -141,6 +142,9 @@ namespace GAME_NAME
 			//Ensure all cogs get reset.
 			Mechanical::Cog::ClearCogRegistry();
 
+			//Reset all the nodes since they are different now.
+			Cutscenes::CharacterNodeManager::ClearNodes();
+
 			GAME_NAME::Mechanical::MechanicalSaveManager::ClearObjectRefs();
 
 			if (Game_nextLevelIsOnlyObjects)
@@ -195,7 +199,6 @@ namespace GAME_NAME
 			StateSaver::SaveMisc();
 		}
 		
-
 #endif
 
 		//Update input manager stuff.
@@ -349,6 +352,10 @@ namespace GAME_NAME
 	{
 		CollisionManager::UpdateAndClearBuffers();
 		Input::DisplayIconManager::AttemptHideIcons();
+
+#if _DEBUG
+		Cutscenes::CharacterNodeManager::DebugRender();
+#endif
 	}
 	
 
@@ -580,18 +587,6 @@ namespace GAME_NAME
 
 		//Cutscenes::DialogueManager::INSTANCE->PlayDialogueSequence(testSequence); 
 
-		Cutscenes::AnimatingCharacter* testCharacter = new Cutscenes::AnimatingCharacter(Vec2{ 50.f, 30.f }, Vec2{ 16.f, 26.f }, false, 50.f);
-
-		testCharacter->AddAbility(new Cutscenes::SpeakAbility(Cutscenes::DialogueSequence(1,
-			Cutscenes::DialogueSequence::DialogueEvent("Hey!!", testCharacter, 1.f, Objects::Player::Player::BAG)
-		)));
-
-		testCharacter->AddAbility(new Cutscenes::ItemRecieveAndSpeakAbility({
-			{ ITEM_TYPE::APPLE, Cutscenes::ItemRecieveAndSpeakAbility::SpeechPattern{ "Thank you for this delicious apple!", Objects::Player::Player::NO_LOOK_DIRECTION, "" }}
-		}));
-
-		testCharacter->SetTarget(ThePlayer.get());
-		Renderer::LoadActiveObject(testCharacter);
 	}
 
 	void TestGame::TogglePauseState()

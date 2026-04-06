@@ -149,6 +149,9 @@ namespace GAME_NAME::Items::Inventories
 					size_t i = 1;
 					for (auto& [action, data] : itemData.Attributes)
 					{
+						//USE_SOUND shouldn't give a tooltip.
+						if (action == TOOL_ACTION::USE_SOUND) { continue; }
+
 						//Create a new box to show the new information.
 						while(m_tooltip.size() <= i)
 						{
@@ -284,12 +287,44 @@ namespace GAME_NAME::Items::Inventories
 
 		switch (action)
 		{
+		case TOOL_ACTION::FURNITURE:
+			//This is outdoor furniture.
+			if (data.ends_with(",1"))
+			{
+				word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_FurnitureOutdoor"), pos, 4.f, -0.4f, 2);
+			}
+			else {
+				word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_FurnitureIndoor"), pos, 4.f, -0.4f, 2);
+			}
+			break;
+		case TOOL_ACTION::MINE:
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Mine"), pos, 4.f, -0.4f, 2);
+			break;
+		case TOOL_ACTION::PLACEABLE:
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Placeable"), pos, 4.f, -0.4f, 2);
+			break;
+
+		case TOOL_ACTION::SHIELD:
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Shield"), pos, 4.f, -0.4f, 2);
+			break;
+
+		case TOOL_ACTION::EQUIPMENT:
+			//Equipment can have different attributes.
+			if (data.starts_with("Health"))
+			{
+				word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_EquipmentHealth"), pos, 4.f, -0.4f, 2);
+			}
+			break;
+		case TOOL_ACTION::CHOP:
+			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Chop"), pos, 4.f, -0.4f, 2);
+			break;
 		case TOOL_ACTION::VALUE:
 			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Value"), pos, 4.f, -0.4f, 2);
 			break;
 		case TOOL_ACTION::FOOD:
 			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Food"), pos, 4.f, -0.4f, 2);
 			break;
+		case TOOL_ACTION::RANGED_WEAPON:
 		case TOOL_ACTION::WEAPON:
 			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Damage"), pos, 4.f, -0.4f, 2);
 			break;
@@ -303,20 +338,29 @@ namespace GAME_NAME::Items::Inventories
 
 	Text::TextRenderer::RenderedDigit InventoryTooltip::formatToolAttributeValue(Vec2 pos, const TOOL_ACTION& action, const std::string& data, InventoryItem* item)
 	{
+		if (action & TOOL_ACTION::EQUIPMENT)
+		{
+			//Equipment can have different attributes.
+			if (data.starts_with("Health"))
+			{
+				return Text::TextRenderer::RenderNumber(std::stoi(data.substr(data.find_first_of(":") + 1)), pos, 0.175f, 0.f, 1, TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, 2);
+			}
+		}
+
 		if (action & TOOL_ACTION::VALUE)
 		{
-			return Text::TextRenderer::RenderNumber(std::stoi(data), pos, 0.175f, 0.f, 1, -408, 2);
+			return Text::TextRenderer::RenderNumber(std::stoi(data), pos, 0.175f, 0.f, 1, TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, 2);
 		}
 
 		if (action & TOOL_ACTION::FOOD)
 		{
-			return Text::TextRenderer::RenderNumber(std::stoi(data), pos, 0.175f, 0.f, 1, -408, 2);
+			return Text::TextRenderer::RenderNumber(std::stoi(data), pos, 0.175f, 0.f, 1, TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, 2);
 		}
 
 		if (action & TOOL_ACTION::WEAPON)
 		{
 			int damage = std::stoi(data.substr(0, data.find_first_of(',')));
-			return Text::TextRenderer::RenderNumber(damage, pos, 0.175f, 0.f, 1, -408, 2);
+			return Text::TextRenderer::RenderNumber(damage, pos, 0.175f, 0.f, 1, TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, 2);
 		}
 
 		if (action & TOOL_ACTION::FIREARM)
@@ -327,7 +371,7 @@ namespace GAME_NAME::Items::Inventories
 
 			if (f)
 			{
-				return Text::TextRenderer::RenderNumber(f->GetAmmo(), pos, 0.175f, 0.f, 1, -408, 2);
+				return Text::TextRenderer::RenderNumber(f->GetAmmo(), pos, 0.175f, 0.f, 1, TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, 2);
 			}
 		}
 

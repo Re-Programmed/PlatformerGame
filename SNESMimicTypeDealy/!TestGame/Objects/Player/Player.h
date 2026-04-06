@@ -191,6 +191,13 @@ namespace  GAME_NAME
 					{
 
 					}
+
+					PlayerAnimationData(const PlayerAnimationData* other)
+						: walk_anim(other->walk_anim), run_anim(other->run_anim), jump_anim(other->jump_anim), fall_anim(other->fall_anim), skid_anim(other->skid_anim),
+						fall_over_anim(other->fall_over_anim), get_up_anim(other->get_up_anim), basic_attack_anim(other->basic_attack_anim), climbing_behind_anim(other->climbing_behind_anim), player_sitting_puff_anim(other->player_sitting_puff_anim),
+						player_idle_tap_toe_anim(other->player_idle_tap_toe_anim), player_idle_stomp_anim(other->player_idle_stomp_anim), player_biking_anim(other->player_biking_anim)
+					{
+					}
 				};
 
 				struct PlayerTextureData
@@ -239,6 +246,7 @@ namespace  GAME_NAME
 						}
 					}
 
+
 					PlayerTextureData(int defaultSprite, int bagTurnaround, int fall, int basicAttack, int climbing, int idleAnimation, int dead, int victoryBalloon, int ridingBike, int unintentionalFlying, PlayerAnimationData* animationOverride = nullptr)
 						: DefaultSprites(defaultSprite), BagTurnaround(bagTurnaround), Fall(fall), BasicAttack(basicAttack), Climbing(climbing), AnimationOverride(animationOverride),
 						IdleAnimations(idleAnimation), Dead(dead), VictoryBalloon(victoryBalloon), RidingBike(ridingBike), UnintentionalFlying(unintentionalFlying)
@@ -260,7 +268,26 @@ namespace  GAME_NAME
 						AnimationOverride = other.AnimationOverride;
 						UnintentionalFlying = other.UnintentionalFlying;
 
+						AnimationOverride = other.AnimationOverride;
+
 						return *this;
+					}
+
+					PlayerTextureData(const PlayerTextureData* other)
+					{
+						DefaultSprites = other->DefaultSprites;
+						BagTurnaround = other->BagTurnaround;
+						Fall = other->Fall;
+						BasicAttack = other->BasicAttack;
+						Climbing = other->Climbing;
+						IdleAnimations = other->IdleAnimations;
+						Dead = other->Dead;
+						VictoryBalloon = other->VictoryBalloon;
+						RidingBike = other->RidingBike;
+						AnimationOverride = other->AnimationOverride;
+						UnintentionalFlying = other->UnintentionalFlying;
+
+						AnimationOverride = other->AnimationOverride;
 					}
 				};
 

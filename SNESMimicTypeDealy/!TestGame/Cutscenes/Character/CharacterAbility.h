@@ -19,7 +19,9 @@ class AnimatingCharacter;
 		Functional		= 0b00000001,
 		CanSpeak		= 0b00000010,
 		CanRecieveItem	= 0b00000100,
-		NodeEnjoyer		= 0b00001000
+		NodeEnjoyer		= 0b00001000,
+		PlayAs			= 0b00010000,
+		DesiredItem		= 0b00100000
 	};
 
 	/// <summary>
@@ -32,6 +34,11 @@ class AnimatingCharacter;
 		virtual std::string GetPrompt() = 0;
 
 		virtual const CharacterAbility GetAbility() = 0;
+
+		virtual void Render(const Vec2& cameraPos, AnimatingCharacter* character)
+		{
+			//Optional update method that can be used by abilities.
+		}
 
 		virtual void Update(AnimatingCharacter* character)
 		{
@@ -103,7 +110,7 @@ using namespace GAME_NAME::Utils;
 	{
 	public:
 		typedef struct SpeechPattern {
-			std::string Say;
+			std::string Say; //If this starts with ">" The speech pattern file will be used.
 			Objects::Player::Player::PLAYER_ANIMATION_STATE Action;
 			std::string GiveItemCode;
 		};
@@ -118,5 +125,62 @@ using namespace GAME_NAME::Utils;
 		
 	protected:
 		bool recieve(ITEM_TYPE item) override;
+	};
+
+	class PlayAsAbility
+		: public CAbility
+	{
+	public:
+		PlayAsAbility(Objects::Player::Player::TEXTURE_OFFSETS character, bool available);
+
+		void Trigger(AnimatingCharacter* character) override;
+		inline std::string GetPrompt() override { return "Switch"; }
+
+		const CharacterAbility GetAbility() override { return CharacterAbility::PlayAs; }
+	private:
+		const Objects::Player::Player::TEXTURE_OFFSETS m_character;
+		const bool m_available;
+	};
+
+	/// <summary>
+	/// Works in conjunction with ItemRecieveAbility.
+	/// </summary>
+	class DesiredItemAbility
+		: public CAbility
+	{
+	public:
+		DesiredItemAbility(ITEM_TYPE item, std::string givenSequenceCode, std::string giveItemCode);
+
+		void Trigger(AnimatingCharacter* character) override;
+		inline std::string GetPrompt() override { return ""; }
+
+		bool Give(ITEM_TYPE attempt);
+
+		/// <summary>
+		/// Used to display the desired item above the character's head.
+		/// </summary>
+		/// <param name="cameraPos"></param>
+		/// <param name="character"></param>
+		void Render(const Vec2& cameraPos, AnimatingCharacter* character) override;
+
+		const CharacterAbility GetAbility() override { return CharacterAbility::DesiredItem; }
+	private:
+		/// <summary>
+		/// The item the character wants.
+		/// </summary>
+		const ITEM_TYPE m_item;
+		/// <summary>
+		/// The sequence that will play after the character recieves the desired item.
+		/// </summary>
+		const std::string m_givenSequence;
+		/// <summary>
+		/// The item the character will give in return for the desired item.
+		/// </summary>
+		const std::string m_giveItemCode;
+
+		/// <summary>
+		/// The item can only be given once.
+		/// </summary>
+		bool m_given = false;
 	};
 }

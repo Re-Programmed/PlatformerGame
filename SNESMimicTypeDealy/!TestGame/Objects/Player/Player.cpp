@@ -176,7 +176,7 @@ using namespace Audio;
 					Player::AnimationOverride(new int[2] { 2, 3 }, 2, ANIM_12_SPF * 1.5f),				//Idle 2
 					Player::AnimationOverride(0, 0)														//No Biking Animation
 				)),
-				Player::PlayerTextureData(SpriteBase(299), SpriteBase(326), SpriteBase(327), SpriteBase(335), SpriteBase(344), SpriteBase(357), SpriteBase(369), SpriteBase(368), SpriteBase(370), SpriteBase(367)),	//Default Foxo (2)
+				Player::PlayerTextureData(SpriteBase(299), SpriteBase(326), SpriteBase(327), SpriteBase(335), SpriteBase(344), SpriteBase(357), SpriteBase(369), SpriteBase(368), SpriteBase(370), SpriteBase(367), Player::TextureData[1].AnimationOverride),	//Default Foxo (2)
 				Player::PlayerTextureData(SpriteBase(389), SpriteBase(406), SpriteBase(407), SpriteBase(415), SpriteBase(419), 0 /*Missing Idle Animation*/, SpriteBase(429), 0 /*Missing victory balloon*/, 0 /*Missing riding bike*/, SpriteBase(427), new Player::PlayerAnimationData(
 					Player::AnimationOverride(new int[8] { 1, 2, 3, 2, 1, 4, 5, 4 }, 8, ANIM_12_SPF),		//walking.
 					Player::AnimationOverride(new int[8] { 1, 2, 3, 2, 1, 4, 5, 4 }, 8, ANIM_16_SPF),		//running.
@@ -593,7 +593,7 @@ using namespace Audio;
 								Furniture* f = new Furniture(m_textureFlipped ? (m_position + Vec2{ FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }) : (m_position + Vec2{ -FURNITURE_PLACE_OFFSET, m_scale.Y / 2.f }), m_textureFlipped, new InventoryItem(m_screenInventory->GetHeldItem()->GetType()));
 								f->Translate(Vec2{ m_textureFlipped ? (1.f - f->GetScale().X * 2.f) : -f->GetScale().X, -2.5f});
 
-								if (!HouseManager::CheckValidPlaceLocation(f->GetPosition(), f->GetScale()))
+								if (!HouseManager::CheckValidPlaceLocation(reinterpret_cast<LayerFlipObject*>(f)->GetPosition(), f->GetScale()))
 								{
 									delete f;
 								}
@@ -2255,10 +2255,10 @@ using namespace Audio;
 								m_animator->SetSpeedMult(1);
 							}
 							else {
-								auto nSprite = Renderer::GetSprite(PLAYER_SIT_TEXTURE);
-								if (m_sprite->GetSpriteId() != nSprite->GetSpriteId())
+								auto nSprite = Renderer::GetSpriteIdFromTextureId(PLAYER_SIT_TEXTURE);
+								if (m_sprite->GetSpriteId() != nSprite)
 								{
-									m_sprite.reset(nSprite);
+									m_sprite.reset(new Sprite(nSprite));
 								}
 							}
 						}

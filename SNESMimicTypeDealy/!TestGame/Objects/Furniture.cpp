@@ -13,6 +13,10 @@
 #include "../InputDisplay/DisplayIconManager.h"
 
 #include "../Items/Crafting/CraftingMenuManager.h"
+#include "../Level/Hub/HubLevelManager.h"
+
+#define FURNITURE_TEXTURE_FLIP_SIT_OFFSET Vec2{ 2.f, 5.f }
+#define FURNITURE_TEXTURE_NOT_FLIP_SIT_OFFSET Vec2{ -2.f, 5.f }
 
 namespace GAME_NAME::Objects
 {
@@ -24,18 +28,90 @@ namespace GAME_NAME::Objects
 		{ ITEM_TYPE::FRIDGE, Furniture::FurnitureInteractions::Inventory },
 		{ ITEM_TYPE::WOODEN_CRATE, Furniture::FurnitureInteractions::Inventory },
 		{ ITEM_TYPE::WORKBENCH, Furniture::FurnitureInteractions::Workbench },
+		{ ITEM_TYPE::WOODEN_BENCH, Furniture::FurnitureInteractions::Sit },
 	};
+
+	Furniture::FurnitureItemInfo Furniture::GetInfo(std::string furnitureData)
+	{
+		FurnitureItemInfo ret{ 0 };
+
+		std::stringstream furnitureInfo(furnitureData);
+		std::string data;
+
+		int i = 0;
+		while (std::getline(furnitureInfo, data, ','))
+		{
+			switch (i++)
+			{
+			case 0:
+				ret.Scale.X = std::stoi(data);
+				break;
+			case 1:
+				ret.Scale.Y = std::stoi(data);
+				break;
+			case 2:
+				ret.InventorySize = std::stoi(data);
+				break;
+			case 3:
+				ret.IsOutdoor = std::stoi(data) > 0;
+				break;
+			}
+		}
+
+		return ret;
+	}
+
+	//When it is used by a character... (not to be confused with the use method for the player...)
+	bool Furniture::Use(Cutscenes::AnimatingCharacter* character)
+	{
+		if (m_inUse) { return false; }
+
+		if (m_inUseByCharacter)
+		{
+			if (m_inUseByCharacter == character)
+			{
+				//Reset attributes. (No longer in use).
+				m_inUseByCharacter->SetFrozen(false);
+				//Make the character move next to the furniture.
+				m_inUseByCharacter->SetTarget(m_position - Vec2{ 15.f, 0.f });
+				m_collider->SetActive(true);
+
+				m_inUseByCharacter = nullptr;
+				return true;
+			}
+
+			return false;
+		}
+
+		m_inUseByCharacter = character;
+
+		//Determine what to do upon interction based on this furniture's abilities.
+
+		switch (FurnitureAbilities.at(m_item->GetType()))
+		{
+		case FurnitureInteractions::Sit:
+			//The character is doing something else, don't let them sit.
+			if (m_inUseByCharacter->IsFrozen()) { return false; }
+
+			m_inUseByCharacter->SetFrozen(true, Objects::Player::Player::SITTING_FORWARD);
+			m_inUseByCharacter->SetTextureFlipped(m_scale.X < 0);
+			m_inUseByCharacter->SetPosition(m_position + m_scale / 2.f - m_inUseByCharacter->GetScale() / 2.f + ((m_scale.X < 0) ? FURNITURE_TEXTURE_FLIP_SIT_OFFSET : FURNITURE_TEXTURE_NOT_FLIP_SIT_OFFSET) - Vec2{ 0.f, 2.f });
+			m_collider->SetActive(false);
+			break;
+		}
+
+		return true;
+	}
 
 	void Furniture::RenderPreview(const Vec2& cameraPos, Items::ITEM_TYPE item, Vec2 position, bool flipped)
 	{
+		FurnitureItemInfo info = GetInfo(Items::ITEMTYPE_GetItemData(item).Attributes.at(Items::FURNITURE));
+
 		Sprite* sp = Items::ITEMTYPE_GetItemTypeTexture(item);
 		DynamicSprite sprite(sp->GetSpriteId());
 		delete sp;
 
-		std::string scaleData = Items::ITEMTYPE_GetItemData(item).Attributes.at(Items::FURNITURE);
-		Vec2 scale{ 0 };
-		scale.X = std::stof(scaleData.substr(0, scaleData.find_first_of(',')));
-		scale.Y = std::stof(scaleData.substr(scaleData.find_first_of(',') + 1));
+		Vec2& scale = info.Scale;
 		scale = scale * Vec2{ flipped ? 1.f : -1.f, -1.f };
 
 		const bool validPos = HouseManager::CheckValidPlaceLocation(position, scale);
@@ -51,6 +127,13 @@ namespace GAME_NAME::Objects
 
 	void Furniture::Update(GLFWwindow* window)
 	{
+		//If the furniture is outdoor and we are not outside, do nothing.
+		//The only reason this furniture is kept is to save to the save file.
+		if (m_isOutdoor == HubLevelManager::GetInHouse()) { return; }
+
+		//No collision for outdoor furniture.
+		if (this->m_isOutdoor) { m_collider->SetActive(false); }
+
 		if (m_inUse)
 		{
 			use();	
@@ -122,6 +205,12 @@ namespace GAME_NAME::Objects
 							return;
 						}
 					}
+					
+					//Make the character stop using this if a character is using it.
+					if (m_inUseByCharacter)
+					{
+						this->Use(m_inUseByCharacter);
+					}
 
 					HouseManager::RemoveFurniture(this);
 					Renderer::DestroyActiveObjectImmediate(this);
@@ -132,6 +221,7 @@ namespace GAME_NAME::Objects
 			}
 		}
 
+
 		LayerFlipObject::Update(window);
 
 		m_interactionRemovalTimer = 0.0;
@@ -139,6 +229,11 @@ namespace GAME_NAME::Objects
 
 	void Furniture::Render(const Vec2& cameraPos)
 	{
+		//If the furniture is outdoor and we are not outside, do nothing.
+		//The only reason this furniture is kept is to save to the save file.
+		if (m_isOutdoor == HubLevelManager::GetInHouse()) { return; }
+
+
 		if (m_hovered)
 		{
 			//No removing furniture with items in them.
@@ -173,7 +268,8 @@ namespace GAME_NAME::Objects
 		std::string ret = std::to_string(m_position.X).append(",")
 			.append(std::to_string(m_position.Y)).append(",")
 			.append(std::to_string(m_item->GetType())).append(",")
-			.append(m_flipped ? "t" : "f");
+			.append(m_flipped ? "t" : "f").append(",")
+			.append(m_isOutdoor ? "1" : "0");
 
 
 		if (m_inventory != nullptr)
@@ -226,8 +322,14 @@ namespace GAME_NAME::Objects
 					m_scale.X = -m_scale.X;
 				}
 				break;
-
 			case 4:
+				m_isOutdoor = std::stoi(line) > 0;
+				if (m_isOutdoor)
+				{
+					Cutscenes::CharacterNodeManager::RegisterNode(this);
+				}
+				break;
+			case 5:
 
 				if (FurnitureAbilities.at(m_item->GetType()) == FurnitureInteractions::Inventory)
 				{
@@ -251,7 +353,6 @@ namespace GAME_NAME::Objects
 				}
 
 				break;
-			
 			}
 			
 			i++;
@@ -274,6 +375,8 @@ namespace GAME_NAME::Objects
 	//Will be called with m_inUse = true if it is updating.
 	void Furniture::use()
 	{
+		if (m_inUseByCharacter) { return; }
+
 		switch (FurnitureAbilities.at(m_item->GetType()))
 		{
 		case FurnitureInteractions::Sit:
@@ -291,11 +394,10 @@ namespace GAME_NAME::Objects
 		}
 	}
 
-#define FURNITURE_TEXTURE_FLIP_SIT_OFFSET Vec2{ 2.f, 5.f }
-#define FURNITURE_TEXTURE_NOT_FLIP_SIT_OFFSET Vec2{ -2.f, 5.f }
 
 	void Furniture::useSit()
 	{
+
 		if (!m_inUse)
 		{
 			m_collider->SetActive(false);

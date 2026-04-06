@@ -36,8 +36,16 @@ namespace GAME_NAME::Level
 
 		static inline bool ShopIsOpen() { return m_shopGUIOpen; }
 
-	private:
+		/// <summary>
+		/// Returns true if the player is inside the house.
+		/// </summary>
+		static inline bool GetInHouse() { return m_isInHouse; }
 
+	private:
+		///True if the player is inside the house.
+		static bool m_isInHouse;
+
+		static void loadCharacters();
 
 		static void generateShop();
 

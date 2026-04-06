@@ -26,7 +26,7 @@ namespace GAME_NAME::Items::Inventories
 		//If the item already exists, just increment the count.
 		if (found != selections.end())
 		{
-			selections.at(std::distance(found, selections.begin())).Count++;
+			selections.at(std::distance(selections.begin(), found)).Count++;
 			return;
 		}
 

@@ -44,6 +44,8 @@
 #include "../Objects/Mechanical/Cog.h"
 #include "../Objects/Mechanical/MechanicalSaveManager.h"
 
+#include "../Cutscenes/Character/CharacterNodeManager.h"
+
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
 
 std::vector<std::string> DebugCommands::m_queuedCommands = std::vector<std::string>(2);
@@ -304,6 +306,9 @@ void DebugCommands::HandleCommands()
 
 			GAME_NAME::Mechanical::MechanicalSaveManager::ClearObjectRefs();
 
+			//Reset all the nodes since they are different now.
+			GAME_NAME::Cutscenes::CharacterNodeManager::ClearNodes();
+
 			GAME_NAME::TestGame::SetLoadLevelWithSavedPlayer(true);
 
 			Mechanical::Cog::HidePlacingCog();
@@ -386,6 +391,12 @@ void DebugCommands::HandleCommands()
 
 			GAME_NAME::Objects::Player::Currency::AddCrumbs(amount);
 			DebugCommands_Log("Gave " + std::to_string(amount) + " crumbs.");
+		}
+
+		if (input.starts_with("cnodes"))
+		{
+			GAME_NAME::Cutscenes::CharacterNodeManager::ToggleDebugGraph();
+			DebugCommands_Log("Nodes toggled.");
 		}
 
 		if (input.starts_with("giveitemcode"))

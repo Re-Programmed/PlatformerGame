@@ -22,7 +22,7 @@ namespace GAME_NAME::Level
 
 		}
 
-		static void LoadHouse();
+		static void LoadHouse(bool outdoor);
 		static void CloseHouse();
 
 		/// <summary>

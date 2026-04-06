@@ -2,7 +2,13 @@
 
 namespace GAME_NAME::Cutscenes
 {
-	std::unique_ptr<ICharacterNode>* CharacterNodeManager::GetNodeAtDistance(Vec2 position, unsigned int nthClosest)
+	std::vector<ICharacterNode*> CharacterNodeManager::m_nodes;
+
+#if _DEBUG
+	bool CharacterNodeManager::m_showDebugGraph = false;
+#endif
+
+	ICharacterNode* CharacterNodeManager::GetNodeAtDistance(Vec2 position, unsigned int nthClosest)
 	{
 		//Store a list of the top n closest nodes.
 		std::vector<std::tuple<int, float>> nodeDistances;
@@ -37,25 +43,24 @@ namespace GAME_NAME::Cutscenes
 
 		if (index == -1) { return nullptr; }
 
-		return &(m_nodes[index]);
+		return m_nodes[index];
 	}
 
-	template<int size>
-	std::array<ICharacterNode*, size> CharacterNodeManager::GetNodesAtDistance(Vec2 position)
+#if _DEBUG
+	void CharacterNodeManager::DebugRender()
 	{
-		std::array<std::unique_ptr<ICharacterNode>*, size> nodes;
-		std::array<float, size> nodeDistances;
+		if (!m_showDebugGraph) { return; }
 
-		for (int i = 0; i < m_nodes.size(); i++)
+		const Vec2 cameraPos = TestGame::INSTANCE->GetCamera()->GetPosition();
+
+		Sprite* s = Renderer::GetSprite(SpriteBase(91));
+
+		for (ICharacterNode* node : m_nodes)
 		{
-			float dist = Vec2::Distance(position, m_nodes[i]->GetPosition());
-			
-			int insert = size - 1;
-			std::tuple<std::unique_ptr<ICharacterNode>*, float> swap = { nullptr };
-			while (insert >= 0)
-			{
-
-			}
+			s->Render(cameraPos, node->GetPosition(), Vec2{ 16.f }, 0.f);
 		}
+
+		delete s;
 	}
+#endif
 }
