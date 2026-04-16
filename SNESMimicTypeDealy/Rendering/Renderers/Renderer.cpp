@@ -650,19 +650,19 @@ namespace GAME_NAME
 			iVec2 chunkPos = AsChunkPosition(bottomLeft);
 			iVec2 chunkScale = AsChunkPosition(scale);
 
-			int8_t start = chunkPos.GetX() * levelSizeY + chunkPos.GetY();
+			int16_t start = chunkPos.GetX() * levelSizeY + chunkPos.GetY();
 
 			if (boxOverlap) { start -= levelSizeY; if (start < 0) { start = 0; } }
 
-			int8_t endX = chunkScale.GetX(); 
-			int8_t endY = chunkScale.GetY();
+			int16_t endX = chunkScale.GetX();
+			int16_t endY = chunkScale.GetY();
 
 			if (boxOverlap && endX < levelSizeX) { endX += 1; }
 			if (boxOverlap && endY < levelSizeY) { endY += 1; }
 
-			for (int8_t x = 0; x <= endX; x++)
+			for (int16_t x = 0; x <= endX; x++)
 			{
-				for (int8_t y = 0; y <= endY; y++)
+				for (int16_t y = 0; y <= endY; y++)
 				{
 					for (int i = 0; i < CHUNK_OBJECT_RENDER_LAYER_COUNT; i++)
 					{

@@ -15,7 +15,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 65
+#define ITEM_COUNT 78
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -85,7 +85,20 @@ namespace GAME_NAME
 			IRON_PLATE = 61,
 			TANTALUM_PLATE = 62,
 			BRASS_PLATE = 63,
-			WOODEN_BENCH = 64
+			WOODEN_BENCH = 64,
+			CHALCOPYRITE = 65,
+			HEMATITE = 66,
+			TANTALITE = 67,
+			TOP_HAT = 68,
+			FARMER_HAT = 69,
+			CAP = 70,
+			PLANK = 71,
+			GLUE = 72,
+			WOODEN_LADDER = 73,
+			COPPER_BATTLE_AXE = 74,
+			POLISH_WARHAMMER = 75,
+			COPPER_SPIKE = 76,
+			BANDAGE = 77,
 		};
 
 		/// <summary>
@@ -93,18 +106,19 @@ namespace GAME_NAME
 		/// </summary>
 		enum TOOL_ACTION
 		{
-			CHOP =			0b000000000001, //Can cut down trees.
-			EQUIPMENT =		0b000000000010, //Can be equipped to equipment slots.
-			MINE =			0b000000000100, //Can break BreakableBlocks. (provide a strength attribute)
-			WEAPON =		0b000000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
-			FOOD =			0b000000010000, //Can be eaten.
-			PLACEABLE =		0b000000100000, //Can be placed.
-			FURNITURE =		0b000001000000, //Furniture. (xScale, yScale, inventorySize[optional], isOutdoor[optional])
-			VALUE =			0b000010000000, //Give an item a specific price value. (crumbValue)
-			RANGED_WEAPON = 0b000100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
-			USE_SOUND =		0b001000000000, //Plays a different sound when used. [soundEventNumber]
-			SHIELD =		0b010000000000, //Blocks damage [resistance,recoveryTime]
-			FIREARM =		0b100000000000	//Shoots bullet [clip_size,clip_itemID,damage,reload_time,shot_interval]
+			CHOP =			0b0000000000001, //Can cut down trees.
+			EQUIPMENT =		0b0000000000010, //Can be equipped to equipment slots.
+			MINE =			0b0000000000100, //Can break BreakableBlocks. (provide a strength attribute)
+			WEAPON =		0b0000000001000, //Can be used to attack. (provide a damage, power consumption, reload attribute, area of effect, and sound [damage,powerconsume,reloadseconds,AOE(integer),sound=Punch])
+			FOOD =			0b0000000010000, //Can be eaten.
+			PLACEABLE =		0b0000000100000, //Can be placed.
+			FURNITURE =		0b0000001000000, //Furniture. (xScale, yScale, inventorySize[optional], isOutdoor[optional])
+			VALUE =			0b0000010000000, //Give an item a specific price value. (crumbValue)
+			RANGED_WEAPON = 0b0000100000000, //Shoots projectiles [damage,powerconsume,reloadseconds,range,projectile_type]
+			USE_SOUND =		0b0001000000000, //Plays a different sound when used. [soundEventNumber]
+			SHIELD =		0b0010000000000, //Blocks damage [resistance,recoveryTime]
+			FIREARM =		0b0100000000000,//Shoots bullet [clip_size,clip_itemID,damage,reload_time,shot_interval]
+			DRINK =			0b1000000000000, //Gives effects. [drink_effect,amplifier,duration]
 		};
 
 		/// <summary>
@@ -156,7 +170,7 @@ namespace GAME_NAME
 			{ "Sharp Stick", SpriteBase(118), SpriteBase(117), WEAPON, {{TOOL_ACTION::WEAPON, "3,0,0.5,26"}}, ""},			//6
 			{ "Toast", SpriteBase(132), SpriteBase(233), 0, {}, "Probably made in a toaster." },							//7
 			{ "Apple", SpriteBase(247), NO_HELD_TEXTURE, FOOD, { { TOOL_ACTION::FOOD, "6" } }, "Apple."},					//8
-			{ "Wooden Plank", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Can be placed."},			//9
+			{ "Wooden Platform", SpriteBase(249), NO_HELD_TEXTURE, PLACEABLE, { { TOOL_ACTION::PLACEABLE, "32,6" }}, "Useful for big gaps."},			//9
 			{ "Crumb", SpriteBase(257), NO_HELD_TEXTURE, 0, {}, "Looks like money..."},					//10
 			{ "Blueprint", SpriteBase(263), NO_HELD_TEXTURE, 0, {}, "Unlocks a recipe."},					//11
 
@@ -166,7 +180,7 @@ namespace GAME_NAME
 			{ "Workbench", 22, NO_HELD_TEXTURE, FURNITURE | VALUE, { { TOOL_ACTION::FURNITURE, "26,29" }, { TOOL_ACTION::VALUE, "45" } }, "Make stuff with me!"},					//15
 
 			{ "Butter Knife", SpriteBase(292), SpriteBase(292), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("4,0,0.3,17,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, {TOOL_ACTION::VALUE, "12"}}, "Still pretty sharp."},					//16
-			{ "Iron Sword", SpriteBase(287), SpriteBase(287), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("8,0,0.9,22,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "60" }}, "8 Damage."},					//17
+			{ "Iron Sword", SpriteBase(287), SpriteBase(287), WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("8,0,0.9,22,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "60" }}, "Owwwwwwuhhhh."},					//17
 			{ "Wooden Club", SpriteBase(297), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, "6,0,1.66,26" }, { TOOL_ACTION::VALUE, "30" }}, "Slow but hurts."},					//18
 			{ "Spear", SpriteBase(298), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, { { TOOL_ACTION::WEAPON, std::string("6,0,1.2,45,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "30" }}, "Reach really far."},					//19
 
@@ -223,7 +237,7 @@ namespace GAME_NAME
 			
 			{ "Bucket", SpriteBase(460), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Holds whatever you want."},			//51
 
-			{ "Milk Jug", SpriteBase(461), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "8" } }, "Holds milk."},			//52
+			{ "Milk Jug", SpriteBase(461), FOLLOW_HAND_TEXTURE, VALUE | DRINK, { { TOOL_ACTION::DRINK, "0,3,15" }, {TOOL_ACTION::VALUE, "8"}}, "Holds milk."},			//52
 
 			{ "Wheat", SpriteBase(462), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "1" } }, "Almost bread?"},			//53
 
@@ -241,7 +255,27 @@ namespace GAME_NAME
 			{ "Tantalum Plate", SpriteBase(471), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "23" } }, "I think there is\ntantalum in my pants." },		//62
 			{ "Brass Plate", SpriteBase(472), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "25" } }, "Someone got their\nzinc in my copper!" },			//63
 
-			{ "Wooden Bench", 53, NO_HELD_TEXTURE, FURNITURE | VALUE, {{TOOL_ACTION::FURNITURE, "28,16.5.5,0,1"}, {TOOL_ACTION::VALUE, "15"}}, "Fits 10 people."},					//64
+			{ "Wooden Bench", 53, NO_HELD_TEXTURE, FURNITURE | VALUE, {{TOOL_ACTION::FURNITURE, "28,16.5.5,0,1"}, {TOOL_ACTION::VALUE, "15"}}, "Peak seating."},					//64
+
+			{ "Chalcophyrite", SpriteBase(473), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "3" } }, "Rich in copper." },						//65
+			{ "Hematite", SpriteBase(474), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "4" } }, "Rich in iron." },								//66
+			{ "Tantalite", SpriteBase(475), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "5" } }, "Rich in tantalum." },							//67
+
+			{ "Top Hat", SpriteBase(476), FOLLOW_HAND_TEXTURE, VALUE | EQUIPMENT, { { TOOL_ACTION::VALUE, "30" }, { TOOL_ACTION::EQUIPMENT, "DisplayHat" } }, "It goes on top." },			//68
+			{ "Farmer Hat", SpriteBase(477), FOLLOW_HAND_TEXTURE, VALUE | EQUIPMENT, { { TOOL_ACTION::VALUE, "30" }, { TOOL_ACTION::EQUIPMENT, "DisplayHat" } }, "Prevents sunburn." },		//69
+			{ "Cap", SpriteBase(478), FOLLOW_HAND_TEXTURE, VALUE | EQUIPMENT, { { TOOL_ACTION::VALUE, "30" }, { TOOL_ACTION::EQUIPMENT, "DisplayHat" } }, "Cool." },						//70
+
+			{ "Plank", SpriteBase(479), FOLLOW_HAND_TEXTURE, VALUE, { { TOOL_ACTION::VALUE, "4" } }, "Useful wooden item." },																//71
+			{ "Glue", SpriteBase(480), FOLLOW_HAND_TEXTURE, VALUE | RANGED_WEAPON, { { TOOL_ACTION::RANGED_WEAPON, "4,0,0.35,80,4" }, { TOOL_ACTION::VALUE, "8" } }, "Gluwewww." },			//72
+
+			{ "Wooden Ladder", SpriteBase(482), NO_HELD_TEXTURE, PLACEABLE | VALUE, { {TOOL_ACTION::VALUE, "12" }, { TOOL_ACTION::PLACEABLE, "6,32" }}, "Up."},			//73
+
+			{ "Copper Battle Axe", SpriteBase(483), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, {{ TOOL_ACTION::WEAPON, std::string("8,0,1.66,30,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_PUNCHED))) }, { TOOL_ACTION::VALUE, "50" }}, "Two axe heads are\n better than one."},			//74
+			{ "Polish Warhammer", SpriteBase(484), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, {{ TOOL_ACTION::WEAPON, std::string("12,0,1.5,26,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_PUNCHED))) }, { TOOL_ACTION::VALUE, "80" }}, "Are you warhammer\nliscensed?"},			//75
+			{ "Copper Spike", SpriteBase(485), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, {{ TOOL_ACTION::WEAPON, std::string("6,0,0.5,18,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "50" }}, "Spiky." },			//76
+
+			{ "Bandage", SpriteBase(286), FOLLOW_HAND_TEXTURE, FOOD | VALUE, { { TOOL_ACTION::FOOD, "15" } }, "Can be applied quickly\n to injuries." },				//77
+
 		};
 	
 

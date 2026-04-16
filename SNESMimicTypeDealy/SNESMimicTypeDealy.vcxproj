@@ -432,6 +432,7 @@
     <ClInclude Include="!TestGame\Objects\Platforms\MovingPathPlatform.h" />
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />
     <ClInclude Include="!TestGame\Objects\Player\Currency.h" />
+    <ClInclude Include="!TestGame\Objects\Player\DrinkEffect.h" />
     <ClInclude Include="!TestGame\Objects\Player\Player.h" />
     <ClInclude Include="!TestGame\Objects\Player\ScreenInventory.h" />
     <ClInclude Include="!TestGame\Objects\Components\Climbable.h" />

@@ -543,6 +543,12 @@
     <ClCompile Include="Utils\Math\Ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Cutscenes\Character\CharacterNodeManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="!TestGame\Cutscenes\Character\NodeEnjoyerAbility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -1146,6 +1152,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Math\Ray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Cutscenes\Character\CharacterNodeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Cutscenes\Character\LobbyCharacters\FopsLobby.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Cutscenes\Character\ICharacterNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Cutscenes\Character\NodeEnjoyerAbility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Player\DrinkEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

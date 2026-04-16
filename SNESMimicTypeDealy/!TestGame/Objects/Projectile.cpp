@@ -21,6 +21,10 @@
 #define BUTTER_SPLASH_WIDTH 32.f
 #define BUTTER_SPLASH_HEIGHT 7.f
 
+#define GLUE_SPLASH_SPRITE SpriteBase(481)
+#define GLUE_SPLASH_WIDTH 32.f
+#define GLUE_SPLASH_HEIGHT 7.f
+
 namespace GAME_NAME::Objects
 {
 	constexpr float DefaultProjectileGravity = 5.5F;
@@ -89,6 +93,16 @@ using namespace Environment::Effects;
 			Vec2 pos(m_position.X - (BUTTER_SPLASH_WIDTH/2.f), other->GetPosition().Y + other->GetScale().Y - BUTTER_SPLASH_HEIGHT + 1.f);
 
 			SlipperySurface* butterSplash = new SlipperySurface(pos, Vec2{ BUTTER_SPLASH_WIDTH, BUTTER_SPLASH_HEIGHT }, Renderer::GetSprite(BUTTER_SPLASH_SPRITE));
+			Renderer::InstantiateObject(Renderer::InstantiateGameObject(butterSplash, false, 3, false));
+
+			Renderer::DestroyActiveObject(this);
+		}
+		//Glue
+		else if (m_projectileType <= 4)
+		{
+			Vec2 pos(m_position.X - (GLUE_SPLASH_WIDTH / 2.f), other->GetPosition().Y + other->GetScale().Y - GLUE_SPLASH_HEIGHT + 1.f);
+
+			SlipperySurface* butterSplash = new SlipperySurface(pos, Vec2{ GLUE_SPLASH_WIDTH, GLUE_SPLASH_HEIGHT }, Renderer::GetSprite(GLUE_SPLASH_SPRITE), -1.f);
 			Renderer::InstantiateObject(Renderer::InstantiateGameObject(butterSplash, false, 3, false));
 
 			Renderer::DestroyActiveObject(this);

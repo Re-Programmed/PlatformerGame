@@ -1,5 +1,8 @@
->AnimatingCharacter_CannotSwitch1
+>AnimatingCharacter
 I only trust people with toast...
+
+>Foragable
+I must have left my %item% at home.
 
 >AnimatingCharacter_CannotSwitch2
 Maybe if I had some grains I would believe you.
@@ -26,10 +29,6 @@ Thank you for this delicious %item% !
 >AnimatingCharacter_CraftWooden1
 I've been getting good at working with wood!
 
-
->Foragable_WrongItem1
-I must have left my %item% at home.
-
 >Foragable_WrongItem2
 I could use a %item% to get this.
 
@@ -43,7 +42,7 @@ I could go for a %item% right now.
 Value
 
 >InventoryTooltip_Food
-Food
+Health
 
 >InventoryTooltip_Damage
 Damage
@@ -57,17 +56,3 @@ Chop
 >InventoryTooltip_EquipmentHealth
 Equipment Armor
 
->InventoryTooltip_FurnitureOutdoor
-Amenity
-
->InventoryTooltip_FurnitureIndoor
-Furniture
-
->InventoryTooltip_Mine
-Tool
-
->InventoryTooltip_Placeable
-Structure
-
->InventoryTooltip_Shield
-Shield

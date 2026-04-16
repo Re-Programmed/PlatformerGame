@@ -21,8 +21,14 @@ namespace GAME_NAME::Objects
 
 		if (otherPhysics)
 		{
-			otherPhysics->GetPhysics()->AddVelocity(Vec2{ 0.f, -1.f });
-			otherPhysics->GetPhysics()->SlideFor(3);
+			if (reinterpret_cast<SlipperySurface*>(self)->m_slipFactor > 0.f)
+			{
+				otherPhysics->GetPhysics()->AddVelocity(Vec2{ 0.f, -1.f });
+				otherPhysics->GetPhysics()->SlideFor(3);
+				return true;
+			}
+
+			otherPhysics->GetPhysics()->AddVelocity(Vec2{ -otherPhysics->GetVelocity().X/50.f, 0.f });
 		}
 
 		return true;
