@@ -549,6 +549,9 @@
     <ClCompile Include="!TestGame\Cutscenes\Character\NodeEnjoyerAbility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Objects\Player\MainProgressIndicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -1167,6 +1170,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\Objects\Player\DrinkEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Player\MainProgressIndicator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,6 +16,8 @@
 
 #include "../Environment/Effects/GlitchableObject.h"
 
+#include "DrinkEffectManager.h"
+
 
 #ifndef _PLAYERDEF
 #define _PLAYERDEF
@@ -443,6 +445,8 @@ namespace  GAME_NAME
 				void beforeCollision() override;		//Called before any collisions are calculated to allow for resetting the jump conditions.
 
 			private:
+				DrinkEffectManager m_effectManager;
+
 				bool m_feetOnlyCollision = false;
 
 				ControlType m_controlType = ControlType::PLATFORMER;

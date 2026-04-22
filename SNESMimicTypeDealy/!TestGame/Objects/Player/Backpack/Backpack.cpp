@@ -80,7 +80,7 @@ namespace GAME_NAME::Objects::Player
 		{
 			m_animatingMutex.lock();
 			m_animating = true;
-			m_animatingMutex.unlock();
+			m_animatingMutex.unlock(); 
 
 			//Smoothly bring the equipment backing and slots onto the screen.
 			m_isOpen = true;

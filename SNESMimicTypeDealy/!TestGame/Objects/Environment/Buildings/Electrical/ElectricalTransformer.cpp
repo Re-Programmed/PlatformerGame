@@ -12,7 +12,7 @@ namespace GAME_NAME::Objects::Environment::Buildings
 
 	void ElectricalTransformer::Update(GLFWwindow* window)
 	{
-		if (m_randomZapTimer > 3.0)
+		if (m_randomZapTimer > 1.5)
 		{
 			m_randomZapTimer = 0.0;
 

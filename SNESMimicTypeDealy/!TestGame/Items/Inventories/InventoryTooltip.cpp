@@ -168,6 +168,8 @@ namespace GAME_NAME::Items::Inventories
 
 						for (auto& letter : attributeDescription)
 						{
+							if (m_tooltip.size() <= i) { break; }
+
 							TooltipCompoentDisplacement.emplace_back(letter->letter->GetPosition() - Vec2{ m_tooltip[i].Element->GetPosition().X, MousePosition.Y - m_tooltipHeight - 5.f });
 							m_tooltipComponents.push_back(letter->letter);
 							m_tooltipComponentsApproachedScales.emplace_back(4.f);
@@ -175,6 +177,8 @@ namespace GAME_NAME::Items::Inventories
 
 						for (auto& digit : attributeValues)
 						{
+							if (m_tooltip.size() <= i) { break; }
+
 							TooltipCompoentDisplacement.emplace_back(digit->GetPosition() - Vec2{ m_tooltip[i].Element->GetPosition().X, MousePosition.Y - m_tooltipHeight - 4.f });
 							m_tooltipComponents.push_back(digit);
 							m_tooltipComponentsApproachedScales.emplace_back(digit->GetScale());
@@ -331,6 +335,13 @@ namespace GAME_NAME::Items::Inventories
 		case TOOL_ACTION::FIREARM:
 			word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Firearm"), pos, 4.f, -0.4f, 2);
 			break;
+		case TOOL_ACTION::DRINK:
+			std::string drinkAbility = data.substr(0, data.find_first_of(','));
+			if (drinkAbility == "0")
+			{
+				word = Text::TextRenderer::RenderWordCaseSensitive(Cutscenes::DialogueManager::INSTANCE->GetPhrase("InventoryTooltip_Drink_Strength"), pos, 4.f, -0.4f, 2);
+			}
+			break;
 		}
 
 		return word;
@@ -361,6 +372,12 @@ namespace GAME_NAME::Items::Inventories
 		{
 			int damage = std::stoi(data.substr(0, data.find_first_of(',')));
 			return Text::TextRenderer::RenderNumber(damage, pos, 0.175f, 0.f, 1, TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, 2);
+		}
+
+		if (action & TOOL_ACTION::DRINK)
+		{
+			int amplifier = std::stoi(data.substr(data.find_first_of(',') + 1, data.find_last_of(',')));
+			return Text::TextRenderer::RenderNumber(amplifier, pos, 0.175f, 0.f, 1, TEXT_RENDERER_ZERO_DIGIT_SPRITE_ID, 2);
 		}
 
 		if (action & TOOL_ACTION::FIREARM)

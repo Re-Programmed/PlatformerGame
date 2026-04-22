@@ -160,6 +160,7 @@
     <ClCompile Include="!TestGame\Items\Inventory.cpp" />
     <ClCompile Include="!TestGame\Items\InventoryItem.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Blueprint.cpp" />
+    <ClCompile Include="!TestGame\Items\Types\Drink.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Firearm.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Food.cpp" />
     <ClCompile Include="!TestGame\Items\Types\Placeable.cpp" />
@@ -240,6 +241,8 @@
     <ClCompile Include="!TestGame\Objects\Platforms\FallingPlatform.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Backpack\Backpack.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Currency.cpp" />
+    <ClCompile Include="!TestGame\Objects\Player\DrinkEffectManager.cpp" />
+    <ClCompile Include="!TestGame\Objects\Player\MainProgressIndicator.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Player.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\ScreenInventory.cpp" />
     <ClCompile Include="!TestGame\Objects\Player\Skills\SkillHolder.cpp" />
@@ -349,6 +352,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="!TestGame\Items\Types\Blueprint.h" />
+    <ClInclude Include="!TestGame\Items\Types\Drink.h" />
     <ClInclude Include="!TestGame\Items\Types\Firearm.h" />
     <ClInclude Include="!TestGame\Items\Types\Food.h" />
     <ClInclude Include="!TestGame\Items\Types\Placeable.h" />
@@ -433,6 +437,8 @@
     <ClInclude Include="!TestGame\Objects\Player\Backpack\Backpack.h" />
     <ClInclude Include="!TestGame\Objects\Player\Currency.h" />
     <ClInclude Include="!TestGame\Objects\Player\DrinkEffect.h" />
+    <ClInclude Include="!TestGame\Objects\Player\DrinkEffectManager.h" />
+    <ClInclude Include="!TestGame\Objects\Player\MainProgressIndicator.h" />
     <ClInclude Include="!TestGame\Objects\Player\Player.h" />
     <ClInclude Include="!TestGame\Objects\Player\ScreenInventory.h" />
     <ClInclude Include="!TestGame\Objects\Components\Climbable.h" />

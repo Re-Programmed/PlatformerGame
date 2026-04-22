@@ -6,6 +6,7 @@
 #include "./Types/Placeable.h"
 #include "./Types/Blueprint.h"
 #include "./Types/Firearm.h"
+#include "./Types/Drink.h"
 
 namespace GAME_NAME
 {
@@ -119,6 +120,15 @@ namespace GAME_NAME
 				Firearm* f = new Firearm();
 				f->Decode(data);
 				item = f;
+				break;
+			}
+
+			case ITEM_PREFIX_DRINK:
+			{
+				delete item;
+				Drink* d = new Drink();
+				d->Decode(data);
+				item = d;
 				break;
 			}
 			}

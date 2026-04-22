@@ -48,6 +48,9 @@
 
 #include "../Projectile.h"
 
+#include "./MainProgressIndicator.h"
+#include "../../Items/Types/Drink.h"
+
 #define PLAYER_ROOM_SPEED 40	//How fast the player moves vertically in room control mode.
 
 #define PLAYER_ANIMATION_RUN_WALK_SWITCH 142.f //When the player should switch from the walking to running animation.
@@ -214,7 +217,8 @@ using namespace Audio;
 				m_skillHolder({ 62.f, 7.f }),		//Skill holder (manages update and display of current skill and equipment effects)
 				m_textureData(TextureData[0]),
 				IsAlive(true),
-				m_heldItemDisplayOffset({ 0.f, 0.f }, { 0.f, 0.f })
+				m_heldItemDisplayOffset({ 0.f, 0.f }, { 0.f, 0.f }),
+				m_effectManager()
 			{
 
 				//Change to load based on what sprite the player should be using from the selected kit.
@@ -286,8 +290,10 @@ using namespace Audio;
 			float m_curr = 0;
 			void Player::Update(GLFWwindow* window)
 			{
-				//TODO: Make this only happen if you are actually trying to place a cog.
+				m_effectManager.Update();
 
+
+				//TODO: Make this only happen if you are actually trying to place a cog.
 				if (m_screenInventory->GetHeldItem() != nullptr)
 				{
 					ITEM_TYPE type = m_screenInventory->GetHeldItem()->GetType();
@@ -453,6 +459,7 @@ using namespace Audio;
 								if (f->Use())
 								{
 									m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+									delete f;
 								}
 							}
 						}
@@ -460,6 +467,13 @@ using namespace Audio;
 						{
 							bp->Use();
 							m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+							delete bp;
+						}
+						else if (Drink* d = dynamic_cast<Drink*>(m_screenInventory->GetHeldItem()))
+						{
+							m_effectManager.ApplyEffect(d);
+							m_screenInventory->SetItem(m_screenInventory->GetSelectedSlot() - 1, nullptr);
+							delete d;
 						}
 					}
 				}
@@ -783,14 +797,14 @@ using namespace Audio;
 						//If the player is currently attacking, the item will be rendered outward from their body.
 						if (m_animator->GetCurrentAnimationIndex() == 7 /*Basic Attack Anim*/)
 						{
-							const int frame = 0;
-							m_heldItemLastSprite = std::shared_ptr<Sprite>(Renderer::GetSprite(baseSpriteId + frame));
-							m_heldItemDisplayFrameOffset = frame;
+							const int frame = m_animator->GetCurrentAnimation()->GetFrame();
+							m_heldItemLastSprite.reset(Renderer::GetSprite(baseSpriteId));
+							m_heldItemDisplayFrameOffset = 0;
 							m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
 
 							//Offset position is determined by what frame of attack the player is on.
 							Vec2 offsetPosition = Vec2::Zero;
-							switch (m_animator->GetCurrentAnimation()->GetFrame())
+							switch (frame)
 							{
 							case 0:
 								offsetPosition = { -6.25f, 3.f };
@@ -822,6 +836,7 @@ using namespace Audio;
 							{
 								Vec2 heldItemDisplayPos = offsetPosition + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + m_position + Vec2{ 16.f + m_heldItemDisplay->GetScale().X - 7, 0 };
 
+
 								//Shielding makes the item go up a bit.
 								if (m_blocking) { heldItemDisplayPos += Vec2{ 0.f, 1.55f }; }
 
@@ -834,6 +849,22 @@ using namespace Audio;
 								if (m_blocking) { heldItemDisplayPos += Vec2{ 0.f, 1.55f }; }
 
 								m_heldItemDisplay->GetSprite()->Render(cameraPosition, heldItemDisplayPos, m_heldItemDisplay->GetScale(), 0.0F);
+							}
+							return;
+						}
+
+						if (m_animator->GetCurrentAnimationIndex() == -1)
+						{
+							//Just put it in your hand.
+							m_heldItemDisplay->SetPosition(m_position + Vec2(5.5, 3.95f));
+							//Make the held item display scale up as the cooldown decreases.
+							Vec2 displayScale = Vec2{ m_heldItemDisplay->GetScale().X, 8.f * static_cast<float>(std::clamp(1 - m_attackCooldown, 0.0, 1.0)) };
+							if (m_textureFlipped)
+							{
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)) + Vec2{ displayScale.X - 7, 0 }, displayScale* Vec2 { -1, 1 }, 0.0F);
+							}
+							else {
+								m_heldItemDisplay->GetSprite()->Render(cameraPosition, m_heldItemDisplay->GetPosition() + (m_textureFlipped ? std::get<0>(m_heldItemDisplayOffset) : std::get<1>(m_heldItemDisplayOffset)), displayScale, 0.0F);
 							}
 							return;
 						}
@@ -899,6 +930,7 @@ using namespace Audio;
 								m_heldItemDisplay->SetSprite(m_heldItemLastSprite);
 
 								m_heldItemDisplay->SetPosition(m_position + (m_textureFlipped ? Vec2(6.75f, -0.5f) : Vec2(0, -0.5f)));
+
 
 								//Apply a motion effect if no animation is used.
 								if (noAnimatingTexture)
@@ -2360,6 +2392,8 @@ using namespace Lighting;
 					m_attackCooldown -= Utils::Time::GameTime::GetScaledDeltaTime();
 					Player_AttackingTracker -= Utils::Time::GameTime::GetScaledDeltaTime();
 
+					MainProgressIndicator::UpdateProgressIndicator(std::clamp(1.0 - m_attackCooldown, 0.0, 1.0));
+
 					if (Player_AttackingTracker < 0 && Player_AttackingTracker > -100)
 					{
 						Player_AttackingTracker = -100;
@@ -2506,6 +2540,9 @@ using namespace Lighting;
 							//m_animator->SetSpeedMult(((8.0 * 0.5) * (double)ANIM_16_SPF / m_attackCooldown) * 2.0);
 						}
 					}
+
+					//Check for any attack damage modifiers.
+					damage += m_effectManager.GetTotalEffect(DrinkEffectType::STRENGTH);
 
 					//Handle damage.
 					for (Enemies::Enemy* enemy : Enemies::Enemy::EnemyRegistry)

@@ -71,6 +71,7 @@ namespace GAME_NAME::Items
 		}
 
 		//Update the given slot.
+
 		m_items[slot] = item;
 		
 		return true;

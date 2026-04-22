@@ -4,8 +4,11 @@ I only trust people with toast...
 >Foragable
 I must have left my %item% at home.
 
->AnimatingCharacter_CannotSwitch2
+>AnimatingCharacter
 Maybe if I had some grains I would believe you.
+
+>Foragable
+I could use a %item% to get this.
 
 >AnimatingCharacter_CannotSwitch3
 You got any toast?
@@ -29,8 +32,11 @@ Thank you for this delicious %item% !
 >AnimatingCharacter_CraftWooden1
 I've been getting good at working with wood!
 
+>Foragable_WrongItem1
+If I had a %item% I could get this.
+
 >Foragable_WrongItem2
-I could use a %item% to get this.
+I left my %item% at home.
 
 >Foragable_WrongItem3
 Oh, I must have misplaced my %item% .
@@ -53,6 +59,6 @@ Ammo
 >InventoryTooltip_Chop
 Chop
 
->InventoryTooltip_EquipmentHealth
-Equipment Armor
+>InventoryTooltip_Drink_Strength
+Strength
 
