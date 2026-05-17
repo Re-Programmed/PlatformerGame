@@ -89,6 +89,7 @@
 #include "./Objects/Environment/AnimatingObject.h"
 
 #include "./Objects/Environment/PassTriggerObject.h"
+#include "Objects/FunctionalObject.h"
 
 #define COMPONENT_MAPPINGS_SIZE 1	//How many component mappings there are
 #define MAPPINGS_SIZE 20			//How many object mappings there are.
@@ -492,7 +493,7 @@ using namespace Enemies;
 			3 - Bench (sprite)
 			4 - Sagging Object (sprite, segmentCount, bouncy)
 			5 - InteriorDoor (sprite,destination,playerExitX,playerExitY,shouldLoadOnlyObjects=false,shouldUseLocalState=false)
-			6 - DialogueInteractable (sprite,dialogueKey)
+			6 - DialogueInteractable (sprite,dialogueKey,setActiveKey = "")
 			7 - SpinningObject (sprite, rotationSpeed, enabled)
 			8 - ElectricalTransformer (sprite, zapRadius)
 			9 - InnerUpperWall (sprite,fadeOffset = 0,maxFadeOffset = 0) [Set layer to 4 to render infront]
@@ -568,7 +569,23 @@ using namespace Objects::Environment::Buildings;
 		}
 		case 6:
 		{
-			GAME_NAME::Objects::Environment::DialogueInteractable* di = new GAME_NAME::Objects::Environment::DialogueInteractable(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), Renderer::GetSprite(std::stoi(data[6])), data[7]);
+			std::string setActiveKey = "";
+			if (data.size() > 8)
+			{
+				setActiveKey = data[8];
+			}
+
+			Sprite* finalSprite = nullptr;
+
+			if (data[6].starts_with("sb_"))
+			{
+				finalSprite = Renderer::GetSprite(SpriteBase(std::stoi(data[6].substr(3))));
+			}
+			else {
+				finalSprite = Renderer::GetSprite(std::stoi(data[6]));
+			}
+
+			GAME_NAME::Objects::Environment::DialogueInteractable* di = new GAME_NAME::Objects::Environment::DialogueInteractable(STOIVEC(data[1], data[2]), STOIVEC(data[3], data[4]), finalSprite, data[7], setActiveKey);
 			Renderer::LoadObject(di, std::stoi(data[5]));
 			break;
 		}
@@ -1152,6 +1169,17 @@ void GAME_NAME::Mappings::LoadOver20Switch(int index, std::vector<std::string> d
 		Objects::Environment::PassTriggerObject* obj = new Objects::Environment::PassTriggerObject(position, scale, new Sprite(sprites[0]->GetSpriteId()), sprites, animSpeed);
 		Renderer::LoadObject(obj, std::stoi(data[4]));
 
+		break;
+	}
+
+	/*
+	36: FunctionalObject (map, positionX, positionY, scaleX, scaleY, sprite, layer, functionKey, isPassTrigger = false)
+	*/
+	case 36:
+	{
+		FunctionalObject* fObject = new FunctionalObject(STOIVEC(data[0], data[1]), STOIVEC(data[2], data[3]), Renderer::GetSprite(std::stoi(data[4])), data[6], data.size() > 7 ? (std::stoi(data[7]) == 1) : false);
+		Renderer::LoadObject(fObject, std::stoi(data[5]));
+		
 		break;
 	}
 

@@ -10,11 +10,11 @@
 #define FERAL_RABBIT_AWAKEN_DISTANCE 50
 #define FERAL_RABBIT_ATTACK_DISTANCE 10
 
-#define FERAL_RABBIT_BASE_ATTACK_DAMAGE 12
+#define FERAL_RABBIT_BASE_ATTACK_DAMAGE 4
 #define FERAL_RABBIT_BASE_ATTACK_DELAY 1.25f
 
-#define FERAL_RABBIT_AGRESSION_SPEED 2400.f
-#define FERAL_RABBIT_DEFAULT_SPEED 1000.f
+#define FERAL_RABBIT_AGRESSION_SPEED 1800.f
+#define FERAL_RABBIT_DEFAULT_SPEED 700.f
 
 namespace GAME_NAME::Objects::Enemies
 {
@@ -78,8 +78,14 @@ namespace GAME_NAME::Objects::Enemies
 				}
 
 				//Damage player since rabbit is in range.
-				//TODO: Add slashing animation.
 				TestGame::ThePlayer->Damage(FERAL_RABBIT_BASE_ATTACK_DAMAGE * (m_supercharge + 1), this, false);
+
+				//Jump upon hitting.
+				if (m_onGround)
+				{
+					m_physics->AddVelocity({ 0.f, (((PassiveRabbitAttributes*)(m_enemyAttributes))->JumpHeight * 5.f) });
+				}
+
 				m_actionTimer = FERAL_RABBIT_BASE_ATTACK_DELAY;
 			}
 

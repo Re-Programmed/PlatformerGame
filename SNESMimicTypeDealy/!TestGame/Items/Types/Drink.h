@@ -25,6 +25,18 @@ namespace GAME_NAME::Items
 	public:
 		DrinkEffect GetEffect();
 
+		Drink()
+			: InventoryItem()
+		{
+
+		}
+
+		Drink(ITEM_TYPE type)
+			: InventoryItem(type)
+		{
+
+		}
+
 	protected:
 		inline constexpr const char getPrefix() override { return ITEM_PREFIX_DRINK; }
 		

@@ -20,10 +20,14 @@ typedef HealthBarRenderer::HealthBar HealthBar;
 
 	void HealthBarRenderer::CreateHealthBar(GameObject* targetObject, float maxValue, float value)
 	{
-		auto barCheck = m_createdHealthBars.find(targetObject);
-
-		//A health bar with this target object already exists.
-		if (barCheck != m_createdHealthBars.end()) { return; }
+		//Check if bar already exists.
+		for (auto& [object, bar] : m_createdHealthBars)
+		{
+			if (object == targetObject)
+			{
+				return;
+			}
+		}
 
 		GameObject* healthBarObject = new GameObject(Vec2{ targetObject->GetPosition().X + targetObject->GetScale().X / 2.f, targetObject->GetPosition().Y + targetObject->GetScale().Y + HEALTH_BAR_Y_OFFSET }, { HEALTH_BAR_SCALE_X * (value / maxValue), HEALTH_BAR_SCALE_Y}, Rendering::Renderer::GetSprite(HEALTH_BAR_SPRITE_ID));
 		//Increase scale by 2* healthBarObject size / pixels (ADJUST IF SPRITE CHANGES).

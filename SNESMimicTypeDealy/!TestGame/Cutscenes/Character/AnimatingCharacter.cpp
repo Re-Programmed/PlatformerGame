@@ -8,7 +8,7 @@ namespace GAME_NAME::Cutscenes
 {
 
 	AnimatingCharacter::AnimatingCharacter(Vec2 position, Vec2 scale, bool gravityObserved, float stopDistance, Objects::Player::Player::PlayerTextureData* textureData)
-		: ActiveBoxCollisionGravityObject(position, scale, Renderer::GetSprite(textureData->DefaultSprites)), 
+		: ActiveBoxCollisionGravityObject(position, scale, textureData ? Renderer::GetSprite(textureData->DefaultSprites) : nullptr),
 		m_target{ /*Target Point: */position, /*Target Object: */nullptr }, m_gravityObserved(gravityObserved), m_stopDistance(stopDistance),
 		m_textureData(textureData)
 	{
@@ -19,6 +19,8 @@ namespace GAME_NAME::Cutscenes
 		else {
 			m_physics->SetGravityStrength(0.f);
 		}
+
+		if (textureData == nullptr) { return; }
 
 		registerAnimations();
 	}
@@ -87,9 +89,8 @@ namespace GAME_NAME::Cutscenes
 		pathfind();
 		updateAnimations();
 
+		if (m_animator) { m_animator->Update(window, this); }
 
-
-		m_animator->Update(window, this);
 		if (m_collisionEnabled)
 		{
 			ActiveBoxCollisionGravityObject::Update(window);
@@ -268,6 +269,8 @@ namespace GAME_NAME::Cutscenes
 
 	void AnimatingCharacter::updateAnimations()
 	{
+		if (!m_animator) { return; }
+
 		float animMomentum = std::abs(m_physics->GetVelocity().X);
 
 		if (!m_onGround)
@@ -337,12 +340,21 @@ using namespace Components::Animation;
 
 	void AnimatingCharacter::updateLookDirection()
 	{
+		if (m_textureData == nullptr) { return; }
 
 		if (m_lookDirection == Objects::Player::Player::SITTING_FORWARD)
 		{
 			m_collisionEnabled = false;
 
 			auto nSprite = Renderer::GetSpriteIdFromTextureId(m_textureData->Climbing + 8);
+			if (m_sprite->GetSpriteId() != nSprite)
+			{
+				m_sprite.reset(new Sprite(nSprite));
+			}
+		}
+		else if (m_lookDirection == Objects::Player::Player::BEHIND)
+		{
+			auto nSprite = Renderer::GetSpriteIdFromTextureId(m_textureData->BagTurnaround);
 			if (m_sprite->GetSpriteId() != nSprite)
 			{
 				m_sprite.reset(new Sprite(nSprite));

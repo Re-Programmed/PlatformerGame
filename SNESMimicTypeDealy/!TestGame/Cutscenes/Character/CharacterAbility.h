@@ -164,6 +164,8 @@ using namespace GAME_NAME::Utils;
 		void Render(const Vec2& cameraPos, AnimatingCharacter* character) override;
 
 		const CharacterAbility GetAbility() override { return CharacterAbility::DesiredItem; }
+
+		inline bool GetHasGiven() { return m_given; }
 	private:
 		/// <summary>
 		/// The item the character wants.

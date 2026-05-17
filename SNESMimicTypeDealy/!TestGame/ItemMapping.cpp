@@ -6,6 +6,8 @@
 #include "./Items/Types/Food.h"
 #include "./Items/Types/Placeable.h"
 #include "./Items/Types/Blueprint.h"
+#include "./Items/Types/Firearm.h"
+#include "./Items/Types/Drink.h"
 
 namespace GAME_NAME
 {
@@ -56,6 +58,12 @@ using namespace std;
 			
 		case ITEM_PREFIX_BLUEPRINT:
 			return new Blueprint((ITEM_TYPE)std::stoi(parameters[0]), std::stoi(parameters[1]));
+
+		case ITEM_PREFIX_FIREARM:
+			return new Firearm((ITEM_TYPE)std::stoi(parameters[0]));
+			
+		case ITEM_PREFIX_DRINK:
+			return new Drink((ITEM_TYPE)std::stoi(parameters[0]));
 
 		case ITEM_PREFIX_ITEM:
 		default:

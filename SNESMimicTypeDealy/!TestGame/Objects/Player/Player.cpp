@@ -1376,7 +1376,15 @@ using namespace Audio;
 				if (m_swimming) { return; }
 				if (m_physics->GetGravitationalVelocity() < -m_physics->GetGravityStrength() - 1)
 				{
+
 					m_onGround = false;
+
+					//If the player is climbing, they should be able to jump off the ladder.
+					if (m_climbing) {
+						m_onGround = true; 
+						m_airTime = 0.f;
+					}
+					
 				}
 				m_foundCollisionInTick = false;
 

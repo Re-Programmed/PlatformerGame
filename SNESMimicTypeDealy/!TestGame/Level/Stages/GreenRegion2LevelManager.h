@@ -18,7 +18,13 @@ namespace GAME_NAME::Level
 		void Update(GLFWwindow* window) override;
 
 	private:
+		static GameObject* m_cutsceneWifiRouter;
+		static double m_cutsceneTimer;
+
+		static void wifiBreakCutscene(GameObject* wifiRouter);
+
 		static Cutscenes::AnimatingCharacter* m_evilWolf;
+		static Cutscenes::AnimatingCharacter* m_butterCraftChecker;
 		static bool m_playedEvilWolfCutscene, m_wolfJumped;
 	};
 }

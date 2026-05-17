@@ -21,6 +21,8 @@ namespace GAME_NAME::Objects::Environment::Buildings
 
 	void InteriorDoor::onInteract(std::shared_ptr<Player::Player> player, InputManager::KEY_STATE state)
 	{
+		if (!m_active) { return; }
+
 		Input::DisplayIconManager::ShowKeyInputDisplay(keyRef::PLAYER_INTERACT, TestGame::ThePlayer->GetPosition() + Vec2(TestGame::ThePlayer->GetScale() + Vec2(3, -5)), state & InputManager::KEY_STATE::KEY_STATE_HELD ? 8 : 0);
 
 		if (state & InputManager::KEY_STATE::KEY_STATE_RELEASED)
@@ -64,7 +66,7 @@ namespace GAME_NAME::Objects::Environment::Buildings
 					TestGame::INSTANCE->SetLoadLevelWithSavedPlayer(true);
 				}
 
-				TestGame::INSTANCE->LoadLevelAndAllData(m_levelDestination.c_str());
+				TestGame::INSTANCE->LoadLevelAndAllData(m_levelDestination.c_str(), m_exitPosition);
 			}
 
 			

@@ -112,7 +112,7 @@ namespace GAME_NAME::Objects::Enemies
 		m_physics->SetFrictionDrag(0.4f);
 
 		m_enemyAttributes->MovementSpeed = ANGRY_FARMER_DEFAULT_SPEED;
-		m_enemyAttributes->TerminalMovementSpeed = 50.f;
+		m_enemyAttributes->TerminalMovementSpeed = 1200.f;
 		m_enemyAttributes->IgnoreYPathfind = true;
 
 	}

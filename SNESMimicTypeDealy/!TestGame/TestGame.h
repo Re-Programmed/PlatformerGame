@@ -76,7 +76,7 @@ namespace GAME_NAME
 		/// The basic level loading function. Loads everything with global_assets in order.
 		/// </summary>
 		/// <param name="levelPath"></param>
-		void LoadLevelAndAllData(const char* levelPath);
+		void LoadLevelAndAllData(const char* levelPath, Vec2 newPlayerPos = Vec2{ 0.f, 0.f });
 		void LoadLevelOnlyObjects(const char* levelPath, Vec2 newPlayerPos);
 
 		static inline void SetLoadLevelWithSavedPlayer(bool value) { m_loadLevelWithSavedPlayer = value; }

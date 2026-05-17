@@ -184,9 +184,13 @@ namespace GAME_NAME::Cutscenes
 				DialogueManager::INSTANCE->PlayDialogueSequence(DialogueManager::INSTANCE->GetDialogueSequence(this->m_givenSequence, attempt));
 			}
 			
-			InventoryItem* giveItem = InventoryItem::DecodeItemString(m_giveItemCode);
-			FloorItem* floorItem = new FloorItem(TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale() / 2.f, giveItem, 0.5f);
-			Renderer::InstantiateObject(Renderer::InstantiateGameObject(floorItem, true, 2, false));
+			if (!m_giveItemCode.empty())
+			{
+				InventoryItem* giveItem = InventoryItem::DecodeItemString(m_giveItemCode);
+				FloorItem* floorItem = new FloorItem(TestGame::ThePlayer->GetPosition() + TestGame::ThePlayer->GetScale() / 2.f, giveItem, 0.5f);
+				Renderer::InstantiateObject(Renderer::InstantiateGameObject(floorItem, true, 2, false));
+			}
+
 			m_given = true;
 			return true;
 		}

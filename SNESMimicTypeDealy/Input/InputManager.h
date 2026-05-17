@@ -9,9 +9,9 @@
 
 ///How many inputs to check for
 #if _DEBUG
-#define KEY_ARRAY_SIZE 26
+#define KEY_ARRAY_SIZE 27
 #else
-#define KEY_ARRAY_SIZE 18
+#define KEY_ARRAY_SIZE 19
 #endif
 
 #define JOYSTICK_DEADZONE 0.175f //TODO: Make this a setting.
@@ -34,6 +34,7 @@ const std::string_view KeybindNames[KEY_ARRAY_SIZE] {
 	"PLAYER_ATTACK",
 	"PLAYER_USE_ITEM",
 	"PLAYER_RELOAD",
+	"PLAYER_INVENTORY_QUICK_MOVE",
 	"DEFAULT_PAUSE_GAME",
 #if _DEBUG
 	"PLAYER_DEBUG",
@@ -70,6 +71,7 @@ namespace GAME_NAME
 		PLAYER_ATTACK,				//Player Attack [Right Mouse Button]
 		PLAYER_USE_ITEM,			//Player Use Item [Left Mouse Button]
 		PLAYER_RELOAD,				//Player Reload [R]
+		PLAYER_INVENTORY_QUICK_MOVE,//Player Inventory Quick Move [Shift]
 
 		DEFAULT_PAUSE_GAME,			//Pause Game {DEFAULT} [ESC]
 

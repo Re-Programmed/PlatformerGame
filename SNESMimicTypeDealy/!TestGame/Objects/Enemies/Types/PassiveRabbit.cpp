@@ -95,7 +95,7 @@ namespace GAME_NAME::Objects::Enemies
 	{
 		Enemy::onCollision(push, self, other);
 
-		m_physics->SetVelocity({ 0.f, 0.f });
+		m_physics->SetVelocity({ m_physics->GetVelocity().X, 0.f});
 	}
 
 	void PassiveRabbit::updateTextures(GLFWwindow* window)

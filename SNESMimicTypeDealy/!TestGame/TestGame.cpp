@@ -79,6 +79,7 @@
 #include "./Objects/Mechanical/MechanicalSaveManager.h"
 
 #include "./Items/Inventories/GiveItemInventory.h"
+#include "Objects/FunctionalObject.h"
 
 #define SKIP_MAIN_MENU
 #define STANDARD_LOAD
@@ -367,6 +368,9 @@ namespace GAME_NAME
 		DebugCommands::RunRecieverThread();
 #endif
 
+		//Reset all registered functional triggers.
+		FunctionalObject::ClearRegisteredFunctions();
+
 		Mechanical::Cog::HidePlacingCog();
 
 		Mechanical::MechanicalSaveManager::LoadAllMechanicalObjectsForCurrentLevel();
@@ -380,6 +384,14 @@ namespace GAME_NAME
 		{
 			ThePlayer = std::make_shared<Objects::Player::Player>(Vec2(-20, level.PlayerStartPosition.Y), m_loadLevelWithSavedPlayer);
 			m_loadLevelWithSavedPlayer = false;
+
+			//Loading the level with a specified player position -- usually after using a door.
+			if (Game_playerNewPos.X > 0 || Game_playerNewPos.Y > 0)
+			{
+				std::cout << Game_playerNewPos.ToString();
+				ThePlayer->SetPosition(Game_playerNewPos);
+				Game_playerNewPos = Vec2{-1.f, -1.f};
+			}
 
 			if (level.Flags.contains(LEVEL_ROOM_CONTROLS_FLAG))
 			{
@@ -679,9 +691,10 @@ namespace GAME_NAME
 		}
 	}
 
-	void TestGame::LoadLevelAndAllData(const char* levelPath)
+	void TestGame::LoadLevelAndAllData(const char* levelPath, Vec2 newPlayerPos)
 	{
 		Game_nextLevelToLoad = std::string(levelPath);
+		Game_playerNewPos = newPlayerPos;
 	}
 
 	void TestGame::LoadLevelOnlyObjects(const char* levelPath, Vec2 newPlayerPos)

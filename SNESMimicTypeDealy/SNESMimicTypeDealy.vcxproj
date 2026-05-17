@@ -222,6 +222,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Spikes.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Water.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Waterfall.cpp" />
+    <ClCompile Include="!TestGame\Objects\FunctionalObject.cpp" />
     <ClCompile Include="!TestGame\Objects\Furniture.cpp" />
     <ClCompile Include="!TestGame\Objects\GUI\AnimatingGUIElement.cpp" />
     <ClCompile Include="!TestGame\Objects\GUI\GUIItemSelectionBox.cpp" />
@@ -418,6 +419,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Spikes.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Water.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Waterfall.h" />
+    <ClInclude Include="!TestGame\Objects\FunctionalObject.h" />
     <ClInclude Include="!TestGame\Objects\Furniture.h" />
     <ClInclude Include="!TestGame\Objects\GUI\AnimatingGUIElement.h" />
     <ClInclude Include="!TestGame\Objects\GUI\GUIItemSelectionBox.h" />

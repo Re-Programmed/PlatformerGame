@@ -488,6 +488,12 @@ namespace GAME_NAME::Objects::Player
 		updateSlotItem(id - (CurrentOpenBackpack->m_size - BACKPACK_NUM_EQUIPMENT_SLOTS), TOOL_ACTION::EQUIPMENT /*Item must have the equipment attribute to enter this slot.*/);
 	}
 
+#define UpdateBag() {										\
+		Backpack* const savedBag = CurrentOpenBackpack;		\
+		CurrentOpenBackpack->Close(true);					\
+		savedBag->Open(true);								\
+	}	
+
 	void Backpack::clickGeneralItemSlot(int id)
 	{
 		if (m_clickDelay > 0.f) { return; }
@@ -508,14 +514,33 @@ namespace GAME_NAME::Objects::Player
 
 		const int& index = id + BACKPACK_NUM_EQUIPMENT_SLOTS;
 
+		//Trying to quick move the item.
+		if (InputManager::GetKeyUpDown(keyRef::PLAYER_INVENTORY_QUICK_MOVE) & InputManager::KEY_STATE_HELD)
+		{
+			ScreenInventory* pInv = TestGame::ThePlayer->GetInventory();
+			ReturnItem item(CurrentOpenBackpack->GetItem(index));
+
+			if (!item.ri_IsNull)
+			{
+				//Find the first empty player slot.
+				for (int i = 0; i < pInv->GetSize(); i++)
+				{
+					if (pInv->GetItem(i).ri_IsNull)
+					{
+						//Put the item in the player slot and remove it from the backpack.
+						pInv->SetItem(i, item.ri_Item);
+						CurrentOpenBackpack->SetItem(index, nullptr);
+						UpdateBag();
+						return;
+					}
+				}
+			}
+		}
+
 		updateSlotItem(index);
 	}
 
-#define UpdateBag() {										\
-		Backpack* const savedBag = CurrentOpenBackpack;		\
-		CurrentOpenBackpack->Close(true);					\
-		savedBag->Open(true);								\
-	}														\
+													
 
 	void Backpack::clickPlayerSlot(int id)
 	{
@@ -536,6 +561,25 @@ namespace GAME_NAME::Objects::Player
 		StaticGUIElement* cursorElement = nullptr;
 
 		ReturnItem playerSlotItem = TestGame::ThePlayer->GetInventory()->GetItem(index);
+
+		//Quickmove to general slots.
+		if (InputManager::GetKeyUpDown(keyRef::PLAYER_INVENTORY_QUICK_MOVE) & InputManager::KEY_STATE_HELD && !playerSlotItem.ri_IsNull)
+		{
+			for (int slotIndex = BACKPACK_NUM_EQUIPMENT_SLOTS; slotIndex < CurrentOpenBackpack->m_size; slotIndex++) 
+			{
+				if (CurrentOpenBackpack->GetItem(slotIndex).ri_IsNull)
+				{
+					//Quick move the item to the first open slot.
+					CurrentOpenBackpack->SetItem(slotIndex, playerSlotItem.ri_Item);
+					TestGame::ThePlayer->GetInventory()->SetItem(index, nullptr);
+					Audio::SoundEvents::PlaySoundGlobal(Audio::SoundEvents::Event::GUI_ITEM, 0.66f);
+					UpdateBag();
+					break;
+				}
+			}
+
+			return;
+		}
 
 		if (cursorElement = setCursorItem(TestGame::ThePlayer->GetInventory()->GetItem(index).ri_Item))
 		{

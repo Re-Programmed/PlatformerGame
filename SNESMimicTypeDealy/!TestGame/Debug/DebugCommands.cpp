@@ -56,7 +56,7 @@ void DebugCommands::HandleKeybinds()
 {
 	if (GAME_NAME::InputManager::GetKeyUpDown(GAME_NAME::keyRef::DEBUG_OBJECT_MENU) & GAME_NAME::InputManager::KEY_STATE::KEY_STATE_PRESSED)
 	{
-		m_queuedCommands.push_back("loadlevel,/green_region_barninterior");
+		m_queuedCommands.push_back("loadlevel,/green_region_area_3");
 	}
 }
 

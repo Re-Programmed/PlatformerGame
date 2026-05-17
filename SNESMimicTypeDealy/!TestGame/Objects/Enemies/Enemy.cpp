@@ -73,17 +73,24 @@ namespace GAME_NAME::Objects::Enemies
 
 			m_pathfindTimeout.Distance = distance;
 
+
+			bool turningAround = (m_physics->GetVelocity().X > 0.f && m_position.X - m_pathfind.X > 0) || (m_physics->GetVelocity().X < 0.f && m_position.X - m_pathfind.X < 0);
+
 			//Move the enemy towards the pathfinding point if they are not already at it and ensure the enemy dosent exceed terminal velocity.
-			if (std::abs(m_physics->GetVelocity().X) < m_enemyAttributes->TerminalMovementSpeed && m_onGround)
+			//If the enemy is turning around, then it is changing its velocity away from 
+			if ((turningAround || std::abs(m_physics->GetVelocity().X) < (m_enemyAttributes->TerminalMovementSpeed / 27.f)) && m_onGround)
 			{
-				Vec2 addVel = Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0) * 0.013f /*Speed is still changing with framerate for some reason??? BECAUSE OF setVelocity(0) in omCollision*/;
-				if ((addVel.X < 0 && m_physics->GetVelocity().X > 0) || (addVel.X > 0 && m_physics->GetVelocity().X < 0))
+				Vec2 addVel = Vec2((m_position.X - m_pathfind.X < 0) ? m_enemyAttributes->MovementSpeed : -m_enemyAttributes->MovementSpeed, 0.f) * 0.013f /*Speed is still changing with framerate for some reason??? BECAUSE OF setVelocity(0) in omCollision*/;
+
+				//Add more velocity if the enemy is trying to turn around.
+				if (turningAround)
 				{
 					addVel = addVel * 8.f;
 				}
 
-				m_physics->AddVelocity(addVel);
+				m_physics->AddVelocity(addVel * 0.1f * (Utils::Time::GameTime::GetScaledDeltaTime() / 0.0017f));
 			}
+			
 		}
 
 finish_pathfind:
@@ -112,7 +119,7 @@ finish_pathfind:
 
 	void Enemy::Damage(float damage, const Vec2 attackOrigin)
 	{
-		if (m_isDead) { return; }
+		if (m_isDead || !m_active) { return; }
 
 		m_health -= damage;
 		m_attackedAnimationTimer = ATTACK_ANIMATION_LENGTH;
