@@ -561,6 +561,12 @@
     <ClCompile Include="!TestGame\Objects\FunctionalObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Objects\Environment\Effects\ThoughtEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -1191,6 +1197,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\Objects\FunctionalObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Environment\Effects\ThoughtEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

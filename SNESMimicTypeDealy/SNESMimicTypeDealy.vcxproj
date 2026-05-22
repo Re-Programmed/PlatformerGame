@@ -188,6 +188,7 @@
     <ClCompile Include="!TestGame\Objects\Enemies\HealthBarRenderer.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\AngryFarmer.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\FeralRabbit.cpp" />
+    <ClCompile Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\LeftRightEnemy.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\PassiveRabbit.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\AnimatingObject.cpp" />
@@ -213,6 +214,7 @@
     <ClCompile Include="!TestGame\Objects\Environment\Effects\GlitchedRegion.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\GlitchEffect.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Effects\Rain.cpp" />
+    <ClCompile Include="!TestGame\Objects\Environment\Effects\ThoughtEffect.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\ExplosiveObject.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Foragable.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\Levels\Town1Manager.cpp" />
@@ -382,6 +384,7 @@
     <ClInclude Include="!TestGame\Objects\Enemies\HealthBarRenderer.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\AngryFarmer.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\FeralRabbit.h" />
+    <ClInclude Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\LeftRightEnemy.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\PassiveRabbit.h" />
     <ClInclude Include="!TestGame\Objects\Environment\AnimatingObject.h" />
@@ -409,6 +412,7 @@
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchedRegion.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\GlitchEffect.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Effects\Rain.h" />
+    <ClInclude Include="!TestGame\Objects\Environment\Effects\ThoughtEffect.h" />
     <ClInclude Include="!TestGame\Objects\Environment\ExplosiveObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Foragable.h" />
     <ClInclude Include="!TestGame\Objects\Environment\Levels\Town1Manager.h" />

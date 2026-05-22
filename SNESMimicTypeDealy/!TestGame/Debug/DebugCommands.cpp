@@ -44,6 +44,8 @@
 #include "../Objects/Mechanical/Cog.h"
 #include "../Objects/Mechanical/MechanicalSaveManager.h"
 
+#include "../Objects/Enemies/Types/ImpressionableEnemy.h"
+
 #include "../Cutscenes/Character/CharacterNodeManager.h"
 
 #define DebugCommands_Log(x) DEBUG::DebugLog::Log(std::string("[Debug Commands] ").append(x), true, ";33");
@@ -101,6 +103,37 @@ void DebugCommands::HandleCommands()
 			GAME_NAME::Camera::LevelBuilderCam* lbc = new GAME_NAME::Camera::LevelBuilderCam(GAME_NAME::TestGame::INSTANCE->GetCamera()->GetPosition(), GAME_NAME::TestGame::INSTANCE->GetCamera()->GetZoom());
 
 			GAME_NAME::TestGame::INSTANCE->SetCamera(lbc);
+
+			continue;
+		}
+
+		if (input.starts_with("enemy"))
+		{
+			std::vector<std::string> params = getParams(input);
+
+			if (params.size() >= 1)
+			{
+				if (params[0] == "impressionable")
+				{
+					if (params.size() >= 2)
+					{
+						if (params[1] == "stabber")
+						{
+							DebugCommands_Log("Spawned enemy.");
+
+							Enemies::ImpressionableEnemy* newEnemy = new Enemies::ImpressionableEnemy(GAME_NAME::TestGame::ThePlayer->GetPosition(), Enemies::ImpressionableEnemy::AttackType::Stabber);
+							newEnemy->SetHeldItem(ITEM_TYPE::IRON_SWORD);
+							Renderer::InstantiateObject(Renderer::InstantiateGameObject(newEnemy, true, 2, false));
+						}
+					}
+					else {
+						DebugCommands_Log("Specify enemy attack type (stabber, thrower, healer).");
+					}
+				}
+			}
+			else {
+				DebugCommands_Log("Specify enemy type (impressionable).");
+			}
 
 			continue;
 		}

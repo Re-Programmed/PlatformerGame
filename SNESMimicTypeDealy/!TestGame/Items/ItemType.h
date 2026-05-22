@@ -15,7 +15,7 @@ namespace GAME_NAME
 {
 	namespace Items
 	{
-#define ITEM_COUNT 78
+#define ITEM_COUNT 79
 		/// <summary>
 		/// An enum for the types of items in the game.
 		/// </summary>
@@ -99,6 +99,7 @@ namespace GAME_NAME
 			POLISH_WARHAMMER = 75,
 			COPPER_SPIKE = 76,
 			BANDAGE = 77,
+			PHONE = 78
 		};
 
 		/// <summary>
@@ -274,8 +275,9 @@ namespace GAME_NAME
 			{ "Polish Warhammer", SpriteBase(484), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, {{ TOOL_ACTION::WEAPON, std::string("12,0,1.5,26,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_PUNCHED))) }, { TOOL_ACTION::VALUE, "80" }}, "Are you warhammer\nliscensed?"},			//75
 			{ "Copper Spike", SpriteBase(485), FOLLOW_HAND_TEXTURE, WEAPON | VALUE, {{ TOOL_ACTION::WEAPON, std::string("6,0,0.5,18,").append(std::to_string(static_cast<int>(Audio::SoundEvents::Event::HIT_SLICED))) }, { TOOL_ACTION::VALUE, "50" }}, "Spiky." },			//76
 
-			{ "Bandage", SpriteBase(286), FOLLOW_HAND_TEXTURE, FOOD | VALUE, { { TOOL_ACTION::FOOD, "15" } }, "Can be applied quickly\n to injuries." },				//77
+			{ "Bandage", SpriteBase(486), FOLLOW_HAND_TEXTURE, FOOD | VALUE, { { TOOL_ACTION::FOOD, "15" } }, "Can be applied quickly\n to injuries." },				//77
 
+			{ "Phone", SpriteBase(489), FOLLOW_HAND_TEXTURE, 0, { }, "An update is avaialable." },				//78
 		};
 	
 
