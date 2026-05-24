@@ -2,7 +2,7 @@
 
 #include "../../../../Utils/Time/GameTime.h"
 
-#define THOUGHT_BUBBLE_SCALE Vec2{12.f, 12.f}
+#define THOUGHT_BUBBLE_SCALE Vec2{20.f, 20.f}
 #define THOUGHT_BUBBLE_SPRITE SpriteBase(487)
 
 namespace GAME_NAME::Objects::Environment::Effects
@@ -68,7 +68,7 @@ namespace GAME_NAME::Objects::Environment::Effects
 	{
 		GameObject::Render(cameraPos);
 		
-		m_displayedSprite->Render(cameraPos, m_position + Vec2{ THOUGHT_BUBBLE_SCALE/8.f }, Vec2{ THOUGHT_BUBBLE_SCALE/4.f });
+		m_displayedSprite->Render(cameraPos, m_position + Vec2{ THOUGHT_BUBBLE_SCALE/4.f }, Vec2{ THOUGHT_BUBBLE_SCALE/2.f });
 	}
 
 }

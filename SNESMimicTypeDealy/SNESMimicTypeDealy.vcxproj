@@ -190,6 +190,7 @@
     <ClCompile Include="!TestGame\Objects\Enemies\Types\FeralRabbit.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\LeftRightEnemy.cpp" />
+    <ClCompile Include="!TestGame\Objects\Enemies\Types\LoadableEnemy.cpp" />
     <ClCompile Include="!TestGame\Objects\Enemies\Types\PassiveRabbit.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\AnimatingObject.cpp" />
     <ClCompile Include="!TestGame\Objects\Environment\BackgroundObjects.cpp" />
@@ -386,6 +387,7 @@
     <ClInclude Include="!TestGame\Objects\Enemies\Types\FeralRabbit.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\LeftRightEnemy.h" />
+    <ClInclude Include="!TestGame\Objects\Enemies\Types\LoadableEnemy.h" />
     <ClInclude Include="!TestGame\Objects\Enemies\Types\PassiveRabbit.h" />
     <ClInclude Include="!TestGame\Objects\Environment\AnimatingObject.h" />
     <ClInclude Include="!TestGame\Objects\Environment\BackgroundObjects.h" />

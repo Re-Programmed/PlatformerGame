@@ -4,11 +4,12 @@
 #include "../../../../Components/Animation/AnimatorComponent.h"
 #include "../../../Items/ItemType.h"
 
+#include "./LoadableEnemy.h"
 
 namespace GAME_NAME::Objects::Enemies
 {
 	class ImpressionableEnemy
-		: public Enemy
+		: public Enemy, public LoadableEnemy
 	{
 	public:
 		enum class AttackType
@@ -18,7 +19,7 @@ namespace GAME_NAME::Objects::Enemies
 			Healer  = 2
 		};
 
-		ImpressionableEnemy(Vec2 position, AttackType type, bool initiallyAngry = false, size_t saveId = 0);
+		ImpressionableEnemy(Vec2 position, AttackType type, LoadableEnemy::LoadMode loadCondition, bool initiallyAngry = false, size_t saveId = 0);
 
 		void Update(GLFWwindow* window) override; 
 
@@ -48,7 +49,14 @@ namespace GAME_NAME::Objects::Enemies
 
 		void attack();
 
+		void load() override;
+		void unload() override;
+
+		void onCollision(Vec2 push, GameObject* self, GameObject* other) override;
+
 	private:
+		double m_checkingPhone = 0.0;
+
 		double m_attackCharge;
 		double m_actionTimer;
 	};

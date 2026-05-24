@@ -64,7 +64,7 @@ namespace GAME_NAME::Objects::Environment::Effects
 
 		//Do screenshake.
 		GAME_NAME::Camera::GameCamera* gc = dynamic_cast<GAME_NAME::Camera::GameCamera*>(TestGame::INSTANCE->GetCamera());
-		gc->ScreenShake(2.6f * (power/15.f), std::clamp(static_cast<double>(power) / 25.0, 0.0, 2.0));
+		gc->ScreenShake(0.66f * (power/15.f), std::clamp(static_cast<double>(power) / 25.0, 0.0, 2.0));
 
 		//Play explosion sound. (TODO: Make it so the power effects which explosion sound is played.)
 		Audio::SoundEvents::PlaySoundAtPoint(Audio::SoundEvents::Event::EXPLODE_MEDIUM, m_position);

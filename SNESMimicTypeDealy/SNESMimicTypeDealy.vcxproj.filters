@@ -567,6 +567,9 @@
     <ClCompile Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="!TestGame\Objects\Enemies\Types\LoadableEnemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\include\glad\glad.h">
@@ -1203,6 +1206,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="!TestGame\Objects\Enemies\Types\ImpressionableEnemy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="!TestGame\Objects\Enemies\Types\LoadableEnemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

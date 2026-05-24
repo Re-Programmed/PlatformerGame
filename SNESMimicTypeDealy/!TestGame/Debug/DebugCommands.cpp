@@ -121,8 +121,14 @@ void DebugCommands::HandleCommands()
 						{
 							DebugCommands_Log("Spawned enemy.");
 
-							Enemies::ImpressionableEnemy* newEnemy = new Enemies::ImpressionableEnemy(GAME_NAME::TestGame::ThePlayer->GetPosition(), Enemies::ImpressionableEnemy::AttackType::Stabber);
+							Enemies::ImpressionableEnemy* newEnemy = new Enemies::ImpressionableEnemy(GAME_NAME::TestGame::ThePlayer->GetPosition(), Enemies::ImpressionableEnemy::AttackType::Stabber, Enemies::LoadableEnemy::LoadMode::Initilize);
 							newEnemy->SetHeldItem(ITEM_TYPE::IRON_SWORD);
+							Renderer::InstantiateObject(Renderer::InstantiateGameObject(newEnemy, true, 2, false));
+						}
+						else if (params[1] == "thrower")
+						{
+							Enemies::ImpressionableEnemy* newEnemy = new Enemies::ImpressionableEnemy(GAME_NAME::TestGame::ThePlayer->GetPosition(), Enemies::ImpressionableEnemy::AttackType::Thrower, Enemies::LoadableEnemy::LoadMode::WhenOffscreen);
+							newEnemy->SetHeldItem(ITEM_TYPE::GRENADE);
 							Renderer::InstantiateObject(Renderer::InstantiateGameObject(newEnemy, true, 2, false));
 						}
 					}
